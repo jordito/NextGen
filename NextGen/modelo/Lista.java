@@ -1,4 +1,5 @@
 package NextGen.modelo;
+
 import java.util.ArrayList;
 
 public class Lista<T> {
@@ -8,9 +9,31 @@ public class Lista<T> {
         lista = new ArrayList<>();
     }
 
-    // Métodos genéricos
-    // ...
-}
+    public int getSize() {
+        return lista.size();
+    }
 
-// Clases derivadas: ListaArticulos, ListaClientes, ListaPedidos
-// ...
+    public void add(T t) {
+        lista.add(t);
+    }
+
+    public void borrar(T t) {
+        lista.remove(t);
+    }
+
+    public T getAt(int position) {
+        return lista.get(position);
+    }
+
+    public void clear() {
+        lista.clear();
+    }
+
+    public boolean isEmpty() {
+        return lista.isEmpty();
+    }
+
+    public ArrayList<T> getArrayList() {
+        return new ArrayList<>(lista);
+    }
+}
