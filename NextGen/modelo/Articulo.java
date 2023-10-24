@@ -1,24 +1,46 @@
 package NextGen.modelo;
 
 public class Articulo {
-    // Atributos
-    private String id;
+    private String codigo;
     private String descripcion;
     private double precio;
 
-    // Constructor
-    public Articulo(String id, String descripcion, double precio) {
-        this.id = id;
+    public Articulo(String codigo, String descripcion, double precio) {
+        this.codigo = codigo;
         this.descripcion = descripcion;
         this.precio = precio;
     }
 
-    // Getters y Setters
-    // ...
+    public String getCodigo() {
+        return codigo;
+    }
 
-    // Método toString
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public double getPrecio() {
+        return precio;
+    }
+
+    public void setPrecio(double precio) {
+        this.precio = precio;
+    }
+
     @Override
     public String toString() {
-        return "Articulo: " + id + ", Descripcion: " + descripcion + ", Precio: " + precio;
+        return "Articulo{" +
+                "codigo='" + codigo + '\'' +
+                ", descripcion='" + descripcion + '\'' +
+                ", precio=" + precio +
+                '}';
     }
 }
