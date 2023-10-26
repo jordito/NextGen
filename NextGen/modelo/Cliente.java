@@ -30,6 +30,7 @@ public abstract class Cliente {
     @Override
 
     public String toString() {
+        DecimalFormat df = new DecimalFormat("#.##");
         return  "\nCliente:               " + nif +
                 "\nNombre Cliente:        " + nombre +
                 "\nEmail:                 " + email +

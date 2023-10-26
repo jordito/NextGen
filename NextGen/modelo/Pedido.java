@@ -1,6 +1,7 @@
 package NextGen.modelo;
 
 import java.util.Date;
+import java.time.format.DateTimeFormatter;
 
 public class Pedido {
     private int numeroPedido;
@@ -19,13 +20,61 @@ public class Pedido {
         this.enviado = false;
     }
 
+
+    public int getNumeroPedido() {
+        return numeroPedido;
+    }
+
+    public void setNumeroPedido(int numeroPedido) {
+        this.numeroPedido = numeroPedido;
+    }
+
+    public Date getFechaHora() {
+        return fechaHora;
+    }
+
+    public void setFechaHora(Date fechaHora) {
+        this.fechaHora = fechaHora;
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
+
+    public Articulo getArticulo() {
+        return articulo;
+    }
+
+    public void setArticulo(Articulo articulo) {
+        this.articulo = articulo;
+    }
+
+    public int getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(int cantidad) {
+        this.cantidad = cantidad;
+    }
+
+    public boolean isEnviado() {
+        return enviado;
+    }
+
+    public void setEnviado(boolean enviado) {
+        this.enviado = enviado;
+    }
+
     public boolean pedidoEnviado() {
         return enviado;
     }
 
-    public float precioEnvio() {
-        // Lógica para calcular el precio de envío
-        return 0;  // Valor de ejemplo
+    public float precioTotal() {
+        return cantidad * articulo.getPrecio() + precioEnvio();
     }
 
     @Override

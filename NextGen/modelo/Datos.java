@@ -11,5 +11,27 @@ public class Datos {
         listaPedidos = new ListaPedidos();
     }
 
-    // Métodos para interactuar con listas
+    public ListaArticulos getListaArticulos() {
+        return listaArticulos;
+    }
+
+    public void setListaArticulos(ListaArticulos listaArticulos) {
+        this.listaArticulos = listaArticulos;
+    }
+
+    public ListaClientes getListaClientes() {
+        return listaClientes;
+    }
+
+    public void setListaClientes(ListaClientes listaClientes) {
+        this.listaClientes = listaClientes;
+    }
+
+    public ListaPedidos getListaPedidos() {
+        return listaPedidos;
+    }
+
+    public void setListaPedidos(ListaPedidos listaPedidos) {
+        this.listaPedidos = listaPedidos;
+    }
 }

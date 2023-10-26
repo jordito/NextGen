@@ -6,20 +6,16 @@ public class ClienteEstandard extends Cliente {
         super(nif, nombre, email, direccion);
     }
 
-    @Override
+    //Metodos Abstractos
     public String tipoCliente() {
         return "Estandard";
     }
+    public float calcAnual() {return 0; }
+    public float descuentoEnv() {return 0; }
 
+    //toString
     @Override
-    public float calcAnual() {
-        // Lógica para calcular la cuota anual
-        return 0;  // Valor de ejemplo
-    }
-
-    @Override
-    public float descuentoEnv() {
-        // Lógica para calcular el descuento en gastos de envío
-        return 0;  // Valor de ejemplo
+    public String toString() {
+        return super.toString();
     }
 }
