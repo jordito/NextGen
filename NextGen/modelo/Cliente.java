@@ -4,11 +4,13 @@ public abstract class Cliente {
     private String email;
     private String nombre;
     private String direccion;
+    private String nif; // Añadido el campo NIF
 
-    public Cliente(String email, String nombre, String direccion) {
+    public Cliente(String email, String nombre, String direccion, String nif) {
         this.email = email;
         this.nombre = nombre;
         this.direccion = direccion;
+        this.nif = nif; // Inicializado el campo NIF
     }
 
     public abstract String tipoCliente();
@@ -40,12 +42,21 @@ public abstract class Cliente {
         this.direccion = direccion;
     }
 
+    public String getNif() {
+        return nif; // Implementación del método getNif()
+    }
+
+    public void setNif(String nif) {
+        this.nif = nif; // Implementación del método setNif()
+    }
+
     @Override
     public String toString() {
         return "Cliente{" +
                 "email='" + email + '\'' +
                 ", nombre='" + nombre + '\'' +
                 ", direccion='" + direccion + '\'' +
+                ", nif='" + nif + '\'' + // Añadido el campo NIF en el método toString()
                 '}';
     }
 }
