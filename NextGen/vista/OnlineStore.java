@@ -2,7 +2,7 @@ package NextGen.vista;
 
 public class OnlineStore {
     public static void main(String[] args) {
-        GestionOS gestion = new GestionOS();
+        GestionOs gestion = new GestionOs();
         gestion.inicio();
     }
 }

@@ -1,8 +1,5 @@
 package NextGen.controlador;
-import NextGen.modelo.Datos;
-import NextGen.modelo.Articulo;
-import NextGen.modelo.Cliente;
-import NextGen.modelo.Pedido;
+import NextGen.modelo.*; // Corrección en la línea de importación
 
 public class Controlador {
     private Datos datos;

@@ -2,8 +2,8 @@ package NextGen.modelo;
 
 public class ClientePremium extends Cliente {
 
-    public ClientePremium(String email, String nombre, String direccion) {
-        super(email, nombre, direccion);
+    public ClientePremium(String email, String nombre, String direccion, String nif) {
+        super(email, nombre, direccion, nif);
     }
 
     @Override
