@@ -31,4 +31,6 @@ public class Controlador {
     public void agregarPedido(Pedido pedido) {
         // Lógica para agregar un pedido
     }
+
+    //Faltarian las funciones que irian dentro de gestion de articulos, clientes y pedidos.
 }
