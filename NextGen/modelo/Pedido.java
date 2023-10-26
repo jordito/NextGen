@@ -30,18 +30,18 @@ public class Pedido {
 
     @Override
     public String toString() {
-        return "Pedido{" +
-                "numeroPedido=" + numeroPedido +
-                ", fechaHora=" + fechaHora +
+        return "Pedido: " +
+                "Numero Pedido=" + numeroPedido +
+                ", Fecha y Hora=" + fechaHora +
                 ", NIF Cliente=" + cliente.getNif() +
-                ", nombre Cliente=" + cliente.getNombre() +
-                ", codigo Articulo=" + articulo.getCodigo() +
-                ", descripcion Articulo=" + articulo.getDescripcion() +
-                ", cantidad=" + cantidad +
-                ", precio Articulo=" + articulo.getPrecio() +
-                ", coste Envio=" + precioEnvio() +
-                ", precio Total=" + (articulo.getPrecio() * cantidad + precioEnvio()) +
-                ", enviado=" + pedidoEnviado() +
+                ", Nombre Cliente=" + cliente.getNombre() +
+                ", Codigo Articulo=" + articulo.getCodigo() +
+                ", Descripcion Articulo=" + articulo.getDescripcion() +
+                ", Cantidad=" + cantidad +
+                ", Precio Articulo=" + articulo.getPrecio() +
+                ", Coste Envio=" + precioEnvio() +
+                ", Precio Total=" + (articulo.getPrecio() * cantidad + precioEnvio()) +
+                ", Enviado: " + pedidoEnviado() +
                 '}';
     }
 }
