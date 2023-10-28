@@ -22,16 +22,13 @@ public class GestionOs {
             opcio = pedirOpcion();
             switch (opcio) {
                 case '1':
-                    controlador.listarArticulos();
-                    // Otras operaciones relacionadas con artículos
+                    gestionArticulos();
                     break;
                 case '2':
-                    controlador.listarClientes();
-                    // Otras operaciones relacionadas con clientes
+                    gestionClientes();
                     break;
                 case '3':
-                    controlador.listarPedidos();
-                    // Otras operaciones relacionadas con pedidos
+                    gestionPedidos();
                     break;
                 case '0':
                     salir = true;
@@ -50,5 +47,17 @@ public class GestionOs {
             resp = " ";
         }
         return resp.charAt(0);
+    }
+
+    public void gestionArticulos() {
+        //FALTA IMPLEMENTAR LA FUCNIÓN
+    }
+
+    public void gestionClientes() {
+        //FALTA IMPLEMENTAR LA FUCNIÓN
+    }
+
+    public void gestionPedidos() {
+        //FALTA IMPLEMENTAR LA FUCNIÓN
     }
 }
