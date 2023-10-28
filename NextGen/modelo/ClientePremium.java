@@ -65,7 +65,7 @@ public class ClientePremium extends Cliente {
         return super.toString() +
                 "\nSu cuota anual es de:        " + calcAnual() + "€" +
                 "\nSe le aplica un descuento de:" + (descuentoEnv() * 100) + "%";
-
+    }
 
     public ClientePremium(String email, String nombre, String direccion, String nif) {
         super(email, nombre, direccion, nif);

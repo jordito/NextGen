@@ -1,15 +1,14 @@
 package NextGen.modelo;
+import java.text.DecimalFormat;
+
 /**
  * Clase abstracta que representa un cliente con sus atributos.
  */
 public abstract class Cliente {
 
-    private string nif;
+    private String nif;
     private String nombre;
-
-
     private String email;
-    private String nombre;
     private String direccion;
 
     /**
@@ -22,8 +21,9 @@ public abstract class Cliente {
     public Cliente(String nif, String nombre, String email, String direccion) {
         this.nif = nif;
         this.nombre = nombre;
-
-    private String nif; // Añadido el campo NIF
+        this.email = email;
+        this.direccion = direccion;
+    }
 
     public Cliente(String email, String nombre, String direccion, String nif) {
 
@@ -105,6 +105,7 @@ public abstract class Cliente {
         String data = String.format("%-12s" + separator + "%-26s" + separator + "%-34s" + separator + "%-38s" + separator + "%-15s" + separator + "%-13s" + separator + "%-15s",
                 nif, nombre, email, direccion, tipoCliente(), df.format(calcAnual()) + "€", df.format((descuentoEnv() * 100)) + "%");
         return header + "\n" + data;
+    }
 
 
     // Getters and Setters
