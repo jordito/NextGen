@@ -3,11 +3,11 @@ package NextGen.vista;
 import NextGen.controlador.Controlador;
 import java.util.Scanner;
 
-public class GestionOS {
+public class GestionOs {
     private Controlador controlador;
     Scanner teclado = new Scanner(System.in);
 
-    public GestionOS() {
+    public GestionOs() {
         controlador = new Controlador();
     }
 

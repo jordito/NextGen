@@ -3,6 +3,7 @@ package NextGen.modelo;
  * Clase que representa un cliente premium. Hereda de la clase abstracta Cliente.
  */
 public class ClientePremium extends Cliente {
+
     private double cuota;
     private double descuento;
     /**
@@ -64,5 +65,27 @@ public class ClientePremium extends Cliente {
         return super.toString() +
                 "\nSu cuota anual es de:        " + calcAnual() + "€" +
                 "\nSe le aplica un descuento de:" + (descuentoEnv() * 100) + "%";
+
+
+    public ClientePremium(String email, String nombre, String direccion, String nif) {
+        super(email, nombre, direccion, nif);
+    }
+
+    @Override
+    public String tipoCliente() {
+        return "Premium";
+    }
+
+    @Override
+    public float calcAnual() {
+        // Lógica para calcular la cuota anual
+        return 0;  // Valor de ejemplo
+    }
+
+    @Override
+    public float descuentoEnv() {
+        // Lógica para calcular el descuento en gastos de envío
+        return 0;  // Valor de ejemplo
+
     }
 }
