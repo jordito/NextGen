@@ -15,10 +15,15 @@ public class GestionOs {
         boolean salir = false;
         char opcio;
         do {
-            System.out.println("1. Gestión Articulos");
-            System.out.println("2. Gestión Clientes");
-            System.out.println("3. Gestión Pedidos");
-            System.out.println("0. Salir");
+            System.out.println("╔═══════════════════════════╗");
+            System.out.println("║        MENÚ PRINCIPAL     ║");
+            System.out.println("╠═══════════════════════════╣");
+            System.out.println("║ 1. Gestión Articulos      ║");
+            System.out.println("║ 2. Gestión Clientes       ║");
+            System.out.println("║ 3. Gestión Pedidos        ║");
+            System.out.println("║ 4. Cargar Datos           ║");
+            System.out.println("║ 0. Salir                  ║");
+            System.out.println("╚═══════════════════════════╝");
             opcio = pedirOpcion();
             switch (opcio) {
                 case '1':
@@ -41,6 +46,7 @@ public class GestionOs {
             }
         } while (!salir);
     }
+
 
     private char pedirOpcion() {
         String resp;
