@@ -87,7 +87,7 @@ public class Controlador {
      * @param articulo El artículo que se desea eliminar de la lista.
      */
     public void eliminarArticulo(Articulo articulo) {
-
+        //FALTA AÑADIR
     }
 
     /**
@@ -176,7 +176,7 @@ public class Controlador {
      * @param cliente El cliente que se desea eliminar de la lista
      */
     public void eliminarCliente(Cliente cliente) {
-
+        //FALTA AÑADIR
     }
 
 
@@ -184,7 +184,7 @@ public class Controlador {
      * Lista y muestra todos los pedidos presentes en la lista.
      */
     public void listarPedidos() {
-
+        //FALTA AÑADIR
     }
 
     public void listarPedidosPendientes() {
@@ -292,7 +292,7 @@ public class Controlador {
      * @param pedido El pedido que se desea eliminar de la lista
      */
     public void eliminarPedido(Pedido pedido) {
-
+        //FALTA AÑADIR
     }
 
 
