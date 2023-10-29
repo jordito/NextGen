@@ -15,23 +15,25 @@ public class GestionOs {
         boolean salir = false;
         char opcio;
         do {
-            System.out.println("1. Gestión Articulos");
-            System.out.println("2. Gestión Clientes");
-            System.out.println("3. Gestión Pedidos");
-            System.out.println("0. Salir");
+                System.out.println("╔═══════════════════════════╗");
+                System.out.println("║        MENÚ PRINCIPAL     ║");
+                System.out.println("╠═══════════════════════════╣");
+                System.out.println("║ 1. Gestión Articulos      ║");
+                System.out.println("║ 2. Gestión Clientes       ║");
+                System.out.println("║ 3. Gestión Pedidos        ║");
+                System.out.println("║ 4. Cargar Datos           ║");
+                System.out.println("║ 0. Salir                  ║");
+                System.out.println("╚═══════════════════════════╝");
             opcio = pedirOpcion();
             switch (opcio) {
                 case '1':
-                    controlador.listarArticulos();
-                    // Otras operaciones relacionadas con artículos
+                    gestionArticulos();
                     break;
                 case '2':
-                    controlador.listarClientes();
-                    // Otras operaciones relacionadas con clientes
+                    gestionClientes();
                     break;
                 case '3':
-                    controlador.listarPedidos();
-                    // Otras operaciones relacionadas con pedidos
+                    gestionPedidos();
                     break;
                 case '0':
                     salir = true;
@@ -50,5 +52,17 @@ public class GestionOs {
             resp = " ";
         }
         return resp.charAt(0);
+    }
+
+    public void gestionArticulos() {
+        //FALTA IMPLEMENTAR LA FUCNIÓN
+    }
+
+    public void gestionClientes() {
+        //FALTA IMPLEMENTAR LA FUCNIÓN
+    }
+
+    public void gestionPedidos() {
+        //FALTA IMPLEMENTAR LA FUCNIÓN
     }
 }
