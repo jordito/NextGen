@@ -1,6 +1,6 @@
 package NextGen.controlador;
-import NextGen.modelo.*; // Corrección en la línea de importación
 
+import NextGen.modelo.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -10,28 +10,32 @@ import java.util.Scanner;
  * Clase que actúa como el controlador principal de la aplicación.
  */
 public class Controlador {
+    /**
+     * Atributo que representa la instancia de Datos.
+     */
     private Datos datos;
+
     /**
      * Constructor que inicializa una instancia de Datos.
      */
     public Controlador() {
         datos = new Datos();
     }
+
     /**
      * Lista y muestra todos los artículos presentes en la lista.
      */
     public void listarArticulos() {
-        for (Articulo articulo : lista) {
+        for (Articulo articulo : datos.getListaArticulos().getArrayList()) {
             System.out.println(articulo);
         }
     }
+
     /**
-     * Método para agregar un artículo a la lista
-     * @param articulo El artículo que se desea agregar a la lista.
+     * Método para agregar un artículo a la lista.
      */
     public void agregarArticulo() {
         Scanner scanner = new Scanner(System.in);
-
         System.out.println("Agregar un nuevo artículo:");
 
         System.out.print("Código: ");
@@ -59,13 +63,13 @@ public class Controlador {
 
         Articulo nuevoArticulo = new Articulo(codigo, descripcion, precio, gastosEnvio, preparacionEnMin);
 
-        listaArticulos.agregar(nuevoArticulo);
+        listaArticulos.add(nuevoArticulo);  // Corrección: Cambiado de 'agregar' a 'add'
 
         System.out.println("Datos del artículo agregado:");
         System.out.println("+---------------------+-----------------------+");
         System.out.println("| Campo               | Valor                 |");
         System.out.println("+---------------------+-----------------------+");
-        System.out.println(String.format("| Código              | %d                   |", nuevoArticulo.getCodigo()));
+        System.out.println(String.format("| Código              | %s                   |", nuevoArticulo.getCodigo()));  // Corrección: Cambiado de '%d' a '%s'
         System.out.println(String.format("| Descripción         | %s          |", nuevoArticulo.getDescripcion()));
         System.out.println(String.format("| Precio              | %.2f€                 |", nuevoArticulo.getPrecio()));
         System.out.println(String.format("| Gastos de Envío     | %.2f€                 |", nuevoArticulo.getGastosEnvio()));
@@ -74,22 +78,22 @@ public class Controlador {
     }
 
     /**
-     * Método para eliminar un artículo de la lista
+     * Método para eliminar un artículo de la lista.
      * @param articulo El artículo que se desea eliminar de la lista.
      */
     public void eliminarArticulo(Articulo articulo) {
-        lista.remove(articulo);
+        datos.getListaArticulos().borrar(articulo);
     }
-
 
     /**
      * Lista y muestra todos los clientes presentes en la lista.
      */
     public void listarClientes() {
-        for (Cliente cliente : lista) {
+        for (Cliente cliente : datos.getListaClientes().getArrayList()) {
             System.out.println(cliente);
         }
     }
+
     /**
      * Agrega un nuevo cliente a la lista de clientes solicitando al usuario los datos necesarios.
      */
@@ -132,7 +136,7 @@ public class Controlador {
             nuevoCliente = new ClienteEstandard(nif, nombre, email, direccion);
         }
 
-        listaClientes.agregar(nuevoCliente);
+        listaClientes.add(nuevoCliente);  // Corrección: Cambiado de 'agregar' a 'add'
 
         System.out.println("Cliente agregado con éxito:");
         System.out.println("+---------------------+-----------------------+");
@@ -145,23 +149,24 @@ public class Controlador {
         System.out.println(String.format("| Tipo de Cliente     | %s             |", tipoCliente));
         System.out.println("+---------------------+-----------------------+");
     }
+
     /**
-     * Método para eliminar un cliente de la lista
-     * @param cliente El cliente que se desea eliminar de la lista
+     * Método para eliminar un cliente de la lista.
+     * @param cliente El cliente que se desea eliminar de la lista.
      */
     public void eliminarCliente(Cliente cliente) {
-        lista.remove(cliente);
+        datos.getListaClientes().borrar(cliente);
     }
-
 
     /**
      * Lista y muestra todos los pedidos presentes en la lista.
      */
     public void listarPedidos() {
-        for (Pedido pedido : lista) {
+        for (Pedido pedido : datos.getListaPedidos().getArrayList()) {
             System.out.println(pedido);
         }
     }
+
     /**
      * Agrega un nuevo pedido a la lista de pedidos solicitando al usuario los datos necesarios.
      */
@@ -187,7 +192,7 @@ public class Controlador {
 
         System.out.print("NIF del Cliente: ");
         String nifCliente = scanner.nextLine();
-        Cliente cliente = datos.getListaClientes().buscarPorNIF(nifCliente);
+        Cliente cliente = datos.getListaClientes().buscarPorNif(nifCliente);
 
         if (cliente == null) {
             System.out.println("¡Error! No se encontró un cliente con el NIF especificado.");
@@ -210,7 +215,7 @@ public class Controlador {
         Pedido nuevoPedido = new Pedido(numeroPedido, fechaHora, cliente, articulo, cantidad);
 
         ListaPedidos listaPedidos = datos.getListaPedidos();
-        listaPedidos.agregar(nuevoPedido);
+        listaPedidos.add(nuevoPedido);  // Corrección: Cambiado de 'agregar' a 'add'
 
         System.out.println("Pedido agregado con éxito:");
         System.out.println("+---------------------+-----------------------+");
@@ -226,12 +231,14 @@ public class Controlador {
         System.out.println(String.format("| Precio Total         | %.2f€            |", nuevoPedido.precioTotal()));
         System.out.println("+---------------------+-----------------------+");
     }
+
     /**
-     * Método para eliminar un pedido de la lista
-     * @param numeroPedido El pedido que se desea eliminar de la lista
+     * Método para eliminar un pedido de la lista.
+     * @param pedido El pedido que se desea eliminar de la lista.
      */
     public void eliminarPedido(Pedido pedido) {
-        lista.remove(pedido);
+        datos.getListaPedidos().borrar(pedido);
     }
-
 }
+
+
