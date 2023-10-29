@@ -10,7 +10,10 @@
 
 # Generated files
 .idea/**/contentModel.xml
-
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/.gitignore
 
 # Sensitive or high-churn files
 .idea/**/dataSources/
@@ -23,4 +26,5 @@
 
 # IntelliJ
 out/
+NextGen.iml
 
