@@ -16,7 +16,7 @@ public class ListaClientes extends Lista<Cliente> {
      */
     public Cliente buscarPorNif(int nif) {
         for (Cliente cliente : lista) {
-            if (cliente.getNif() == nif) {
+            if (cliente.getNif().equals(nif)) {
                 return cliente;
             }
         }

@@ -17,7 +17,7 @@ public class ListaArticulos extends Lista<Articulo> {
      */
     public Articulo buscarPorCodigo(int codigo) {
         for (Articulo articulo : lista) {
-            if (articulo.getCodigo() == codigo) {
+            if (articulo.getCodigo().equals(codigo)) {
                 return articulo;
             }
         }
