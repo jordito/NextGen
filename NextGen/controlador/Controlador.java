@@ -1,4 +1,4 @@
-package NextGen.Controlador;
+package NextGen.controlador;
 
 import NextGen.modelo.*;
 import java.text.ParseException;
@@ -11,6 +11,9 @@ import java.util.Scanner;
  * Clase que actúa como el controlador principal de la aplicación.
  */
 public class Controlador {
+    /**
+     * Atributo que representa la instancia de Datos.
+     */
     private Datos datos;
     Scanner teclado = new Scanner(System.in);
     /**
@@ -87,7 +90,7 @@ public class Controlador {
      * @param articulo El artículo que se desea eliminar de la lista.
      */
     public void eliminarArticulo(Articulo articulo) {
-        //FALTA AÑADIR
+
     }
 
     /**
@@ -98,7 +101,7 @@ public class Controlador {
         if (listaClientes.isEmpty()) {
             System.out.println("\u001B[31m" + "No hay clientes registrados.\n" + "\u001B[0m");
         } else {
-            System.out.println("\u001B[34m" + "Lista de clientes:\n");
+            System.out.println("\u001B[34m" + "Lista de clientes:\n\n");
             for (Cliente cliente: listaClientes.getArrayList()) {
                 System.out.println("Los clientes son los siguientes:\n " + "\u001B[0m" + cliente.toString());
             }
@@ -106,15 +109,31 @@ public class Controlador {
     }
 
     public void listarClienteEstandard () {
-        //FALTA AÑADIRLA
+        ListaClientes listaClientes = datos.getListaClientes();
+        if (listaClientes.isEmpty()) {
+            System.out.println("\u001B[31m" + "No hay clientes estándar.\n" + "\u001B[0m");
+        } else {
+            System.out.println("\u001B[34m" + "Lista de clientes estándar:\n" + "\u001B[0m");
+            for (Cliente cliente : listaClientes.getArrayList()) {
+                if (cliente instanceof ClienteEstandard) {
+                    System.out.println(cliente.toString());
+                }
+            }
+        }
     }
 
     public void listarClientePremium () {
-        //FALTA AÑADIRLA
-    }
-
-    public void modificarCliente () {
-        //FALTA AÑADIRLA
+        ListaClientes listaClientes = datos.getListaClientes();
+        if (listaClientes.isEmpty()) {
+            System.out.println("\u001B[31m" + "No hay clientes premium.\n" + "\u001B[0m");
+        } else {
+            System.out.println("\u001B[34m" + "Lista de clientes premium :\n" + "\u001B[0m");
+            for (Cliente cliente : listaClientes.getArrayList()) {
+                if (cliente instanceof ClientePremium) {
+                    System.out.println(cliente.toString());
+                }
+            }
+        }
     }
     /**
      * Agrega un nuevo cliente a la lista de clientes solicitando al usuario los datos necesarios.
@@ -154,8 +173,18 @@ public class Controlador {
         } else if (tipoCliente.equalsIgnoreCase("Premium")) {
             nuevoCliente = new ClientePremium(nif, nombre, email, direccion);
         } else {
-            System.out.println("\u001B[33m" + "Tipo de cliente no válido. Se creará como cliente estándard por defecto." + "\u001B[0m");
-            nuevoCliente = new ClienteEstandard(nif, nombre, email, direccion);
+            System.out.println("\u001B[33m" + "Tipo de cliente no válido. Por favor, ingrese 'Estandard' o 'Premium'." + "\u001B[0m");
+
+            do {
+                System.out.print("Tipo de cliente (Estandard/Premium): ");
+                tipoCliente = scanner.nextLine();
+            } while (!tipoCliente.equalsIgnoreCase("Estandard") && !tipoCliente.equalsIgnoreCase("Premium"));
+
+            if (tipoCliente.equalsIgnoreCase("Estandard")) {
+                nuevoCliente = new ClienteEstandard(nif, nombre, email, direccion);
+            } else {
+                nuevoCliente = new ClientePremium(nif, nombre, email, direccion);
+            }
         }
 
         listaClientes.add(nuevoCliente);
@@ -173,18 +202,52 @@ public class Controlador {
     }
     /**
      * Método para eliminar un cliente de la lista
-     * @param cliente El cliente que se desea eliminar de la lista
+     * El cliente que se desea eliminar de la lista
      */
-    public void eliminarCliente(Cliente cliente) {
-        //FALTA AÑADIR
+    public void eliminarCliente() {
+        System.out.println("\u001B[34m" + "Escoge un cliente de la lista de clientes disponibles:" + "\u001B[0m");
+        ListaClientes listaClientes = datos.getListaClientes();
+        for (Cliente cliente : listaClientes.getArrayList()) {
+            System.out.println("NIF:     " + cliente.getNif());
+            System.out.println("Nombre:  " + cliente.getNombre());
+            System.out.println("------------------------");
+        }
+
+        System.out.print("\u001B[34m" + "Ingrese el NIF del Cliente que desea eliminar: " + "\u001B[0m");
+        String nifCliente = teclado.nextLine();
+
+        Cliente cliente = listaClientes.buscarPorNif(nifCliente);
+
+        if (cliente != null) {
+            System.out.println("\u001B[31m" + "¿Está seguro de que desea eliminar al siguiente cliente?" + "\u001B[0m");
+            System.out.println("NIF:     " + cliente.getNif());
+            System.out.println("Nombre:  " + cliente.getNombre());
+            System.out.print("Confirme (Si/No): ");
+            String confirmacion = teclado.nextLine();
+
+            if (confirmacion.equalsIgnoreCase("Si")) {
+                listaClientes.borrar(cliente);
+                System.out.println("\u001B[33m" + "Cliente eliminado con éxito." + "\u001B[0m");
+            } else {
+                System.out.println("\u001B[32m" + "Eliminación de cliente cancelada." + "\u001B[0m");
+            }
+        } else {
+            System.out.println("\u001B[31m" + "¡Error! No se encontró un cliente con el NIF especificado." + "\u001B[0m");
+        }
     }
-
-
     /**
      * Lista y muestra todos los pedidos presentes en la lista.
      */
     public void listarPedidos() {
-        //FALTA AÑADIR
+        ListaPedidos listaPedidos = datos.getListaPedidos();
+        if (listaPedidos.isEmpty()) {
+            System.out.println("\u001B[31m" + "No hay pedidos registrados.\n" + "\u001B[0m");
+        } else {
+            System.out.println("\u001B[34m" + "Lista de pedidos:\n\n");
+            for (Pedido pedido: listaPedidos.getArrayList()) {
+                System.out.println("Los pedidos realizados son los siguientes:\n " + "\u001B[0m" + pedido.toString());
+            }
+        }
     }
 
     public void listarPedidosPendientes() {
@@ -217,7 +280,7 @@ public class Controlador {
             fechaHora = new Date();
         }
 
-        System.out.println("\u001B[34m" + "Lista de Clientes Disponibles:" + "\u001B[0m");
+        System.out.println("\u001B[34m" + "Escoge un cliente de la lista de clientes disponibles:" + "\u001B[0m");
         ListaClientes listaClientes = datos.getListaClientes();
         for (Cliente cliente : listaClientes.getArrayList()) {
             System.out.println("NIF:          " + cliente.getNif());
@@ -228,12 +291,12 @@ public class Controlador {
             System.out.println("------------------------");
         }
 
-        System.out.print("\u001B[34m" + "Ingrese el NIF del Cliente (o escriba " + "\u001B[33m" + "'nuevo'" + "\u001B[0m" + " para crear uno nuevo): " + "\u001B[0m");
+        System.out.print("\u001B[34m" + "Ingrese el NIF del Cliente (o escriba " + "\u001B[33m" + "'nuevo'" + "\u001B[0m" + "\u001B[34m" + " para crear uno nuevo): " + "\u001B[0m");
         String nifCliente = scanner.nextLine();
 
         if (nifCliente.equalsIgnoreCase("nuevo")) {
             agregarCliente();
-            System.out.print("Ingrese el NIF del Cliente: ");
+            System.out.print("Ingrese el NIF del Cliente y continua con el pedido: ");
             nifCliente = scanner.nextLine();
         }
 
@@ -244,7 +307,7 @@ public class Controlador {
             return;
         }
 
-        System.out.println("\u001B[34m" + "Lista de Artículos Disponibles:" + "\u001B[0m");
+        System.out.println("\u001B[34m" + "Escoge un articulo de la lista de artículos disponibles:" + "\u001B[0m");
         ListaArticulos listaArticulos = datos.getListaArticulos();
         for (Articulo articulo : listaArticulos.getArrayList()) {
             System.out.println("Código:                 " + articulo.getCodigo());
@@ -292,8 +355,7 @@ public class Controlador {
      * @param pedido El pedido que se desea eliminar de la lista
      */
     public void eliminarPedido(Pedido pedido) {
-        //FALTA AÑADIR
+        //eliminar pedido
     }
-
 
 }

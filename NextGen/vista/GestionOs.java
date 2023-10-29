@@ -73,13 +73,13 @@ public class GestionOS {
                     controlador.agregarArticulo();
                     break;
                 case '3':
-                    controlador.eliminarArticulo(); //mirar error
+                    //controlador.eliminarArticulo(); //mirar error
                     break;
                 case '0':
                     salir = true;
                     break;
                 default:
-                    System.out.println("Opción inválida. Por favor, elija una opción válida.");
+                    System.out.println("\u001B[31m" + "Opción inválida. Por favor, elija una opción válida." + "\u001B[0m");
             }
         } while (!salir);
     }
@@ -95,8 +95,7 @@ public class GestionOS {
             System.out.println("║ 2. Listar Clientes Estandard ║");
             System.out.println("║ 3. Listar Clientes Premium   ║");
             System.out.println("║ 4. Añadir Cliente            ║");
-            System.out.println("║ 5. Modificar Cliente         ║");
-            System.out.println("║ 6. Eliminar Cliente          ║");
+            System.out.println("║ 5. Eliminar Cliente          ║");
             System.out.println("║ 0. Salir                     ║");
             System.out.println("╚══════════════════════════════╝");
             opcion = pedirOpcion();
@@ -114,16 +113,13 @@ public class GestionOS {
                     controlador.agregarCliente();
                     break;
                 case '5':
-                    controlador.modificarCliente(); //FALTA CREARLA
-                    break;
-                case '6':
-                    controlador.eliminarCliente(); //mirar error
+                    controlador.eliminarCliente();
                     break;
                 case '0':
                     salir = true;
                     break;
                 default:
-                    System.out.println("Opción inválida. Por favor, elija una opción válida.");
+                    System.out.println("\u001B[31m" + "Opción inválida. Por favor, elija una opción válida." + "\u001B[0m");
             }
         } while (!salir);
     }
@@ -157,13 +153,13 @@ public class GestionOS {
                     controlador.listarPedidosEnviados(); //FALTA CREARLA
                     break;
                 case '5':
-                    controlador.eliminarPedido(); //MIRAR ERROR
+                    //controlador.eliminarPedido(); //MIRAR ERROR
                     break;
                 case '0':
                     salir = true;
                     break;
                 default:
-                    System.out.println("Opción inválida. Por favor, elija una opción válida.");
+                    System.out.println("\u001B[31m" + "Opción inválida. Por favor, elija una opción válida." + "\u001B[0m");
             }
         } while (!salir);
     }
