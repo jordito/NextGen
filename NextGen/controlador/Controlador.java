@@ -1,6 +1,11 @@
 package NextGen.controlador;
 import NextGen.modelo.*; // Corrección en la línea de importación
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Scanner;
+
 /**
  * Clase que actúa como el controlador principal de la aplicación.
  */
@@ -30,12 +35,11 @@ public class Controlador {
         System.out.println("Agregar un nuevo artículo:");
 
         System.out.print("Código: ");
-        int codigo = scanner.nextInt();
-        scanner.nextLine();
+        String codigo = scanner.nextLine();
 
         ListaArticulos listaArticulos = datos.getListaArticulos();
         for (Articulo articuloExistente : listaArticulos.getArrayList()) {
-            if (articuloExistente.getCodigo() == codigo) {
+            if (articuloExistente.getCodigo().equals(codigo)) {
                 System.out.println("¡Error! Ya existe un artículo con el mismo código.");
                 return;
             }
@@ -191,8 +195,7 @@ public class Controlador {
         }
 
         System.out.print("Código del Artículo: ");
-        int codigoArticulo = scanner.nextInt();
-        scanner.nextLine();
+        String codigoArticulo = scanner.nextLine();
         Articulo articulo = datos.getListaArticulos().buscarPorCodigo(codigoArticulo);
 
         if (articulo == null) {

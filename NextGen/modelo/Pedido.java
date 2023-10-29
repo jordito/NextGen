@@ -118,7 +118,7 @@ public class Pedido {
      * @return El precio total del pedido.
      */
     public float precioTotal() {
-        return cantidad * articulo.getPrecio() + precioEnvio();
+        return (float) (cantidad * articulo.getPrecio() + precioEnvio());
     }
     /**
      * Comprueba si el pedido ha sido enviado.
