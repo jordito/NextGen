@@ -1,5 +1,6 @@
 package NextGen.modelo;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.time.format.DateTimeFormatter;
 import java.text.SimpleDateFormat;
@@ -125,7 +126,7 @@ public class Pedido {
      * @return true si el pedido ha sido enviado, false de lo contrario.
      */
     public boolean pedidoEnviado() {
-        LocalDateTime horaPreparacion = fechaHora.plusMinutes(articulo.getPreparacionEnMin());
+        LocalDateTime horaPreparacion = LocalDateTime.now().plusMinutes(articulo.getPreparacionEnMin());
         LocalDateTime horaActual = LocalDateTime.now();
 
         return horaActual.isAfter(horaPreparacion);
@@ -136,8 +137,8 @@ public class Pedido {
      */
     public float precioEnvio() {
         float descuento = cliente.descuentoEnv();
-        float precioEnvioConDescuento = (float) (articulo.getGastosEnvio() * (1 - descuento));
-        return precioEnvioConDescuento;
+        return (float) (articulo.getGastosEnvio() * (1 - descuento));
+
     }
     /**
      * Convierte el pedido en una representación de tabla.
