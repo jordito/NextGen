@@ -1,6 +1,6 @@
-package NextGen.Vista;
+package NextGen.vista;
 
-import NextGen.Controlador.Controlador;
+import NextGen.controlador.Controlador;
 import java.util.Scanner;
 
 public class GestionOS {

@@ -1,6 +1,6 @@
 package NextGen.Controlador;
 
-import NextGen.Modelo.*;
+import NextGen.modelo.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;

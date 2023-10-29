@@ -1,4 +1,4 @@
-package NextGen.Modelo;
+package NextGen.modelo;
 
 import java.text.DecimalFormat;
 
