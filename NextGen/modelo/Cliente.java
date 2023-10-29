@@ -1,17 +1,15 @@
-package NextGen.modelo;
+package NextGen.Modelo;
+
+import java.text.DecimalFormat;
+
 /**
  * Clase abstracta que representa un cliente con sus atributos.
  */
 public abstract class Cliente {
-
-    private string nif;
+    private String nif;
     private String nombre;
-
-
     private String email;
-    private String nombre;
     private String direccion;
-
     /**
      * Constructor para crear un objeto Cliente con los detalles especificados.
      * @param nif El NIF del cliente.
@@ -22,28 +20,20 @@ public abstract class Cliente {
     public Cliente(String nif, String nombre, String email, String direccion) {
         this.nif = nif;
         this.nombre = nombre;
-
-    private String nif; // Añadido el campo NIF
-
-    public Cliente(String email, String nombre, String direccion, String nif) {
-
         this.email = email;
-        this.nombre = nombre;
         this.direccion = direccion;
-        this.nif = nif; // Inicializado el campo NIF
     }
-
 
     /**
      * Obtiene el NIF del cliente.
      * @return El NIF del cliente.
      */
-    public string getNif() { return nif; }
+    public String getNif() { return nif; }
     /**
      * Establece el NIF del cliente.
      * @param nif El nuevo NIF del cliente.
      */
-    public void setNif(string nif) { this.nif = nif;}
+    public void setNif(String nif) { this.nif = nif;}
     /**
      * Obtiene el nombre del cliente.
      * @return El nombre del cliente.
@@ -79,8 +69,6 @@ public abstract class Cliente {
      * Devuelve el tipo de cliente.
      * @return El tipo de cliente.
      */
-
-
     public abstract String tipoCliente();
     /**
      * Calcula la cuota anual del cliente.
@@ -92,7 +80,6 @@ public abstract class Cliente {
      * @return El descuento en el envío como un valor entre 0 y 1.
      */
     public abstract float descuentoEnv();
-
     /**
      * Representación en forma de tabla del cliente con los detalles.
      * @return Una cadena que muestra los detalles del cliente en forma de tabla.
@@ -105,49 +92,5 @@ public abstract class Cliente {
         String data = String.format("%-12s" + separator + "%-26s" + separator + "%-34s" + separator + "%-38s" + separator + "%-15s" + separator + "%-13s" + separator + "%-15s",
                 nif, nombre, email, direccion, tipoCliente(), df.format(calcAnual()) + "€", df.format((descuentoEnv() * 100)) + "%");
         return header + "\n" + data;
-
-
-    // Getters and Setters
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getDireccion() {
-        return direccion;
-    }
-
-    public void setDireccion(String direccion) {
-        this.direccion = direccion;
-    }
-
-    public String getNif() {
-        return nif; // Implementación del método getNif()
-    }
-
-    public void setNif(String nif) {
-        this.nif = nif; // Implementación del método setNif()
-    }
-
-    @Override
-    public String toString() {
-        return "Cliente{" +
-                "email='" + email + '\'' +
-                ", nombre='" + nombre + '\'' +
-                ", direccion='" + direccion + '\'' +
-                ", nif='" + nif + '\'' + // Añadido el campo NIF en el método toString()
-                '}';
-
     }
 }
