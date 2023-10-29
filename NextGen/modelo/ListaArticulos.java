@@ -15,9 +15,9 @@ public class ListaArticulos extends Lista<Articulo> {
      * @param codigo El código del artículo que se desea buscar.
      * @return El artículo con el código especificado, o null si no se encuentra.
      */
-    public Articulo buscarPorCodigo(int codigo) {
+    public Articulo buscarPorCodigo(String codigo) {
         for (Articulo articulo : lista) {
-            if (articulo.getCodigo() == codigo) {
+            if (articulo.getCodigo().equals(codigo)) {
                 return articulo;
             }
         }

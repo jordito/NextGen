@@ -19,10 +19,6 @@ public class ClienteEstandard extends Cliente {
      * @return El tipo de cliente, que es "Estandard" para esta clase.
      */
 
-
-    public ClienteEstandard(String email, String nombre, String direccion, String nif) {
-        super(email, nombre, direccion, nif);
-    }
     @Override
 
     public String tipoCliente() {
