@@ -3,7 +3,6 @@ package NextGen.modelo;
  * Clase que representa un cliente estándar. Hereda de la clase abstracta Cliente.
  */
 public class ClienteEstandard extends Cliente {
-
     /**
      * Constructor para crear un cliente estándar con los detalles especificados.
      * @param nif El NIF del cliente.
@@ -19,7 +18,10 @@ public class ClienteEstandard extends Cliente {
      * @return El tipo de cliente, que es "Estandard" para esta clase.
      */
 
+
     @Override
+
+
 
     public String tipoCliente() {
         return "Estandard";
