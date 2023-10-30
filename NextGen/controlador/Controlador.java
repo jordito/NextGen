@@ -6,12 +6,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Scanner;
 
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Scanner;
-
 /**
  * Clase que actúa como el controlador principal de la aplicación.
  */
@@ -20,17 +14,21 @@ public class Controlador {
      * Atributo que representa la instancia de Datos.
      */
     private Datos datos;
-    Scanner teclado = new Scanner(System.in);
+    /**
+     * Atributo para la entrada de datos desde teclado.
+     */
+    private Scanner teclado = new Scanner(System.in);
+
     /**
      * Constructor que inicializa una instancia de Datos.
      */
     public Controlador() {
         datos = new Datos();
     }
-    /**
-     * Lista y muestra todos los articulos presentes en la lista.
-     */
 
+    /**
+     * Lista y muestra todos los artículos presentes en la lista.
+     */
     public void listarArticulos() {
         ListaArticulos listaArticulos = datos.getListaArticulos();
         if (listaArticulos.isEmpty()) {
@@ -38,13 +36,13 @@ public class Controlador {
         } else {
             System.out.println("\u001B[34m" + "Lista de artículos:");
             for (Articulo articulo : listaArticulos.getArrayList()) {
-                System.out.println("Los articulos son los siguientes:\n " + "\u001B[0m" + articulo.toString());
+                System.out.println("Los artículos son los siguientes:\n " + "\u001B[0m" + articulo.toString());
             }
         }
     }
+
     /**
-     * Método para agregar un artículo a la lista
-     * El artículo que se desea agregar a la lista.
+     * Método para agregar un artículo a la lista.
      */
     public void agregarArticulo() {
         Scanner scanner = new Scanner(System.in);
@@ -57,11 +55,11 @@ public class Controlador {
         ListaArticulos listaArticulos = datos.getListaArticulos();
         for (Articulo articuloExistente : listaArticulos.getArrayList()) {
             if (articuloExistente.getCodigo().equals(codigo)) {
-<<<<<<< HEAD
+
                 System.out.println("¡Error! Ya existe un artículo con el mismo código.");
-=======
+
                 System.out.println("\u001B[31m" + "¡Error! Ya existe un artículo con el mismo código." + "\u001B[0m");
->>>>>>> liada3.0
+
                 return;
             }
         }
@@ -316,9 +314,9 @@ public class Controlador {
             return;
         }
 
-<<<<<<< HEAD
+
         System.out.print("Código del Artículo: ");
-=======
+
         System.out.println("\u001B[34m" + "Escoge un articulo de la lista de artículos disponibles:" + "\u001B[0m");
         ListaArticulos listaArticulos = datos.getListaArticulos();
         for (Articulo articulo : listaArticulos.getArrayList()) {
@@ -331,7 +329,7 @@ public class Controlador {
         }
 
         System.out.print("Ingrese el Código del Artículo deseado: ");
->>>>>>> liada3.0
+
         String codigoArticulo = scanner.nextLine();
         Articulo articulo = datos.getListaArticulos().buscarPorCodigo(codigoArticulo);
 

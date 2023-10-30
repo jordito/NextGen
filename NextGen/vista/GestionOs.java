@@ -3,11 +3,11 @@ package NextGen.vista;
 import NextGen.controlador.Controlador;
 import java.util.Scanner;
 
-public class GestionOS {
+public class GestionOs {
     private Controlador controlador;
-    Scanner teclado = new Scanner(System.in);
+    private Scanner teclado = new Scanner(System.in);
 
-    public GestionOS() {
+    public GestionOs() {
         controlador = new Controlador();
     }
 
@@ -20,34 +20,23 @@ public class GestionOS {
         }
         return resp.charAt(0);
     }
+
     public void inicio() {
         boolean salir = false;
         char opcion;
         do {
-<<<<<<< HEAD
-                System.out.println("╔═══════════════════════════╗");
-                System.out.println("║        MENÚ PRINCIPAL     ║");
-                System.out.println("╠═══════════════════════════╣");
-                System.out.println("║ 1. Gestión Articulos      ║");
-                System.out.println("║ 2. Gestión Clientes       ║");
-                System.out.println("║ 3. Gestión Pedidos        ║");
-                System.out.println("║ 4. Cargar Datos           ║");
-                System.out.println("║ 0. Salir                  ║");
-                System.out.println("╚═══════════════════════════╝");
-            opcio = pedirOpcion();
-            switch (opcio) {
-=======
-            System.out.println("╔══════════════════════════════╗");
-            System.out.println("║        MENÚ PRINCIPAL        ║");
-            System.out.println("╠══════════════════════════════╣");
-            System.out.println("║ 1. Gestión Articulos         ║");
-            System.out.println("║ 2. Gestión Clientes          ║");
-            System.out.println("║ 3. Gestión Pedidos           ║");
-            System.out.println("║ 0. Salir                     ║");
-            System.out.println("╚══════════════════════════════╝");
+            System.out.println("╔═══════════════════════════╗");
+            System.out.println("║        MENÚ PRINCIPAL     ║");
+            System.out.println("╠═══════════════════════════╣");
+            System.out.println("║ 1. Gestión Articulos      ║");
+            System.out.println("║ 2. Gestión Clientes       ║");
+            System.out.println("║ 3. Gestión Pedidos        ║");
+            System.out.println("║ 4. Cargar Datos           ║");
+            System.out.println("║ 0. Salir                  ║");
+            System.out.println("╚═══════════════════════════╝");
+
             opcion = pedirOpcion();
             switch (opcion) {
->>>>>>> liada3.0
                 case '1':
                     gestionArticulos();
                     break;

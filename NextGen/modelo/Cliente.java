@@ -1,18 +1,10 @@
 package NextGen.modelo;
-<<<<<<< HEAD
-=======
-
->>>>>>> liada3.0
 import java.text.DecimalFormat;
 
 /**
  * Clase abstracta que representa un cliente con sus atributos.
  */
 public abstract class Cliente {
-<<<<<<< HEAD
-
-=======
->>>>>>> liada3.0
     private String nif;
     private String nombre;
     private String email;

@@ -17,12 +17,12 @@ public class ClienteEstandard extends Cliente {
      * Obtiene el tipo de cliente.
      * @return El tipo de cliente, que es "Estandard" para esta clase.
      */
-<<<<<<< HEAD
+
 
     @Override
 
-=======
->>>>>>> liada3.0
+
+
     public String tipoCliente() {
         return "Estandard";
     }
