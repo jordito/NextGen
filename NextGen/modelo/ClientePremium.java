@@ -3,6 +3,7 @@ package NextGen.modelo;
  * Clase que representa un cliente premium. Hereda de la clase abstracta Cliente.
  */
 public class ClientePremium extends Cliente {
+
     private double cuota;
     private double descuento;
     /**
