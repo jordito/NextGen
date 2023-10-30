@@ -1,22 +1,16 @@
 package NextGen.modelo;
-<<<<<<< HEAD
-=======
-
->>>>>>> gege
 import java.text.DecimalFormat;
 
 /**
  * Clase abstracta que representa un cliente con sus atributos.
  */
 public abstract class Cliente {
-<<<<<<< HEAD
 
-=======
->>>>>>> gege
     private String nif;
     private String nombre;
     private String email;
     private String direccion;
+
     /**
      * Constructor para crear un objeto Cliente con los detalles especificados.
      * @param nif El NIF del cliente.
@@ -76,6 +70,8 @@ public abstract class Cliente {
      * Devuelve el tipo de cliente.
      * @return El tipo de cliente.
      */
+
+
     public abstract String tipoCliente();
     /**
      * Calcula la cuota anual del cliente.
@@ -87,6 +83,7 @@ public abstract class Cliente {
      * @return El descuento en el envío como un valor entre 0 y 1.
      */
     public abstract float descuentoEnv();
+
     /**
      * Representación en forma de tabla del cliente con los detalles.
      * @return Una cadena que muestra los detalles del cliente en forma de tabla.
