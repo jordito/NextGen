@@ -92,9 +92,9 @@ public class Articulo {
     @Override
     public String toString() {
         String separator = " | ";
-        String header = "Código       | Descripción                   | Precio  | Gastos de Envío  | Preparación (min)";
-        String data = String.format("%-13s" + separator + "%-30s" + separator + "%-8s" + separator + "%-18s" + separator + "%-16s",
+        String header = "Código       | Descripción                   | Precio   | Gastos de Envío    | Preparación (min)";
+        String data = String.format("%-13s" + separator + "%-29s" + separator + "%-8s" + separator + "%-18s" + separator + "%-16s",
                 codigo, descripcion, precio, gastosEnvio, preparacionEnMin);
-        return header + "\n" + data;
+        return header + "\n" + data + "\n";
     }
 }
