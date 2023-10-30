@@ -40,6 +40,22 @@ public class Controlador {
             }
         }
     }
+    /**
+     * Método para buscar un artículo por su código.
+     *
+     * @param codigo El código del artículo que se desea buscar.
+     * @return El artículo si se encuentra, null en caso contrario.
+     */
+    public Articulo buscarArticuloPorCodigo(String codigo) {
+        ListaArticulos listaArticulos = datos.getListaArticulos();
+        for (Articulo articulo : listaArticulos.getArrayList()) {
+            if (articulo.getCodigo().equals(codigo)) {
+                return articulo;
+            }
+        }
+        return null;
+    }
+
 
     /**
      * Método para agregar un artículo a la lista.
@@ -93,13 +109,25 @@ public class Controlador {
     }
 
     /**
-     * Método para eliminar un artículo de la lista
+     * Método para eliminar un artículo de la lista.
      *
      * @param articulo El artículo que se desea eliminar de la lista.
      */
     public void eliminarArticulo(Articulo articulo) {
+        // Obtener la lista de artículos desde el objeto 'datos'.
+        ListaArticulos listaArticulos = datos.getListaArticulos();
 
+        // Verificar si el artículo existe en la lista.
+        if (listaArticulos.getArrayList().contains(articulo)) {
+            // Sí existe, eliminar el artículo.
+            listaArticulos.borrar(articulo);
+            System.out.println("Artículo eliminado con éxito.");
+        } else {
+            // Si no existe, mostrar un mensaje de error.
+            System.out.println("¡Error! No se encontró el artículo especificado.");
+        }
     }
+
 
     /**
      * Lista y muestra todos los clientes presentes en la lista.
@@ -415,10 +443,10 @@ public class Controlador {
         // Buscar el pedido en la lista de pedidos.
         Pedido pedido = listaPedidos.buscarPorNumeropedido(numeroPedido);
 
-        // Si se encuentra el pedido, proceder con la confirmación para eliminarlo.
+        // Sí se encuentra el pedido, proceder con la confirmación para eliminarlo.
         if (pedido != null) {
             System.out.println("¿Está seguro de que desea eliminar el siguiente pedido?");
-            System.out.println("Número de Pedido: " + pedido.getNumeroPedido());
+            System.out.println("Número de Pedido: " + Pedido.getNumeroPedido());
             System.out.println("Nombre del Cliente: " + pedido.getCliente().getNombre());
             System.out.print("Confirme (Si/No): ");
             String confirmacion = scanner.nextLine();

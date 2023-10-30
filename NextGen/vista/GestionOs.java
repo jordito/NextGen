@@ -1,6 +1,7 @@
 package NextGen.vista;
 
 import NextGen.controlador.Controlador;
+import NextGen.modelo.Articulo;
 import java.util.Scanner;
 
 public class GestionOs {
@@ -56,6 +57,7 @@ public class GestionOs {
     }
 
     public void gestionArticulos() {
+        Scanner scanner = new Scanner(System.in);
         boolean salir = false;
         char opcion;
         do {
@@ -76,7 +78,21 @@ public class GestionOs {
                     controlador.agregarArticulo();
                     break;
                 case '3':
-                    //controlador.eliminarArticulo(); //mirar error
+                    // Listar artículos disponibles para eliminación
+                    controlador.listarArticulos();
+
+                    // Pedir al usuario que seleccione un artículo para eliminar
+                    System.out.print("Ingrese el código del artículo que desea eliminar: ");
+                    String codigo = scanner.nextLine();
+
+                    // Buscar el artículo por el código
+                    Articulo articulo = controlador.buscarArticuloPorCodigo(codigo);
+
+                    if (articulo != null) {
+                        controlador.eliminarArticulo(articulo);
+                    } else {
+                        System.out.println("Artículo no encontrado.");
+                    }
                     break;
                 case '0':
                     salir = true;
@@ -86,6 +102,7 @@ public class GestionOs {
             }
         } while (!salir);
     }
+
 
     public void gestionClientes() {
         boolean salir = false;
