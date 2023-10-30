@@ -107,10 +107,10 @@ public class GestionOs {
                     controlador.listarClientes();
                     break;
                 case '2':
-                    controlador.listarClienteEstandard(); //FALTA AÑADIRLA
+                    controlador.listarClienteEstandard();
                     break;
                 case '3':
-                    controlador.listarClientePremium(); //FALTA AÑADIRLA
+                    controlador.listarClientePremium();
                     break;
                 case '4':
                     controlador.agregarCliente();
@@ -150,13 +150,13 @@ public class GestionOs {
                     controlador.listarPedidos();
                     break;
                 case '3':
-                    controlador.listarPedidosPendientes(); //FALTA CREARLA
+                    controlador.listarPedidosPendientes();
                     break;
                 case '4':
-                    controlador.listarPedidosEnviados(); //FALTA CREARLA
+                    controlador.listarPedidosEnviados();
                     break;
                 case '5':
-                    //controlador.eliminarPedido(); //MIRAR ERROR
+                    controlador.eliminarPedido();
                     break;
                 case '0':
                     salir = true;

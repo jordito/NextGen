@@ -94,6 +94,7 @@ public class Controlador {
 
     /**
      * Método para eliminar un artículo de la lista
+     *
      * @param articulo El artículo que se desea eliminar de la lista.
      */
     public void eliminarArticulo(Articulo articulo) {
@@ -109,13 +110,13 @@ public class Controlador {
             System.out.println("\u001B[31m" + "No hay clientes registrados.\n" + "\u001B[0m");
         } else {
             System.out.println("\u001B[34m" + "Lista de clientes:\n\n");
-            for (Cliente cliente: listaClientes.getArrayList()) {
+            for (Cliente cliente : listaClientes.getArrayList()) {
                 System.out.println("Los clientes son los siguientes:\n " + "\u001B[0m" + cliente.toString());
             }
         }
     }
 
-    public void listarClienteEstandard () {
+    public void listarClienteEstandard() {
         ListaClientes listaClientes = datos.getListaClientes();
         if (listaClientes.isEmpty()) {
             System.out.println("\u001B[31m" + "No hay clientes estándar.\n" + "\u001B[0m");
@@ -129,7 +130,7 @@ public class Controlador {
         }
     }
 
-    public void listarClientePremium () {
+    public void listarClientePremium() {
         ListaClientes listaClientes = datos.getListaClientes();
         if (listaClientes.isEmpty()) {
             System.out.println("\u001B[31m" + "No hay clientes premium.\n" + "\u001B[0m");
@@ -142,6 +143,7 @@ public class Controlador {
             }
         }
     }
+
     /**
      * Agrega un nuevo cliente a la lista de clientes solicitando al usuario los datos necesarios.
      */
@@ -207,6 +209,7 @@ public class Controlador {
         System.out.println(String.format(" Tipo de Cliente     | %s", tipoCliente));
         System.out.println("+---------------------+-----------------------+");
     }
+
     /**
      * Método para eliminar un cliente de la lista
      * El cliente que se desea eliminar de la lista
@@ -242,6 +245,7 @@ public class Controlador {
             System.out.println("\u001B[31m" + "¡Error! No se encontró un cliente con el NIF especificado." + "\u001B[0m");
         }
     }
+
     /**
      * Lista y muestra todos los pedidos presentes en la lista.
      */
@@ -251,19 +255,46 @@ public class Controlador {
             System.out.println("\u001B[31m" + "No hay pedidos registrados.\n" + "\u001B[0m");
         } else {
             System.out.println("\u001B[34m" + "Lista de pedidos:\n\n");
-            for (Pedido pedido: listaPedidos.getArrayList()) {
+            for (Pedido pedido : listaPedidos.getArrayList()) {
                 System.out.println("Los pedidos realizados son los siguientes:\n " + "\u001B[0m" + pedido.toString());
             }
         }
     }
 
+    /**
+     * Lista y muestra todos los pedidos pendientes presentes en la lista.
+     */
     public void listarPedidosPendientes() {
-        //FALTA AÑADIR
+        ListaPedidos listaPedidos = datos.getListaPedidos();
+        if (listaPedidos.isEmpty()) {
+            System.out.println("\u001B[31m" + "No hay pedidos pendientes registrados.\n" + "\u001B[0m");
+        } else {
+            System.out.println("\u001B[34m" + "Lista de pedidos pendientes:\n" + "\u001B[0m");
+            for (Pedido pedido : listaPedidos.getArrayList()) {
+                if (!pedido.isEnviado()) {
+                    System.out.println(pedido.toString());
+                }
+            }
+        }
     }
 
+    /**
+     * Lista y muestra todos los pedidos enviados presentes en la lista.
+     */
     public void listarPedidosEnviados() {
-        //FALTA AÑADIR
+        ListaPedidos listaPedidos = datos.getListaPedidos();
+        if (listaPedidos.isEmpty()) {
+            System.out.println("\u001B[31m" + "No hay pedidos enviados registrados.\n" + "\u001B[0m");
+        } else {
+            System.out.println("\u001B[34m" + "Lista de pedidos enviados:\n" + "\u001B[0m");
+            for (Pedido pedido : listaPedidos.getArrayList()) {
+                if (pedido.isEnviado()) {
+                    System.out.println(pedido.toString());
+                }
+            }
+        }
     }
+
     /**
      * Agrega un nuevo pedido a la lista de pedidos solicitando al usuario los datos necesarios.
      */
@@ -361,12 +392,47 @@ public class Controlador {
         System.out.println(String.format("  Precio Total         | %.2f€", nuevoPedido.precioTotal()));
         System.out.println("+---------------------+-----------------------+");
     }
+
     /**
      * Método para eliminar un pedido de la lista
-     * @param pedido El pedido que se desea eliminar de la lista
      */
-    public void eliminarPedido(Pedido pedido) {
-        //eliminar pedido
-    }
+    public void eliminarPedido() {
+        // Mostrar todos los pedidos existentes al usuario.
+        System.out.println("Elija un pedido de la lista de pedidos disponibles:");
+        ListaPedidos listaPedidos = datos.getListaPedidos();
+        for (Pedido pedido : listaPedidos.getArrayList()) {
+            System.out.println("Número de Pedido: " + pedido.getNumeroPedido());
+            System.out.println("Nombre del Cliente: " + pedido.getCliente().getNombre());
+            System.out.println("------------------------");
+        }
 
+        // Solicitar al usuario que introduzca el número del pedido que desea eliminar.
+        System.out.print("Introduzca el Número de Pedido del pedido que desea eliminar: ");
+        Scanner scanner = new Scanner(System.in);
+        int numeroPedido = scanner.nextInt();
+        scanner.nextLine();  // Consumir el carácter de nueva línea.
+
+        // Buscar el pedido en la lista de pedidos.
+        Pedido pedido = listaPedidos.buscarPorNumeropedido(numeroPedido);
+
+        // Si se encuentra el pedido, proceder con la confirmación para eliminarlo.
+        if (pedido != null) {
+            System.out.println("¿Está seguro de que desea eliminar el siguiente pedido?");
+            System.out.println("Número de Pedido: " + pedido.getNumeroPedido());
+            System.out.println("Nombre del Cliente: " + pedido.getCliente().getNombre());
+            System.out.print("Confirme (Si/No): ");
+            String confirmacion = scanner.nextLine();
+
+            // Si el usuario confirma, eliminar el pedido de la lista.
+            if (confirmacion.equalsIgnoreCase("Si")) {
+                listaPedidos.borrar(pedido);
+                System.out.println("Pedido eliminado con éxito.");
+            } else {
+                System.out.println("Eliminación de pedido cancelada.");
+            }
+        } else {
+            // Si no se encuentra el pedido, mostrar un mensaje de error.
+            System.out.println("¡Error! No se encontró un pedido con el Número de Pedido especificado.");
+        }
+    }
 }
