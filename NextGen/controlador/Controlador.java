@@ -28,6 +28,20 @@ public class Controlador {
     }
 
     /**
+     *  Agrega un método para obtener los datos
+      */
+    public Datos getDatos() {
+        return datos;
+    }
+
+    static {
+        boolean assertionsEnabled = false;
+        assert assertionsEnabled = true; // Activa las afirmaciones.
+        if (!assertionsEnabled) {
+            throw new AssertionError("Asegúrate de que las afirmaciones estén habilitadas.");
+        }
+    }
+    /**
      * Lista y muestra todos los artículos presentes en la lista.
      */
     public void listarArticulos() {
@@ -222,6 +236,40 @@ public class Controlador {
                 nuevoCliente = new ClienteEstandard(nif, nombre, email, direccion);
             } else {
                 nuevoCliente = new ClientePremium(nif, nombre, email, direccion);
+            }
+        }
+
+        listaClientes.add(nuevoCliente);
+
+        System.out.println("\u001B[34m" + "Cliente agregado con éxito:" + "\u001B[0m");
+        System.out.println("+---------------------+-----------------------+");
+        System.out.println(" Campo               | Valor");
+        System.out.println("+---------------------+-----------------------+");
+        System.out.println(String.format(" NIF                 | %s", nuevoCliente.getNif()));
+        System.out.println(String.format(" Nombre              | %s", nuevoCliente.getNombre()));
+        System.out.println(String.format(" Email               | %s", nuevoCliente.getEmail()));
+        System.out.println(String.format(" Dirección de envío  | %s", nuevoCliente.getDireccion()));
+        System.out.println(String.format(" Tipo de Cliente     | %s", tipoCliente));
+        System.out.println("+---------------------+-----------------------+");
+    }
+
+    public void agregarCliente(String nif, String nombre, String email, String direccion, String tipoCliente) {
+        Cliente nuevoCliente;
+
+        if (tipoCliente.equalsIgnoreCase("Estandard")) {
+            nuevoCliente = new ClienteEstandard(nif, nombre, email, direccion);
+        } else if (tipoCliente.equalsIgnoreCase("Premium")) {
+            nuevoCliente = new ClientePremium(nif, nombre, email, direccion);
+        } else {
+            System.out.println("\u001B[33m" + "Tipo de cliente no válido. Por favor, ingrese 'Estandard' o 'Premium'." + "\u001B[0m");
+            return;
+        }
+
+        ListaClientes listaClientes = datos.getListaClientes();
+        for (Cliente clienteExistente : listaClientes.getArrayList()) {
+            if (clienteExistente.getNif().equals(nif)) {
+                System.out.println("\u001B[31m" + "¡Error! Ya existe un cliente con el mismo NIF." + "\u001B[0m");
+                return;
             }
         }
 
