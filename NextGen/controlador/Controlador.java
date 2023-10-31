@@ -27,6 +27,22 @@ public class Controlador {
     }
 
     /**
+
+     *  Agrega un método para obtener los datos
+      */
+    public Datos getDatos() {
+        return datos;
+    }
+
+    static {
+        boolean assertionsEnabled = false;
+        assert assertionsEnabled = true; // Activa las afirmaciones.
+        if (!assertionsEnabled) {
+            throw new AssertionError("Asegúrate de que las afirmaciones estén habilitadas.");
+        }
+    }
+    /**
+
      * Lista y muestra todos los artículos presentes en la lista.
      */
     public void listarArticulos() {
@@ -236,6 +252,7 @@ public class Controlador {
         System.out.println(String.format(" Dirección de envío  | %s", nuevoCliente.getDireccion()));
         System.out.println(String.format(" Tipo de Cliente     | %s", tipoCliente));
         System.out.println("+---------------------+-----------------------+");
+
     }
 
     /**
@@ -321,6 +338,7 @@ public class Controlador {
                 }
             }
         }
+
     }
 
     /**
