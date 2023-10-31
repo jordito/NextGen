@@ -1,7 +1,9 @@
 package NextGen.vista;
 
+import NextGen.exceptions.CustomException;
+
 public class OnlineStore {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws CustomException {
         GestionOs gestion = new GestionOs();
         gestion.inicio();
     }

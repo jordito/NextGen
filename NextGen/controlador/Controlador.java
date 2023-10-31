@@ -1,5 +1,6 @@
 package NextGen.controlador;
 
+import NextGen.exceptions.CustomException;
 import NextGen.modelo.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -67,7 +68,7 @@ public class Controlador {
     /**
      * Método para agregar un artículo a la lista.
      */
-    public void agregarArticulo() {
+    public void agregarArticulo() throws CustomException {
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("\u001B[34m" + "Agregar un nuevo artículo:" + "\u001B[0m");
@@ -76,43 +77,87 @@ public class Controlador {
         String codigo = scanner.nextLine();
 
         ListaArticulos listaArticulos = datos.getListaArticulos();
-        for (Articulo articuloExistente : listaArticulos.getArrayList()) {
-            if (articuloExistente.getCodigo().equals(codigo)) {
 
-                System.out.println("¡Error! Ya existe un artículo con el mismo código.");
+        boolean successNotFound = false;
+        while (!successNotFound) {
+            try {
+                for (Articulo articuloExistente : listaArticulos.getArrayList()) {
+                    if (articuloExistente.getCodigo().equals(codigo)) {
+                        throw new CustomException("\u001B[31m" + "¡Error! Ya existe un artículo con el mismo código." + "\u001B[0m");
+                    }
+                }
 
-                System.out.println("\u001B[31m" + "¡Error! Ya existe un artículo con el mismo código." + "\u001B[0m");
-
-                return;
+                successNotFound = true;
+            } catch (CustomException e) {
+                System.out.println(e.getMessage());
             }
         }
 
-        System.out.print("Descripción: ");
-        String descripcion = scanner.nextLine();
+            String descripcion = "";
+            boolean descriptionSuccess = false;
+            while (!descriptionSuccess) {
+                try {
+                    System.out.print("Descripción: ");
+                    descripcion = scanner.nextLine();
+                    descriptionSuccess = true;
+                } catch (Exception e) {
+                    System.out.println("\u001B[31m" + "¡Error! Valor inválido." + "\u001B[0m");
+                }
+            }
 
-        System.out.print("Precio: ");
-        double precio = scanner.nextDouble();
+            double precio = 0;
+            boolean precioSuccess = false;
+            while (!precioSuccess) {
+                try {
+                    System.out.print("Precio: ");
+                    precio = scanner.nextDouble();
+                    precioSuccess = true;
+                } catch (Exception e) {
+                    scanner.nextLine();
+                    System.out.println("\u001B[31m" + "¡Error! Valor inválido." + "\u001B[0m");
+                }
+            }
 
-        System.out.print("Gastos de Envío: ");
-        double gastosEnvio = scanner.nextDouble();
+            double gastosEnvio = 0;
+            boolean gastosEnvSuccess = false;
+            while (!gastosEnvSuccess) {
+                try {
+                    System.out.print("Gastos de Envío: ");
+                    gastosEnvio = scanner.nextDouble();
+                    gastosEnvSuccess = true;
+                } catch (Exception e) {
+                    scanner.nextLine();
+                    System.out.println("\u001B[31m" + "¡Error! Valor inválido." + "\u001B[0m");
+                }
+            }
 
-        System.out.print("Preparación en Minutos: ");
-        int preparacionEnMin = scanner.nextInt();
+            int preparacionEnMin = 0;
+            boolean preparacionMinSuccess = false;
+            while (!preparacionMinSuccess) {
+                try {
+                    System.out.print("Preparación en Minutos: ");
+                    preparacionEnMin = scanner.nextInt();
+                    preparacionMinSuccess = true;
+                } catch (Exception e) {
+                    scanner.nextLine();
+                    System.out.println("\u001B[31m" + "¡Error! Valor inválido." + "\u001B[0m");
+                }
+            }
 
-        Articulo nuevoArticulo = new Articulo(codigo, descripcion, precio, gastosEnvio, preparacionEnMin);
+            Articulo nuevoArticulo = new Articulo(codigo, descripcion, precio, gastosEnvio, preparacionEnMin);
 
-        listaArticulos.add(nuevoArticulo);
+            listaArticulos.add(nuevoArticulo);
 
-        System.out.println("\u001B[34m" + "Datos del artículo agregado:" + "\u001B[0m");
-        System.out.println("+---------------------+-----------------------+");
-        System.out.println("  Campo               | Valor                  ");
-        System.out.println("+---------------------+-----------------------+");
-        System.out.println(String.format("  Código              | %s", nuevoArticulo.getCodigo()));
-        System.out.println(String.format("  Descripción         | %s", nuevoArticulo.getDescripcion()));
-        System.out.println(String.format("  Precio              | %.2f€", nuevoArticulo.getPrecio()));
-        System.out.println(String.format("  Gastos de Envío     | %.2f€", nuevoArticulo.getGastosEnvio()));
-        System.out.println(String.format("  Preparación (min)   | %d min", nuevoArticulo.getPreparacionEnMin()));
-        System.out.println("+---------------------+-----------------------+");
+            System.out.println("\u001B[34m" + "Datos del artículo agregado:" + "\u001B[0m");
+            System.out.println("+---------------------+-----------------------+");
+            System.out.println("  Campo               | Valor                  ");
+            System.out.println("+---------------------+-----------------------+");
+            System.out.println(String.format("  Código              | %s", nuevoArticulo.getCodigo()));
+            System.out.println(String.format("  Descripción         | %s", nuevoArticulo.getDescripcion()));
+            System.out.println(String.format("  Precio              | %.2f€", nuevoArticulo.getPrecio()));
+            System.out.println(String.format("  Gastos de Envío     | %.2f€", nuevoArticulo.getGastosEnvio()));
+            System.out.println(String.format("  Preparación (min)   | %d min", nuevoArticulo.getPreparacionEnMin()));
+            System.out.println("+---------------------+-----------------------+");
     }
 
     /**
@@ -187,28 +232,76 @@ public class Controlador {
 
         System.out.println("\u001B[34m" + "Agregar un nuevo cliente:" + "\u001B[0m");
 
-        System.out.print("NIF: ");
-        String nif = scanner.nextLine();
-
-        ListaClientes listaClientes = datos.getListaClientes();
-        for (Cliente clienteExistente : listaClientes.getArrayList()) {
-            if (clienteExistente.getNif().equals(nif)) {
-                System.out.println("\u001B[31m" + "¡Error! Ya existe un cliente con el mismo NIF." + "\u001B[0m");
-                return;
+        String nif = "";
+        boolean successNif = false;
+        while (!successNif) {
+            try {
+                System.out.print("NIF: ");
+                nif = scanner.nextLine();
+                successNif = true;
+            } catch (Exception e) {
+                System.out.println("\u001B[31m" + "¡Error! Valor inválido." + "\u001B[0m");
             }
         }
 
-        System.out.print("Nombre: ");
-        String nombre = scanner.nextLine();
+        ListaClientes listaClientes = datos.getListaClientes();
+        try {
+            for (Cliente clienteExistente : listaClientes.getArrayList()) {
+                if (clienteExistente.getNif().equals(nif)) {
+                    throw new CustomException("\u001B[31m" + "¡Error! Ya existe un artículo con el mismo código." + "\u001B[0m");
+                }
+            }
+        } catch (CustomException e) {
+                System.out.println(e.getMessage());
+        }
 
-        System.out.print("Email: ");
-        String email = scanner.nextLine();
+        String nombre = "";
+        boolean successNombre = false;
+        while (!successNombre) {
+            try {
+                System.out.print("Nombre: ");
+                nombre = scanner.nextLine();
+                successNombre = true;
+            } catch (Exception e) {
+                System.out.println("\u001B[31m" + "¡Error! Valor inválido." + "\u001B[0m");
+            }
+        }
 
-        System.out.print("Dirección de envío: ");
-        String direccion = scanner.nextLine();
+        String email = "";
+        boolean successEmail = false;
+        while (!successEmail) {
+            try {
+                System.out.print("Email: ");
+                email = scanner.nextLine();
+                successEmail = true;
+            } catch (Exception e) {
+                System.out.println("\u001B[31m" + "¡Error! Valor inválido." + "\u001B[0m");
+            }
+        }
 
-        System.out.print("Tipo de cliente (Estandard/Premium): ");
-        String tipoCliente = scanner.nextLine();
+        String direccion = "";
+        boolean successDireccion = false;
+        while (!successDireccion) {
+            try {
+                System.out.print("Dirección de envío: ");
+                direccion = scanner.nextLine();
+                successDireccion = true;
+            } catch (Exception e) {
+                System.out.println("\u001B[31m" + "¡Error! Valor inválido." + "\u001B[0m");
+            }
+        }
+
+        String tipoCliente = "";
+        boolean successTipoCliente = false;
+        while (!successTipoCliente) {
+            try {
+                System.out.print("Tipo de cliente (Estandard/Premium): ");
+                tipoCliente = scanner.nextLine();
+                successTipoCliente = true;
+            } catch (Exception e) {
+                System.out.println("\u001B[31m" + "¡Error! Valor inválido." + "\u001B[0m");
+            }
+        }
 
         Cliente nuevoCliente;
 
@@ -285,6 +378,7 @@ public class Controlador {
      * El cliente que se desea eliminar de la lista
      */
     public void eliminarCliente() {
+        Scanner scanner = new Scanner(System.in);
         System.out.println("\u001B[34m" + "Escoge un cliente de la lista de clientes disponibles:" + "\u001B[0m");
         ListaClientes listaClientes = datos.getListaClientes();
         for (Cliente cliente : listaClientes.getArrayList()) {
@@ -293,8 +387,17 @@ public class Controlador {
             System.out.println("------------------------");
         }
 
-        System.out.print("\u001B[34m" + "Ingrese el NIF del Cliente que desea eliminar: " + "\u001B[0m");
-        String nifCliente = teclado.nextLine();
+        String nifCliente = "";
+        boolean successNifCliente = false;
+        while (!successNifCliente) {
+            try {
+                System.out.print("\u001B[34m" + "Ingrese el NIF del Cliente que desea eliminar: " + "\u001B[0m");
+                nifCliente = scanner.nextLine();
+                successNifCliente = true;
+            } catch (Exception e) {
+                System.out.println("\u001B[31m" + "¡Error! Valor inválido." + "\u001B[0m");
+            }
+        }
 
         Cliente cliente = listaClientes.buscarPorNif(nifCliente);
 
@@ -302,14 +405,27 @@ public class Controlador {
             System.out.println("\u001B[31m" + "¿Está seguro de que desea eliminar al siguiente cliente?" + "\u001B[0m");
             System.out.println("NIF:     " + cliente.getNif());
             System.out.println("Nombre:  " + cliente.getNombre());
-            System.out.print("Confirme (Si/No): ");
-            String confirmacion = teclado.nextLine();
 
-            if (confirmacion.equalsIgnoreCase("Si")) {
-                listaClientes.borrar(cliente);
-                System.out.println("\u001B[33m" + "Cliente eliminado con éxito." + "\u001B[0m");
-            } else {
-                System.out.println("\u001B[32m" + "Eliminación de cliente cancelada." + "\u001B[0m");
+
+            String confirmacion = "";
+            boolean successConfirmar = false;
+            while (!successConfirmar) {
+                try {
+                    System.out.print("Confirme (Si/No): ");
+                    confirmacion = teclado.nextLine();
+                    if (confirmacion.equalsIgnoreCase("Si") || confirmacion.equalsIgnoreCase("No")) {
+                        if (confirmacion.equalsIgnoreCase("Si")) {
+                            listaClientes.borrar(cliente);
+                            System.out.println("\u001B[33m" + "Cliente eliminado con éxito." + "\u001B[0m");
+                        } else {
+                            System.out.println("\u001B[32m" + "Eliminación de cliente cancelada." + "\u001B[0m");
+                        }
+                    } else {
+                        throw new CustomException("\u001B[31m" + "¡Error! Valor inválido." + "\u001B[0m");
+                    }
+                } catch (CustomException e) {
+                    System.out.println(e.getMessage());
+                }
             }
         } else {
             System.out.println("\u001B[31m" + "¡Error! No se encontró un cliente con el NIF especificado." + "\u001B[0m");
@@ -374,14 +490,32 @@ public class Controlador {
 
         System.out.println("\u001B[34m" + "Agregar un nuevo pedido:" + "\u001B[0m");
 
-        System.out.print("Número de Pedido: ");
-        int numeroPedido = scanner.nextInt();
-        scanner.nextLine();
+        int numeroPedido = 0;
+        boolean successNumPedido = false;
+        while (!successNumPedido) {
+            try {
+                System.out.print("Número de Pedido: ");
+                numeroPedido = scanner.nextInt();
+                scanner.nextLine();
+                successNumPedido = true;
+            } catch (Exception e) {
+                System.out.println("\u001B[31m" + "¡Error! Valor inválido." + "\u001B[0m");
+            }
+        }
 
-        System.out.print("Fecha y Hora (yyyy-MM-dd HH:mm:ss): ");
-        String fechaHoraStr = scanner.nextLine();
+        String fechaHoraStr = "";
+        boolean successFechaHora = false;
+        while (!successFechaHora) {
+            try {
+                System.out.print("Fecha y Hora (yyyy-MM-dd HH:mm:ss): ");
+                fechaHoraStr = scanner.nextLine();
+                successFechaHora = true;
+            } catch (Exception e) {
+                System.out.println("\u001B[31m" + "¡Error! Valor inválido." + "\u001B[0m");
+            }
+        }
+
         Date fechaHora;
-
         try {
             fechaHora = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(fechaHoraStr);
         } catch (ParseException e) {
@@ -400,8 +534,16 @@ public class Controlador {
             System.out.println("------------------------");
         }
 
-        System.out.print("\u001B[34m" + "Ingrese el NIF del Cliente (o escriba " + "\u001B[33m" + "'nuevo'" + "\u001B[0m" + "\u001B[34m" + " para crear uno nuevo): " + "\u001B[0m");
-        String nifCliente = scanner.nextLine();
+        String nifCliente = "";
+        boolean successNifCliente = false;
+        while (!successNifCliente) {
+            try {
+                System.out.print("\u001B[34m" + "Ingrese el NIF del Cliente (o escriba " + "\u001B[33m" + "'nuevo'" + "\u001B[0m" + "\u001B[34m" + " para crear uno nuevo): " + "\u001B[0m");
+                nifCliente = scanner.nextLine();
+            } catch (Exception e) {
+                System.out.println("\u001B[31m" + "¡Error! Valor inválido." + "\u001B[0m");
+            }
+        }
 
         if (nifCliente.equalsIgnoreCase("nuevo")) {
             agregarCliente();
@@ -430,20 +572,40 @@ public class Controlador {
             System.out.println("------------------------");
         }
 
-        System.out.print("Ingrese el Código del Artículo deseado: ");
 
-        String codigoArticulo = scanner.nextLine();
-        Articulo articulo = datos.getListaArticulos().buscarPorCodigo(codigoArticulo);
 
-        if (articulo == null) {
-            System.out.println("\u001B[31m" + "¡Error! No se encontró un artículo con el código especificado." + "\u001B[0m");
-            return;
+        String codigoArticulo = "";
+        boolean successFindArticulo = false;
+        Articulo articulo = null;
+        while (!successFindArticulo) {
+            try {
+                System.out.print("Ingrese el Código del Artículo deseado: ");
+                codigoArticulo = scanner.nextLine();
+                articulo = datos.getListaArticulos().buscarPorCodigo(codigoArticulo);
+
+                if (articulo == null) {
+                    throw new CustomException("\u001B[31m" + "¡Error! No se encontró un artículo con el código especificado." + "\u001B[0m");
+                }
+
+                successFindArticulo = true;
+            } catch (CustomException e) {
+                System.out.println(e.getMessage());
+            }
         }
 
-        System.out.print("Cantidad: ");
-        int cantidad = scanner.nextInt();
-        scanner.nextLine();
-
+        int cantidad = 0;
+        boolean successCantidad = false;
+        while (!successCantidad) {
+            try {
+                System.out.print("Cantidad: ");
+                cantidad = scanner.nextInt();
+                scanner.nextLine();
+                successCantidad = true;
+            } catch (Exception e) {
+                System.out.println("\u001B[31m" + "¡Error! Valor inválido." + "\u001B[0m");
+            }
+        }
+        
         Pedido nuevoPedido = new Pedido(numeroPedido, fechaHora, cliente, articulo, cantidad);
 
         ListaPedidos listaPedidos = datos.getListaPedidos();
@@ -468,6 +630,7 @@ public class Controlador {
      * Método para eliminar un pedido de la lista
      */
     public void eliminarPedido() {
+        Scanner scanner = new Scanner(System.in);
         // Mostrar todos los pedidos existentes al usuario.
         System.out.println("Elija un pedido de la lista de pedidos disponibles:");
         ListaPedidos listaPedidos = datos.getListaPedidos();
@@ -477,33 +640,41 @@ public class Controlador {
             System.out.println("------------------------");
         }
 
-        // Solicitar al usuario que introduzca el número del pedido que desea eliminar.
-        System.out.print("Introduzca el Número de Pedido del pedido que desea eliminar: ");
-        Scanner scanner = new Scanner(System.in);
-        int numeroPedido = scanner.nextInt();
-        scanner.nextLine();  // Consumir el carácter de nueva línea.
+        int numeroPedido = 0;
+        boolean numPedidoSuccess = false;
 
-        // Buscar el pedido en la lista de pedidos.
-        Pedido pedido = listaPedidos.buscarPorNumeropedido(numeroPedido);
+        while (!numPedidoSuccess) {
+            try {
+                // Solicitar al usuario que introduzca el número del pedido que desea eliminar.
+                System.out.print("Introduzca el Número de Pedido del pedido que desea eliminar: ");
+                numeroPedido = scanner.nextInt();
+                scanner.nextLine();  // Consumir el carácter de nueva línea.
+            } catch (Exception e) {
+                System.out.println("\u001B[31m" + "¡Error! Valor inválido." + "\u001B[0m");
+            }
+        }
 
-        // Sí se encuentra el pedido, proceder con la confirmación para eliminarlo.
-        if (pedido != null) {
+        Pedido pedido = null;
+        try {
+            // Buscar el pedido en la lista de pedidos.
+            pedido = listaPedidos.buscarPorNumeropedido(numeroPedido);
+            if (pedido == null) throw new CustomException("\u001B[31m" + "¡Error! No se encontró un pedido con el Número de Pedido especificado." + "\u001B[0m");
+            // Sí se encuentra el pedido, proceder con la confirmación para eliminarlo.
             System.out.println("¿Está seguro de que desea eliminar el siguiente pedido?");
             System.out.println("Número de Pedido: " + Pedido.getNumeroPedido());
             System.out.println("Nombre del Cliente: " + pedido.getCliente().getNombre());
             System.out.print("Confirme (Si/No): ");
             String confirmacion = scanner.nextLine();
-
             // Si el usuario confirma, eliminar el pedido de la lista.
+
             if (confirmacion.equalsIgnoreCase("Si")) {
                 listaPedidos.borrar(pedido);
                 System.out.println("Pedido eliminado con éxito.");
             } else {
                 System.out.println("Eliminación de pedido cancelada.");
             }
-        } else {
-            // Si no se encuentra el pedido, mostrar un mensaje de error.
-            System.out.println("¡Error! No se encontró un pedido con el Número de Pedido especificado.");
+        } catch (CustomException e) {
+            System.out.println(e.getMessage());
         }
     }
 }
