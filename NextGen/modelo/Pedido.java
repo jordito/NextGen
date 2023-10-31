@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
  * Clase que representa un pedido realizado por un cliente.
  */
 public class Pedido {
-    private static int numeroPedido;
+    private int numeroPedido;
     private Date fechaHora;
     private Cliente cliente;
     private Articulo articulo;
@@ -24,9 +24,7 @@ public class Pedido {
         this.enviado = false;
     }
 
-    public static int getNumeroPedido() {
-        return numeroPedido;
-    }
+    public int getNumeroPedido() { return numeroPedido; }
 
     public void setNumeroPedido(int numeroPedido) {
         this.numeroPedido = numeroPedido;

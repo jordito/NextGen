@@ -624,7 +624,7 @@ public class Controlador {
         System.out.println("+---------------------+-----------------------+");
         System.out.println("  Campo               | Valor                 ");
         System.out.println("+---------------------+-----------------------+");
-        System.out.println(String.format("  Número de Pedido     | %s", Pedido.getNumeroPedido()));
+        System.out.println(String.format("  Número de Pedido     | %s", nuevoPedido.getNumeroPedido()));
         System.out.println(String.format("  Fecha y Hora         | %s", nuevoPedido.getFechaHora()));
         System.out.println(String.format("  NIF del Cliente      | %s", nuevoPedido.getCliente().getNif()));
         System.out.println(String.format("  Nombre del Cliente   | %s", nuevoPedido.getCliente().getNombre()));
@@ -658,6 +658,7 @@ public class Controlador {
                 System.out.print("Introduzca el Número de Pedido del pedido que desea eliminar: ");
                 numeroPedido = scanner.nextInt();
                 scanner.nextLine();  // Consumir el carácter de nueva línea.
+                numPedidoSuccess = true;
             } catch (Exception e) {
                 scanner.nextLine();
                 System.out.println("\u001B[31m" + "¡Error! Valor inválido." + "\u001B[0m");
@@ -671,7 +672,7 @@ public class Controlador {
             if (pedido == null) throw new CustomException("\u001B[31m" + "¡Error! No se encontró un pedido con el Número de Pedido especificado." + "\u001B[0m");
             // Sí se encuentra el pedido, proceder con la confirmación para eliminarlo.
             System.out.println("¿Está seguro de que desea eliminar el siguiente pedido?");
-            System.out.println("Número de Pedido: " + Pedido.getNumeroPedido());
+            System.out.println("Número de Pedido: " + pedido.getNumeroPedido());
             System.out.println("Nombre del Cliente: " + pedido.getCliente().getNombre());
             System.out.print("Confirme (Si/No): ");
             String confirmacion = scanner.nextLine();
