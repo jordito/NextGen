@@ -1,8 +1,8 @@
 package NextGen.modelo;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * Clase que representa un pedido realizado por un cliente.

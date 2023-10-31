@@ -1,0 +1,30 @@
+# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
+# Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
+
+# User-specific stuff
+NextGen/.idea/**/workspace.xml
+NextGen/.idea/**/tasks.xml
+NextGen/.idea/**/usage.statistics.xml
+NextGen/.idea/**/dictionaries
+NextGen/.idea/**/shelf
+NextGen/.idea/**/Project_Default.xml
+
+# Generated files
+NextGen/.idea/**/contentModel.xml
+NextGen/.idea/misc.xml
+NextGen/.idea/modules.xml
+NextGen/.idea/vcs.xml
+NextGen/.idea/.gitignore
+
+# Sensitive or high-churn files
+NextGen/.idea/**/dataSources/
+NextGen/.idea/**/dataSources.ids
+NextGen/.idea/**/dataSources.local.xml
+NextGen/.idea/**/sqlDataSources.xml
+NextGen/.idea/**/dynamic.xml
+NextGen/.idea/**/uiDesigner.xml
+NextGen/.idea/**/dbnavigator.xml
+
+# IntelliJ
+NextGen/out/
+NextGen/NextGen.iml

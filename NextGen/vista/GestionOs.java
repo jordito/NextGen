@@ -2,7 +2,6 @@ package NextGen.vista;
 
 import NextGen.controlador.Controlador;
 import NextGen.modelo.Articulo;
-
 import java.util.Scanner;
 
 public class GestionOs {
@@ -26,7 +25,8 @@ public class GestionOs {
     public void inicio() {
         boolean salir = false;
         char opcion;
-        do {
+
+      do {
             System.out.println("╔═══════════════════════════╗");
             System.out.println("║        MENÚ PRINCIPAL     ║");
             System.out.println("╠═══════════════════════════╣");
