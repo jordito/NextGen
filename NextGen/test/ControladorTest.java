@@ -57,8 +57,8 @@ class ControladorTest {
         // Comprobamos que la excepción coincida
         assertTrue(actualMessage.contains("Ya existe un artículo con el mismo código"));
     }
-  
-    @Test
+
+    @org.junit.jupiter.api.Test
     public void testAgregarCliente() {
         Controlador controlador = new Controlador();
 
@@ -83,7 +83,6 @@ class ControladorTest {
         assertEquals(email, clienteAgregado.getEmail());
         assertEquals(direccion, clienteAgregado.getDireccion());
         assertEquals(tipoCliente, clienteAgregado.tipoCliente()); // Verifica el tipo de cliente
-
     }
 }
 
