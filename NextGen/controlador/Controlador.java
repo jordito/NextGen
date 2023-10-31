@@ -111,6 +111,7 @@ public class Controlador {
                 try {
                     System.out.print("Precio: ");
                     precio = scanner.nextDouble();
+                    scanner.nextLine();
                     precioSuccess = true;
                 } catch (Exception e) {
                     scanner.nextLine();
@@ -124,6 +125,7 @@ public class Controlador {
                 try {
                     System.out.print("Gastos de Envío: ");
                     gastosEnvio = scanner.nextDouble();
+                    scanner.nextLine();
                     gastosEnvSuccess = true;
                 } catch (Exception e) {
                     scanner.nextLine();
@@ -137,6 +139,7 @@ public class Controlador {
                 try {
                     System.out.print("Preparación en Minutos: ");
                     preparacionEnMin = scanner.nextInt();
+                    scanner.nextLine();
                     preparacionMinSuccess = true;
                 } catch (Exception e) {
                     scanner.nextLine();
@@ -499,6 +502,7 @@ public class Controlador {
                 scanner.nextLine();
                 successNumPedido = true;
             } catch (Exception e) {
+                scanner.nextLine();
                 System.out.println("\u001B[31m" + "¡Error! Valor inválido." + "\u001B[0m");
             }
         }
@@ -540,16 +544,18 @@ public class Controlador {
             try {
                 System.out.print("\u001B[34m" + "Ingrese el NIF del Cliente (o escriba " + "\u001B[33m" + "'nuevo'" + "\u001B[0m" + "\u001B[34m" + " para crear uno nuevo): " + "\u001B[0m");
                 nifCliente = scanner.nextLine();
+                if (nifCliente.equalsIgnoreCase("nuevo")) {
+                    agregarCliente();
+                    System.out.print("Ingrese el NIF del Cliente y continua con el pedido: ");
+                    nifCliente = scanner.nextLine();
+                }
+                successNifCliente = true;
             } catch (Exception e) {
                 System.out.println("\u001B[31m" + "¡Error! Valor inválido." + "\u001B[0m");
             }
         }
 
-        if (nifCliente.equalsIgnoreCase("nuevo")) {
-            agregarCliente();
-            System.out.print("Ingrese el NIF del Cliente y continua con el pedido: ");
-            nifCliente = scanner.nextLine();
-        }
+
 
         Cliente cliente = listaClientes.buscarPorNif(nifCliente);
 
@@ -579,8 +585,10 @@ public class Controlador {
         Articulo articulo = null;
         while (!successFindArticulo) {
             try {
-                System.out.print("Ingrese el Código del Artículo deseado: ");
+                System.out.print("Ingrese el Código del Artículo deseado: (o Escriba 0 para volver)");
                 codigoArticulo = scanner.nextLine();
+
+                if (codigoArticulo.equals("0")) return;
                 articulo = datos.getListaArticulos().buscarPorCodigo(codigoArticulo);
 
                 if (articulo == null) {
@@ -602,6 +610,7 @@ public class Controlador {
                 scanner.nextLine();
                 successCantidad = true;
             } catch (Exception e) {
+                scanner.nextLine();
                 System.out.println("\u001B[31m" + "¡Error! Valor inválido." + "\u001B[0m");
             }
         }
@@ -650,6 +659,7 @@ public class Controlador {
                 numeroPedido = scanner.nextInt();
                 scanner.nextLine();  // Consumir el carácter de nueva línea.
             } catch (Exception e) {
+                scanner.nextLine();
                 System.out.println("\u001B[31m" + "¡Error! Valor inválido." + "\u001B[0m");
             }
         }
