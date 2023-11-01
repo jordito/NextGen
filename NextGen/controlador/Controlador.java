@@ -420,7 +420,9 @@ public class Controlador {
                         if (confirmacion.equalsIgnoreCase("Si")) {
                             listaClientes.borrar(cliente);
                             System.out.println("\u001B[33m" + "Cliente eliminado con éxito." + "\u001B[0m");
+                            successConfirmar = true;
                         } else {
+                            successConfirmar = true;
                             System.out.println("\u001B[32m" + "Eliminación de cliente cancelada." + "\u001B[0m");
                         }
                     } else {
