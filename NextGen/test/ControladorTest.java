@@ -1,8 +1,11 @@
 package NextGen.test;
+
 import NextGen.controlador.*;
 import NextGen.modelo.Articulo;
 import NextGen.modelo.ListaArticulos;
-
+import NextGen.controlador.Controlador;
+import NextGen.modelo.Cliente;
+import NextGen.modelo.ListaClientes;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ControladorTest {
@@ -54,4 +57,32 @@ class ControladorTest {
         // Comprobamos que la excepción coincida
         assertTrue(actualMessage.contains("Ya existe un artículo con el mismo código"));
     }
+
+    @org.junit.jupiter.api.Test
+    public void testAgregarCliente() {
+        Controlador controlador = new Controlador();
+
+        // Valores de prueba
+        String nif = "123456789A";
+        String nombre = "Cliente de Prueba";
+        String email = "cliente@prueba.com";
+        String direccion = "123 Calle de la Prueba";
+        String tipoCliente = "Estandard"; // Puedes cambiar esto según tus necesidades
+
+        // Llama a la función agregarCliente con los valores de prueba
+        controlador.agregarCliente(nif, nombre, email, direccion, tipoCliente);
+
+        // Obtiene la lista de clientes y verifica que el cliente se haya agregado
+        ListaClientes listaClientes = controlador.getDatos().getListaClientes();
+        Cliente clienteAgregado = listaClientes.buscarPorNif(nif);
+
+        // Realiza las aserciones
+        assertNotNull(clienteAgregado);
+        assertEquals(nif, clienteAgregado.getNif());
+        assertEquals(nombre, clienteAgregado.getNombre());
+        assertEquals(email, clienteAgregado.getEmail());
+        assertEquals(direccion, clienteAgregado.getDireccion());
+        assertEquals(tipoCliente, clienteAgregado.tipoCliente()); // Verifica el tipo de cliente
+    }
 }
+

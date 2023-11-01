@@ -1,6 +1,7 @@
 package NextGen.vista;
 
 import NextGen.controlador.Controlador;
+import NextGen.exceptions.CustomException;
 import NextGen.modelo.Articulo;
 import java.util.Scanner;
 
@@ -22,10 +23,11 @@ public class GestionOs {
         return resp.charAt(0);
     }
 
-    public void inicio() {
+    public void inicio() throws CustomException {
         boolean salir = false;
         char opcion;
-        do {
+
+      do {
             System.out.println("╔═══════════════════════════╗");
             System.out.println("║        MENÚ PRINCIPAL     ║");
             System.out.println("╠═══════════════════════════╣");
@@ -56,7 +58,7 @@ public class GestionOs {
         } while (!salir);
     }
 
-    public void gestionArticulos() {
+    public void gestionArticulos() throws CustomException {
         Scanner scanner = new Scanner(System.in);
         boolean salir = false;
         char opcion;
