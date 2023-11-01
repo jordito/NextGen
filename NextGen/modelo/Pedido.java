@@ -1,6 +1,9 @@
 package NextGen.modelo;
 
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.time.LocalDateTime;
 
@@ -75,9 +78,19 @@ public class Pedido {
     }
 
     public boolean pedidoEnviado() {
-        LocalDateTime horaPreparacion = LocalDateTime.now().plusMinutes(articulo.getPreparacionEnMin());
+        Instant instant = Instant.ofEpochMilli(this.fechaHora.getTime());
+        LocalDateTime now = LocalDateTime.now();
+        ZoneId zone = ZoneId.of("Europe/Berlin");
+        ZoneOffset zoneOffSet = zone.getRules().getOffset(now);
+        LocalDateTime ldt = LocalDateTime.ofInstant(instant, zoneOffSet);
+        LocalDateTime horaPreparacion = ldt.plusMinutes(this.articulo.getPreparacionEnMin());
         LocalDateTime horaActual = LocalDateTime.now();
-        return horaActual.isAfter(horaPreparacion);
+
+        if (horaActual.isAfter(horaPreparacion)) {
+            this.setEnviado(true);
+        }
+
+        return this.enviado;
     }
 
     public float precioEnvio() {

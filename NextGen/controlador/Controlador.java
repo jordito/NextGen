@@ -460,7 +460,8 @@ public class Controlador {
         } else {
             System.out.println("\u001B[34m" + "Lista de pedidos pendientes:\n" + "\u001B[0m");
             for (Pedido pedido : listaPedidos.getArrayList()) {
-                if (!pedido.isEnviado()) {
+
+                if (!pedido.pedidoEnviado()) {
                     System.out.println(pedido.toString());
                 }
             }
@@ -472,12 +473,15 @@ public class Controlador {
      */
     public void listarPedidosEnviados() {
         ListaPedidos listaPedidos = datos.getListaPedidos();
+
+
         if (listaPedidos.isEmpty()) {
             System.out.println("\u001B[31m" + "No hay pedidos enviados registrados.\n" + "\u001B[0m");
         } else {
             System.out.println("\u001B[34m" + "Lista de pedidos enviados:\n" + "\u001B[0m");
             for (Pedido pedido : listaPedidos.getArrayList()) {
-                if (pedido.isEnviado()) {
+
+                if (pedido.pedidoEnviado()) {
                     System.out.println(pedido.toString());
                 }
             }
@@ -534,7 +538,7 @@ public class Controlador {
             System.out.println("Nombre:       " + cliente.getNombre());
             System.out.println("Email:        " + cliente.getEmail());
             System.out.println("Dirección:    " + cliente.getDireccion());
-            System.out.println("Tipo cliente: " + cliente.getDireccion());
+            System.out.println("Tipo cliente: " + cliente.tipoCliente());
             System.out.println("------------------------");
         }
 
