@@ -424,6 +424,7 @@ public class Controlador {
                         } else {
                             successConfirmar = true;
                             System.out.println("\u001B[32m" + "Eliminación de cliente cancelada." + "\u001B[0m");
+                            successConfirmar = true;
                         }
                     } else {
                         throw new CustomException("\u001B[31m" + "¡Error! Valor inválido." + "\u001B[0m");
