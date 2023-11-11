@@ -1,5 +1,6 @@
 package NextGen.modelo;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -101,8 +102,11 @@ public class Pedido {
     @Override
     public String toString() {
         String separator = " | ";
+        String header = "Número de Pedido | Fecha y Hora          | NIF Cliente | Nombre Cliente         | Código Artículo | Descripción Artículo | Cantidad | Precio Artículo | Costo de Envío | Precio Total | Enviado";
+        DecimalFormat df = new DecimalFormat("#.##");
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-        return String.format("%-17s" + separator + "%-22s" + separator + "%-11s" + separator + "%-23s" + separator + "%-16s" + separator + "%-22s" + separator + "%-8s" + separator + "%-15s" + separator + "%-13s" + separator + "%-7s",
-                numeroPedido, dateFormat.format(fechaHora), cliente.getNif(), cliente.getNombre(), articulo.getCodigo(), articulo.getDescripcion(), cantidad, articulo.getPrecio() + "€", precioEnvio() + "€", precioTotal() + "€", enviado);
+        String data = String.format("%-17s" + separator + "%-20s" + separator + "%-11s" + separator + "%-23s" + separator + "%-15s" + separator + "%-22s" + separator + "%-8s" + separator + "%-15s" + separator + "%-13s" + separator + "%-7s",
+                numeroPedido, dateFormat.format(fechaHora), cliente.getNif(), cliente.getNombre(), articulo.getCodigo(), articulo.getDescripcion(), cantidad, articulo.getPrecio() + "€", df.format(precioEnvio()) + "€", df.format(precioTotal()) + "€", enviado);
+        return header + "\n" + data;
     }
 }
