@@ -1,6 +1,7 @@
-package NextGen.vista;
 
-import NextGen.exceptions.CustomException;
+package local.NextGen.vista;
+
+import local.NextGen.exceptions.CustomException;
 
 public class OnlineStore {
     public static void main(String[] args) throws CustomException {

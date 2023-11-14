@@ -1,4 +1,4 @@
-package NextGen.modelo;
+package local.NextGen.modelo;
 
 /**
  * Clase que representa una lista de pedidos. Esta clase hereda de la clase genérica Lista<Pedido>.

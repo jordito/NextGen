@@ -1,4 +1,4 @@
-package NextGen.modelo;
+package local.NextGen.modelo;
 import java.util.ArrayList;
 /**
  * Clase genérica que representa una lista para gestionar objetos de tipo T.

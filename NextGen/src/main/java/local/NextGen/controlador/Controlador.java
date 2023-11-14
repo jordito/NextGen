@@ -1,7 +1,8 @@
-package NextGen.controlador;
 
-import NextGen.exceptions.CustomException;
-import NextGen.modelo.*;
+package local.NextGen.controlador;
+
+import local.NextGen.exceptions.CustomException;
+import local.NextGen.modelo.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;

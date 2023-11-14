@@ -1,8 +1,9 @@
-package NextGen.vista;
 
-import NextGen.controlador.Controlador;
-import NextGen.exceptions.CustomException;
-import NextGen.modelo.Articulo;
+package local.NextGen.vista;
+
+import local.NextGen.controlador.Controlador;
+import local.NextGen.exceptions.CustomException;
+import  local.NextGen.modelo.Articulo;
 import java.util.Scanner;
 
 public class GestionOs {

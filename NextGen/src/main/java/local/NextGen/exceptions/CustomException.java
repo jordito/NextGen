@@ -1,4 +1,4 @@
-package NextGen.exceptions;
+package local.NextGen.exceptions;
 
 public class CustomException extends Exception {
     public CustomException(String s) {

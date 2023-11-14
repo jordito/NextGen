@@ -1,4 +1,4 @@
-package NextGen.modelo;
+package local.NextGen.modelo;
 /**
  * Clase que representa un cliente premium. Hereda de la clase abstracta Cliente.
  */
