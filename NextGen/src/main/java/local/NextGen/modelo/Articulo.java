@@ -7,21 +7,21 @@ public class Articulo {
     private String descripcion;
     private double precio;
     private double gastosEnvio;
-    private int preparacionEnMin;
+    private int tiempoPreparacion;
     /**
      * Constructor para crear un objeto Articulo con los detalles especificados.
      * @param codigo El código del artículo.
      * @param descripcion La descripción del artículo.
      * @param precio El precio del artículo.
      * @param gastosEnvio Los gastos de envío asociados al artículo.
-     * @param preparacionEnMin El tiempo de preparación en minutos del artículo.
+     * @param tiempoPreparacion El tiempo de preparación en minutos del artículo.
      */
-    public Articulo(String codigo, String descripcion, double precio, double gastosEnvio, int preparacionEnMin) {
+    public Articulo(String codigo, String descripcion, double precio, double gastosEnvio, int tiempoPreparacion) {
         this.codigo = codigo;
         this.descripcion = descripcion;
         this.precio = precio;
         this.gastosEnvio = gastosEnvio;
-        this.preparacionEnMin = preparacionEnMin;
+        this.tiempoPreparacion = tiempoPreparacion;
     }
     /**
      * Obtiene el código del artículo.
@@ -79,12 +79,12 @@ public class Articulo {
      * Obtiene el tiempo de preparación en minutos del artículo.
      * @return El tiempo de preparación en minutos del artículo.
      */
-    public int getPreparacionEnMin() { return preparacionEnMin;}
+    public int getTiempoPreparacion() { return tiempoPreparacion;}
     /**
      * Establece el tiempo de preparación en minutos del artículo.
-     * @param preparacionEnMin El nuevo tiempo de preparación en minutos del artículo.
+     * @param tiempoPreparacion El nuevo tiempo de preparación en minutos del artículo.
      */
-    public void setPreparacionEnMin(int preparacionEnMin) {this.preparacionEnMin = preparacionEnMin; }
+    public void setTiempoPreparacion(int tiempoPreparacion) {this.tiempoPreparacion = tiempoPreparacion; }
     /**
      * Representación en forma de tabla del artículo, que incluye todos los atributos.
      * @return Una cadena que muestra los detalles del artículo.
@@ -94,7 +94,7 @@ public class Articulo {
         String separator = " | ";
         String header = "Código       | Descripción                   | Precio   | Gastos de Envío    | Preparación (min)";
         String data = String.format("%-13s" + separator + "%-29s" + separator + "%-8s" + separator + "%-18s" + separator + "%-16s",
-                codigo, descripcion, precio, gastosEnvio, preparacionEnMin);
+                codigo, descripcion, precio, gastosEnvio, tiempoPreparacion);
         return header + "\n" + data + "\n";
     }
 }

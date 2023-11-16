@@ -1,34 +1,44 @@
 package local.NextGen.modelo;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.Date;
-import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Clase que representa un pedido realizado por un cliente.
+ * Incluye información sobre el pedido, como el número de pedido, la fecha y hora,
+ * el cliente que realizó el pedido y los detalles del mismo.
  */
 public class Pedido {
     private int numeroPedido;
     private Date fechaHora;
     private Cliente cliente;
-    private Articulo articulo;
-    private int cantidad;
     private boolean enviado;
+    private List<DetallePedido> detallesPedido;
 
-    public Pedido(int numeroPedido, Date fechaHora, Cliente cliente, Articulo articulo, int cantidad) {
+    /**
+     * Constructor para crear un nuevo pedido.
+     * @param numeroPedido Número del pedido.
+     * @param fechaHora Fecha y hora del pedido.
+     * @param cliente Cliente que realiza el pedido.
+     * @param detallesPedido Lista de detalles del pedido.
+     */
+    public Pedido(int numeroPedido, Date fechaHora, Cliente cliente, List<DetallePedido> detallesPedido) {
         this.numeroPedido = numeroPedido;
         this.fechaHora = fechaHora;
         this.cliente = cliente;
-        this.articulo = articulo;
-        this.cantidad = cantidad;
+        this.detallesPedido = detallesPedido;
         this.enviado = false;
     }
 
-    public int getNumeroPedido() { return numeroPedido; }
+    // Getters y setters
+
+    public int getNumeroPedido() {
+        return numeroPedido;
+    }
 
     public void setNumeroPedido(int numeroPedido) {
         this.numeroPedido = numeroPedido;
@@ -50,22 +60,6 @@ public class Pedido {
         this.cliente = cliente;
     }
 
-    public Articulo getArticulo() {
-        return articulo;
-    }
-
-    public void setArticulo(Articulo articulo) {
-        this.articulo = articulo;
-    }
-
-    public int getCantidad() {
-        return cantidad;
-    }
-
-    public void setCantidad(int cantidad) {
-        this.cantidad = cantidad;
-    }
-
     public boolean isEnviado() {
         return enviado;
     }
@@ -74,39 +68,50 @@ public class Pedido {
         this.enviado = enviado;
     }
 
-    public float precioTotal() {
-        return (float) (cantidad * articulo.getPrecio() + precioEnvio());
+    public List<DetallePedido> getDetallesPedido() {
+        return detallesPedido;
     }
 
-    public boolean pedidoEnviado() {
-        Instant instant = Instant.ofEpochMilli(this.fechaHora.getTime());
-        LocalDateTime now = LocalDateTime.now();
-        ZoneId zone = ZoneId.of("Europe/Berlin");
-        ZoneOffset zoneOffSet = zone.getRules().getOffset(now);
-        LocalDateTime ldt = LocalDateTime.ofInstant(instant, zoneOffSet);
-        LocalDateTime horaPreparacion = ldt.plusMinutes(this.articulo.getPreparacionEnMin());
-        LocalDateTime horaActual = LocalDateTime.now();
+    public void setDetallesPedido(List<DetallePedido> detallesPedido) {
+        this.detallesPedido = detallesPedido;
+    }
 
-        if (horaActual.isAfter(horaPreparacion)) {
-            this.setEnviado(true);
+    /**
+     * Calcula el precio total del pedido sumando los precios de todos los detalles.
+     * @return Precio total del pedido.
+     */
+    public BigDecimal precioTotal() {
+        BigDecimal total = BigDecimal.ZERO;
+        for (DetallePedido detalle : detallesPedido) {
+            total = total.add(detalle.getPrecioVenta().multiply(new BigDecimal(detalle.getCantidad())));
         }
-
-        return this.enviado;
+        return total;
     }
 
-    public float precioEnvio() {
-        float descuento = cliente.descuentoEnv();
-        return (float) (articulo.getGastosEnvio() * (1 - descuento));
-    }
-
+    /**
+     * Devuelve una representación en cadena del pedido, incluyendo todos los detalles.
+     * @return Representación en cadena del pedido.
+     */
     @Override
     public String toString() {
-        String separator = " | ";
-        String header = "Número de Pedido | Fecha y Hora          | NIF Cliente | Nombre Cliente         | Código Artículo | Descripción Artículo | Cantidad | Precio Artículo | Costo de Envío | Precio Total | Enviado";
         DecimalFormat df = new DecimalFormat("#.##");
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-        String data = String.format("%-17s" + separator + "%-20s" + separator + "%-11s" + separator + "%-23s" + separator + "%-15s" + separator + "%-22s" + separator + "%-8s" + separator + "%-15s" + separator + "%-13s" + separator + "%-7s",
-                numeroPedido, dateFormat.format(fechaHora), cliente.getNif(), cliente.getNombre(), articulo.getCodigo(), articulo.getDescripcion(), cantidad, articulo.getPrecio() + "€", df.format(precioEnvio()) + "€", df.format(precioTotal()) + "€", enviado);
-        return header + "\n" + data;
+        String fechaFormato = dateFormat.format(fechaHora);
+        String estadoPedido = isEnviado() ? "Enviado" : "Pendiente";
+
+        StringBuilder detalles = new StringBuilder();
+        for (DetallePedido detalle : detallesPedido) {
+            detalles.append(detalle.toString()).append("\n");
+        }
+
+        return "Pedido{" +
+                "numeroPedido=" + numeroPedido +
+                ", fechaHora=" + fechaFormato +
+                ", clienteNIF=" + cliente.getNif() +
+                ", clienteNombre=" + cliente.getNombre() +
+                ", detallesPedido=\n" + detalles +
+                ", precioTotal=" + df.format(precioTotal()) + "€" +
+                ", estado='" + estadoPedido + '\'' +
+                '}';
     }
 }
