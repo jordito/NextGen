@@ -4,6 +4,7 @@ import local.NextGen.modelo.*;
 import local.NextGen.modelo.DAO.*;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.stream.Collectors ;
 
 public class Controlador {
     private ArticuloDAO articuloDAO;
@@ -34,6 +35,7 @@ public class Controlador {
 
         }
     }
+
     /**
      * Lista todos los clientes en la base de datos.
      *
@@ -116,7 +118,7 @@ public class Controlador {
      */
     public List<Pedido> listarPedidosPendientes() throws SQLException {
         return pedidoDAO.listarTodos().stream()
-                .filter(pedido -> pedido.getEstado().equals("Pendiente"))
+                .filter(pedido -> !pedido.isEnviado())
                 .collect(Collectors.toList());
     }
 
@@ -128,8 +130,7 @@ public class Controlador {
      */
     public List<Pedido> listarPedidosEnviados() throws SQLException {
         return pedidoDAO.listarTodos().stream()
-                .filter(pedido -> pedido.getEstado().equals("Enviado"))
+                .filter(Pedido::isEnviado)
                 .collect(Collectors.toList());
     }
-
 }
