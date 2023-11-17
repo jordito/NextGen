@@ -2,6 +2,7 @@ package local.NextGen.modelo;
 
 import local.NextGen.modelo.DAO.*;
 import java.sql.SQLException;
+
 /**
  * Clase Datos que actúa como fábrica para la creación de objetos DAO.
  * Proporciona métodos estáticos para obtener instancias de diferentes DAOs.

@@ -4,130 +4,77 @@ import local.NextGen.modelo.*;
 import local.NextGen.modelo.DAO.*;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.stream.Collectors ;
+import java.util.stream.Collectors;
 
+/**
+ * Clase Controlador que maneja las operaciones de negocio.
+ * Utiliza DAOs para interactuar con la base de datos y realizar operaciones CRUD.
+ */
 public class Controlador {
     private ArticuloDAO articuloDAO;
     private ClienteDAO clienteDAO;
     private PedidoDAO pedidoDAO;
 
+    /**
+     * Constructor de Controlador.
+     * Inicializa los DAOs utilizando la fábrica de DAOs 'Datos'.
+     * @throws SQLException Si ocurre un error al establecer la conexión con la base de datos.
+     */
     public Controlador() throws SQLException {
-        // Inicialización de DAOs. Por ejemplo, utilizando un método para obtener la conexión.
-        this.articuloDAO = new ArticuloDAO(ConexionBD.obtenerConexion());
-        this.clienteDAO = new ClienteDAO(ConexionBD.obtenerConexion());
-        this.pedidoDAO = new PedidoDAO(ConexionBD.obtenerConexion());
+        Datos datos = new Datos();
+        this.articuloDAO = datos.getArticuloDAO();
+        this.clienteDAO = datos.getClienteDAO();
+        this.pedidoDAO = datos.getPedidoDAO();
     }
+
+    // Métodos de operaciones para Artículos
 
     public List<Articulo> listarArticulos() throws SQLException {
         return articuloDAO.obtenerTodos();
     }
 
     public void agregarArticulo(Articulo articulo) throws SQLException {
-        boolean exito = articuloDAO.insertar(articulo);
-        if (!exito) {
-
-        }
+        articuloDAO.insertar(articulo);
     }
 
     public void eliminarArticulo(String codigo) throws SQLException {
-        boolean exito = articuloDAO.eliminar(codigo);
-        if (!exito) {
-
-        }
+        articuloDAO.eliminar(codigo);
     }
 
-    /**
-     * Lista todos los clientes en la base de datos.
-     *
-     * @return Una lista de objetos Cliente.
-     * @throws SQLException Si ocurre un error durante la consulta SQL.
-     */
+    // Métodos de operaciones para Clientes
+
     public List<Cliente> listarClientes() throws SQLException {
         return clienteDAO.obtenerTodos();
     }
 
-    /**
-     * Agrega un nuevo cliente a la base de datos.
-     *
-     * @param cliente El objeto Cliente a agregar.
-     * @return true si el cliente se agregó con éxito, false si el cliente ya existe.
-     * @throws SQLException Si ocurre un error durante la inserción.
-     */
     public boolean agregarCliente(Cliente cliente) throws SQLException {
-        if (!clienteDAO.existeNIF(cliente.getNif())) {
-            return clienteDAO.insertar(cliente);
-        }
-        return false;
+        return clienteDAO.insertar(cliente);
     }
 
-    /**
-     * Elimina un cliente de la base de datos usando su NIF.
-     *
-     * @param nif El NIF del cliente a eliminar.
-     * @return true si la eliminación es exitosa, false de lo contrario.
-     * @throws SQLException Si ocurre un error durante la eliminación.
-     */
     public boolean eliminarCliente(String nif) throws SQLException {
         return clienteDAO.eliminarPorNIF(nif);
     }
 
-    /**
-     * Actualiza la información de un cliente existente.
-     *
-     * @param cliente El objeto Cliente con la información actualizada.
-     * @return true si la actualización es exitosa, false si el cliente no existe.
-     * @throws SQLException Si ocurre un error durante la actualización.
-     */
-    /**
-     * Lista todos los pedidos existentes en la base de datos.
-     *
-     * @return Una lista de objetos Pedido.
-     * @throws SQLException Si ocurre un error de SQL durante la consulta.
-     */
+    // Métodos de operaciones para Pedidos
+
     public List<Pedido> listarPedidos() throws SQLException {
         return pedidoDAO.listarTodos();
     }
 
-    /**
-     * Agrega un nuevo pedido a la base de datos.
-     *
-     * @param pedido El pedido a agregar.
-     * @throws SQLException Si ocurre un error de SQL durante la inserción.
-     */
     public void agregarPedido(Pedido pedido) throws SQLException {
-        // Aquí implementarías la lógica para agregar un pedido y sus detalles.
-        // Esto puede incluir insertar en las tablas Pedidos y DetallePedido.
+        pedidoDAO.insertar(pedido);
     }
 
-    /**
-     * Elimina un pedido existente de la base de datos.
-     *
-     * @param numeroPedido El número del pedido a eliminar.
-     * @throws SQLException Si ocurre un error de SQL durante la eliminación.
-     */
     public void eliminarPedido(int numeroPedido) throws SQLException {
-        // Implementar lógica para eliminar un pedido.
-        // Esto puede incluir eliminar registros en la tabla DetallePedido y luego en Pedidos.
+        pedidoDAO.eliminar(numeroPedido);
     }
 
-    /**
-     * Lista todos los pedidos con estado 'Pendiente'.
-     *
-     * @return Una lista de pedidos pendientes.
-     * @throws SQLException Si ocurre un error de SQL durante la consulta.
-     */
     public List<Pedido> listarPedidosPendientes() throws SQLException {
         return pedidoDAO.listarTodos().stream()
                 .filter(pedido -> !pedido.isEnviado())
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Lista todos los pedidos con estado 'Enviado'.
-     *
-     * @return Una lista de pedidos enviados.
-     * @throws SQLException Si ocurre un error de SQL durante la consulta.
-     */
     public List<Pedido> listarPedidosEnviados() throws SQLException {
         return pedidoDAO.listarTodos().stream()
                 .filter(Pedido::isEnviado)
