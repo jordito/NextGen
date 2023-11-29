@@ -45,12 +45,10 @@ public class DetallePedidoDAO {
     /**
      * Agrega un detalle de pedido a la base de datos.
      */
-    public static void agregarDetalle(DetallePedido detalle) {
+    public static void agregarDetalle(Connection conn, DetallePedido detalle) {
         String sql = "INSERT INTO DetallePedido (numero_pedido, codigo_articulo, cantidad, precio_venta) VALUES (?, ?, ?, ?)";
 
-        try (Connection conn = obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
+        try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             if (!existeDetalle(conn, detalle)) {
                 pstmt.setInt(1, detalle.getNumeroPedido());
                 pstmt.setString(2, detalle.getArticulo().getCodigo());
@@ -65,33 +63,35 @@ public class DetallePedidoDAO {
             e.printStackTrace();
         }
     }
+
     private static boolean existeDetalle(Connection conn, DetallePedido detalle) throws SQLException {
         String sql = "SELECT COUNT(*) FROM DetallePedido WHERE numero_pedido = ? AND codigo_articulo = ?";
+
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, detalle.getNumeroPedido());
             pstmt.setString(2, detalle.getArticulo().getCodigo());
 
-            ResultSet rs = pstmt.executeQuery();
-            rs.next();
-
-            return rs.getInt(1) > 0;
+            try (ResultSet rs = pstmt.executeQuery()) {
+                return rs.next() && rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
         }
     }
     /**
      * Elimina un detalle de pedido de la base de datos.
      */
-    public boolean eliminarDetalle(int numeroPedido, String codigoArticulo) {
-        String sql = "DELETE FROM DetallePedido WHERE numero_pedido = ? AND codigo_articulo = ?";
+    public boolean eliminarPorPedido(int numeroPedido) {
+        String sql = "DELETE FROM DetallePedido WHERE numero_pedido = ?";
         try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
             stmt.setInt(1, numeroPedido);
-            stmt.setString(2, codigoArticulo);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
-
     // Método auxiliar para obtener un objeto Articulo por su código
     private Articulo obtenerArticuloPorCodigo(String codigoArticulo) throws SQLException {
         String sql = "SELECT * FROM Articulos WHERE codigo = ?";
@@ -107,7 +107,7 @@ public class DetallePedidoDAO {
                         rs.getInt("tiempo_preparacion")
                 );
             } else {
-                return null;
+                return null; // Puedes manejar el caso en que el artículo no se encuentre
             }
         }
     }

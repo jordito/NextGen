@@ -79,3 +79,5 @@ BEGIN
 END;
 //
 DELIMITER ;
+
+ALTER TABLE DetallePedido ADD CONSTRAINT uk_detallepedido UNIQUE (numero_pedido, codigo_articulo);

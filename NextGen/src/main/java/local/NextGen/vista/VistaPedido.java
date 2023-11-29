@@ -125,12 +125,21 @@ public class VistaPedido {
         }
     }
 
-    private static void eliminarPedido() throws SQLException {
-        System.out.print("\u001B[34mIngrese el número del pedido a eliminar: \u001B[0m");
-        int numeroPedido = Integer.parseInt(scanner.nextLine());
 
-        controlador.eliminarPedido(numeroPedido);
 
-        System.out.println("\u001B[32mPedido eliminado con éxito\u001B[0m");
+    private static void eliminarPedido() {
+        try {
+            System.out.print("\u001B[34mIngrese el número del pedido a eliminar: \u001B[0m");
+            int numeroPedido = Integer.parseInt(scanner.nextLine());
+
+            controlador.eliminarPedido(numeroPedido);
+
+            System.out.println("\u001B[32mPedido eliminado con éxito\u001B[0m");
+        } catch (NumberFormatException e) {
+            System.out.println("\u001B[31mError: Ingrese un número válido\u001B[0m");
+        } catch (SQLException e) {
+            System.out.println("\u001B[31mError al eliminar el pedido\u001B[0m");
+            e.printStackTrace();
+        }
     }
 }

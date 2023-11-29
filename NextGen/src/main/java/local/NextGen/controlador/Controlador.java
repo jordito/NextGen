@@ -3,10 +3,13 @@ package local.NextGen.controlador;
 import local.NextGen.modelo.*;
 import local.NextGen.modelo.DAO.*;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static local.NextGen.modelo.ConexionBD.obtenerConexion;
 
 /**
  * Clase Controlador que maneja las operaciones de negocio.
@@ -121,27 +124,36 @@ public class Controlador {
     }
 
 
-    public static local.NextGen.modelo.Pedido agregarPedido(local.NextGen.modelo.Pedido pedido) {
-        try {
-            int numeroPedidoGenerado = local.NextGen.modelo.DAO.PedidoDAO.insertar(pedido);
+    public static local.NextGen.modelo.Pedido agregarPedido(local.NextGen.modelo.Pedido pedido) throws SQLException {
+        try (Connection conn = obtenerConexion()) {
+            conn.setAutoCommit(false);
 
-            if (numeroPedidoGenerado > 0) {
-                for (local.NextGen.modelo.DetallePedido detalle : pedido.getDetallesPedido()) {
-                    detalle.setNumeroPedido(numeroPedidoGenerado);
-                    local.NextGen.modelo.DAO.DetallePedidoDAO.agregarDetalle(detalle);
+            try {
+                int numeroPedidoGenerado = local.NextGen.modelo.DAO.PedidoDAO.insertar(conn, pedido);
+
+                if (numeroPedidoGenerado > 0) {
+                    for (local.NextGen.modelo.DetallePedido detalle : pedido.getDetallesPedido()) {
+                        detalle.setNumeroPedido(numeroPedidoGenerado);
+                        local.NextGen.modelo.DAO.DetallePedidoDAO.agregarDetalle(conn, detalle);
+                    }
+
+                    conn.commit();  // Confirmar transacción
+                    return pedido;
+                } else {
+                    System.out.println("Error al agregar el pedido. No se generó un número de pedido válido.");
+                    conn.rollback();
+                    return null;
                 }
-                return pedido;
-            } else {
-                System.out.println("Error al agregar el pedido. No se generó un número de pedido válido.");
+            } catch (SQLException e) {
+                conn.rollback();
+                e.printStackTrace();
                 return null;
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
         }
     }
-    public void eliminarPedido(int numeroPedido) throws SQLException {
-        local.NextGen.modelo.DAO.PedidoDAO.eliminar(numeroPedido);
+
+    public static boolean eliminarPedido(int numeroPedido) throws SQLException {
+        return local.NextGen.modelo.DAO.PedidoDAO.eliminar(numeroPedido);
     }
 
     public static void listarPedidosPendientes() throws SQLException {

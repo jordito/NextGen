@@ -5,7 +5,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static local.NextGen.modelo.ConexionBD.obtenerConexion;
 
 /**
  * Clase DAO para la gestión de pedidos en la base de datos.
@@ -35,32 +34,28 @@ public class PedidoDAO {
      * @param pedido El objeto Pedido a insertar.
      * @throws SQLException Si ocurre un error durante la inserción.
      */
-    public static int insertar(local.NextGen.modelo.Pedido pedido) throws SQLException {
+    public static int insertar(Connection conn, local.NextGen.modelo.Pedido pedido) throws SQLException {
         int numeroPedidoGenerado = -1;
 
-        try (Connection conn = obtenerConexion()) {
-            String sql = "INSERT INTO Pedidos (fecha_hora_pedido, id_cliente) VALUES (?, ?)";
+        String sql = "INSERT INTO Pedidos (fecha_hora_pedido, id_cliente) VALUES (?, ?)";
 
-            try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-                pstmt.setTimestamp(1, new Timestamp(pedido.getFechaHora().getTime()));
-                pstmt.setInt(2, pedido.getCliente().getIdCliente());
+        try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            pstmt.setTimestamp(1, new Timestamp(pedido.getFechaHora().getTime()));
+            pstmt.setInt(2, pedido.getCliente().getIdCliente());
 
-                int filasAfectadas = pstmt.executeUpdate();
+            int filasAfectadas = pstmt.executeUpdate();
 
-                if (filasAfectadas > 0) {
-                    ResultSet generatedKeys = pstmt.getGeneratedKeys();
+            if (filasAfectadas > 0) {
+                ResultSet generatedKeys = pstmt.getGeneratedKeys();
 
-                    if (generatedKeys.next()) {
-                        numeroPedidoGenerado = generatedKeys.getInt(1);
+                if (generatedKeys.next()) {
+                    numeroPedidoGenerado = generatedKeys.getInt(1);
 
-                        for (local.NextGen.modelo.DetallePedido detalle : pedido.getDetallesPedido()) {
-                            detallePedidoDAO.agregarDetalle(new local.NextGen.modelo.DetallePedido(numeroPedidoGenerado, detalle.getArticulo(), detalle.getCantidad()));
-                        }
+                    for (local.NextGen.modelo.DetallePedido detalle : pedido.getDetallesPedido()) {
+                        local.NextGen.modelo.DAO.DetallePedidoDAO.agregarDetalle(conn, new local.NextGen.modelo.DetallePedido(numeroPedidoGenerado, detalle.getArticulo(), detalle.getCantidad()));
                     }
                 }
             }
-        } catch (SQLException | RuntimeException e) {
-            e.printStackTrace();
         }
 
         return numeroPedidoGenerado;
@@ -72,16 +67,20 @@ public class PedidoDAO {
      * Elimina un pedido de la base de datos.
      *
      * @param numeroPedido El número del pedido a eliminar.
+     * @return
      * @throws SQLException Si ocurre un error durante la eliminación.
      */
-    public static void eliminar(int numeroPedido) throws SQLException {
+    public static boolean eliminar(int numeroPedido) throws SQLException {
         if (existePedido(numeroPedido)) {
+            detallePedidoDAO.eliminarPorPedido(numeroPedido);
+
             String sql = "DELETE FROM Pedidos WHERE numero_pedido = ?";
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setInt(1, numeroPedido);
                 pstmt.executeUpdate();
             }
         }
+        return false;
     }
 
     /**
@@ -93,6 +92,7 @@ public class PedidoDAO {
     public static List<local.NextGen.modelo.Pedido> listarTodos() throws SQLException {
         List<local.NextGen.modelo.Pedido> pedidos = new ArrayList<>();
         String sql = "SELECT * FROM Pedidos";
+
         try (PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
             while (rs.next()) {
@@ -100,6 +100,7 @@ public class PedidoDAO {
                 pedidos.add(pedido);
             }
         }
+
         return pedidos;
     }
 
