@@ -1,29 +1,26 @@
 package local.NextGen.modelo;
 
-import java.math.BigDecimal;
+import java.text.DecimalFormat;
 
 /**
  * Clase que representa un detalle de un pedido, incluyendo información del artículo, cantidad y precio.
  */
 public class DetallePedido {
     private int numeroPedido;
-    private String codigoArticulo;
+    private local.NextGen.modelo.Articulo articulo;
     private int cantidad;
-    private BigDecimal precioVenta;
 
     /**
      * Constructor para crear un detalle de pedido.
      *
      * @param numeroPedido El número del pedido al que pertenece este detalle.
-     * @param codigoArticulo El código del artículo en este detalle de pedido.
-     * @param cantidad La cantidad del artículo en este detalle.
-     * @param precioVenta El precio de venta del artículo en este detalle.
+     * @param articulo     El objeto Articulo en este detalle de pedido.
+     * @param cantidad     La cantidad del artículo en este detalle.
      */
-    public DetallePedido(int numeroPedido, String codigoArticulo, int cantidad, BigDecimal precioVenta) {
+    public DetallePedido(int numeroPedido, local.NextGen.modelo.Articulo articulo, int cantidad) {
         this.numeroPedido = numeroPedido;
-        this.codigoArticulo = codigoArticulo;
+        this.articulo = articulo;
         this.cantidad = cantidad;
-        this.precioVenta = precioVenta;
     }
 
     // Getters y Setters
@@ -36,12 +33,12 @@ public class DetallePedido {
         this.numeroPedido = numeroPedido;
     }
 
-    public String getCodigoArticulo() {
-        return codigoArticulo;
+    public local.NextGen.modelo.Articulo getArticulo() {
+        return articulo;
     }
 
-    public void setCodigoArticulo(String codigoArticulo) {
-        this.codigoArticulo = codigoArticulo;
+    public void setArticulo(local.NextGen.modelo.Articulo articulo) {
+        this.articulo = articulo;
     }
 
     public int getCantidad() {
@@ -52,12 +49,17 @@ public class DetallePedido {
         this.cantidad = cantidad;
     }
 
-    public BigDecimal getPrecioVenta() {
-        return precioVenta;
-    }
-
-    public void setPrecioVenta(BigDecimal precioVenta) {
-        this.precioVenta = precioVenta;
+    /**
+     * Obtener el precio de venta del artículo en este detalle.
+     *
+     * @return El precio de venta del artículo.
+     */
+    public double getPrecioVenta() {
+        if (articulo != null) {
+            return articulo.getPrecio();
+        } else {
+            return 0.0;
+        }
     }
 
     /**
@@ -67,11 +69,8 @@ public class DetallePedido {
      */
     @Override
     public String toString() {
-        return "DetallePedido{" +
-                "numeroPedido=" + numeroPedido +
-                ", codigoArticulo='" + codigoArticulo + '\'' +
-                ", cantidad=" + cantidad +
-                ", precioVenta=" + precioVenta +
-                '}';
+        DecimalFormat df = new DecimalFormat("#.##");
+        return String.format("Código Artículo: %-5s| Descripción Articulo: %-15s| Cantidad: %-5s| Precio Venta: %-5s",
+                (articulo != null ? articulo.getCodigo() : ""), articulo.getDescripcion(),  cantidad, df.format(getPrecioVenta()) + "€");
     }
 }

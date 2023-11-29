@@ -1,5 +1,8 @@
 package local.NextGen.modelo;
 
+import java.text.DecimalFormat;
+import java.util.Map;
+
 /**
  * Clase abstracta que representa un cliente con sus atributos básicos.
  */
@@ -18,7 +21,7 @@ public abstract class Cliente {
      * @param email El correo electrónico del cliente.
      * @param direccion La dirección de envío del cliente.
      */
-    public Cliente(int idCliente, String nif, String nombre, String email, String direccion) {
+    public Cliente(int idCliente, String nombre, String direccion, String nif, String email) {
         this.idCliente = idCliente;
         this.nif = nif;
         this.nombre = nombre;
@@ -74,12 +77,9 @@ public abstract class Cliente {
 
     @Override
     public String toString() {
-        return "Cliente{" +
-                "idCliente=" + idCliente +
-                ", nif='" + nif + '\'' +
-                ", nombre='" + nombre + '\'' +
-                ", email='" + email + '\'' +
-                ", direccion='" + direccion + '\'' +
-                '}';
+        DecimalFormat df = new DecimalFormat("#.##");
+        return String.format("ID Cliente: %-5s| Nombre: %-10s| Domicilio: %-15s| NIF: %-12s| Email: %-15s| Cuota Anual: %-5s| Descuento Envío: %-5s",
+                idCliente, nombre, direccion, nif, email, df.format(calcAnual()) + "€", df.format((descuentoEnv() * 100)) + "%");
     }
+    public abstract Map<String, Object> toMap();
 }

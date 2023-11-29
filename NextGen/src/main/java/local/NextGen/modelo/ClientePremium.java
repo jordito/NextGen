@@ -1,10 +1,11 @@
 
 package local.NextGen.modelo;
-
+import java.util.HashMap;
+import java.util.Map;
 /**
  * Clase que representa un cliente premium. Hereda de la clase abstracta Cliente.
  */
-public class ClientePremium extends Cliente {
+public abstract class ClientePremium extends local.NextGen.modelo.Cliente {
     private double cuotaAnual;
     private double descuentoEnvio;
 
@@ -47,6 +48,6 @@ public class ClientePremium extends Cliente {
 
     @Override
     public String toString() {
-        return super.toString() + " (Premium)";
+        return super.toString() + " \u001B[34m(Premium)\u001B[0m";
     }
 }
