@@ -46,7 +46,7 @@ public class Controlador {
         return articulos;
     }
 
-    public static void agregarArticulo(local.NextGen.modelo.Articulo articulo) {
+    public static void agregarArticulo(local.NextGen.modelo.Articulo articulo) throws local.NextGen.exceptions.CustomException {
         local.NextGen.modelo.DAO.ArticuloDAO.insertar(articulo);
     }
 

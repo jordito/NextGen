@@ -76,8 +76,23 @@ public class ArticuloDAO {
      *
      * @param articulo El objeto Articulo a insertar.
      */
-    public static void insertar(Articulo articulo) {
-        String sql = "INSERT INTO Articulos (codigo, descripcion, precio_venta, gastos_envio, tiempo_preparacion) VALUES (?, ?, ?, ?, ?)";
+    public static boolean insertar(Articulo articulo) throws local.NextGen.exceptions.CustomException {
+        // Validación para asegurar que el precio sea un valor positivo.
+        if (articulo.getPrecio() < 0) {
+            throw new local.NextGen.exceptions.CustomException("\u001B[31m" + "¡Error! El precio debe ser un valor positivo." + "\u001B[0m");
+        }
+
+        // Validación para asegurar que los gastos de envío sean un valor positivo.
+        if (articulo.getGastosEnvio() < 0) {
+            throw new local.NextGen.exceptions.CustomException("\u001B[31m" + "¡Error! Los gastos de envío deben ser un valor positivo." + "\u001B[0m");
+        }
+
+        // Validación para asegurar que el tiempo de preparación sea un valor positivo.
+        if (articulo.getTiempoPreparacion() < 0) {
+            throw new local.NextGen.exceptions.CustomException("\u001B[31m" + "¡Error! El tiempo de preparación debe ser un valor positivo." + "\u001B[0m");
+        }
+
+        String sql = "INSERT INTO Articulos (codigo, descripcion, precio_venta, gasto_envio, tiemp_preparacion) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = conexion.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, articulo.getCodigo());
             stmt.setString(2, articulo.getDescripcion());
@@ -92,8 +107,10 @@ public class ArticuloDAO {
                     }
                 }
             }
+            return affectedRows > 0;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
