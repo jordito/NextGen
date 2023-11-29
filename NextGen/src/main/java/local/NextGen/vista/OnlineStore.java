@@ -5,8 +5,12 @@ import local.NextGen.exceptions.CustomException;
 
 public class OnlineStore {
     public static void main(String[] args) throws CustomException {
-        GestionOs gestion = new GestionOs();
-        gestion.inicio();
+
+    }
+}
+
+    /*    GestionOs gestion = new GestionOs();
+      //  gestion.inicio();
     }
     public class CambiarColorTexto {
         public static void main(String[] args) {
@@ -24,3 +28,4 @@ public class OnlineStore {
         }
     }
 }
+*/
