@@ -53,10 +53,10 @@ public class VistaPedido {
                     eliminarPedido();
                     break;
                 case '4':
-                    local.NextGen.controlador.Controlador.listarPedidosPendientes();
+                    mostrarPedidosPendientes();
                     break;
                 case '5':
-                    local.NextGen.controlador.Controlador.listarPedidosEnviados();
+                    mostrarPedidosEnviados();
                     break;
                 case '0':
                     salir = true;
@@ -125,8 +125,6 @@ public class VistaPedido {
         }
     }
 
-
-
     private static void eliminarPedido() {
         try {
             System.out.print("\u001B[34mIngrese el número del pedido a eliminar: \u001B[0m");
@@ -142,4 +140,28 @@ public class VistaPedido {
             e.printStackTrace();
         }
     }
+    public static void mostrarPedidosPendientes() throws SQLException {
+        List<local.NextGen.modelo.Pedido> pedidosPendientes = controlador.listarPedidosPendientes();
+        if (pedidosPendientes.isEmpty()) {
+            System.out.println("\u001B[31mNo hay pedidos pendientes en la base de datos.\u001B[0m");
+        } else {
+            System.out.println("\u001B[34m\nLista de pedidos pendientes:\u001B[0m");
+            for (local.NextGen.modelo.Pedido pedido : pedidosPendientes) {
+                System.out.println(pedido.toString());
+            }
+        }
+    }
+
+    public static void mostrarPedidosEnviados() throws SQLException {
+        List<local.NextGen.modelo.Pedido> pedidosEnviados = controlador.listarPedidosEnviados();
+        if (pedidosEnviados.isEmpty()) {
+            System.out.println("\u001B[31mNo hay pedidos enviados en la base de datos.\u001B[0m");
+        } else {
+            System.out.println("\u001B[34m\nLista de pedidos enviados:\u001B[0m");
+            for (local.NextGen.modelo.Pedido pedido : pedidosEnviados) {
+                System.out.println(pedido.toString());
+            }
+        }
+    }
+
 }

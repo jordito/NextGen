@@ -23,6 +23,7 @@ public class Controlador {
     /**
      * Constructor de Controlador.
      * Inicializa los DAOs utilizando la fábrica de DAOs 'Datos'.
+     *
      * @throws SQLException Si ocurre un error al establecer la conexión con la base de datos.
      */
     public Controlador() throws SQLException {
@@ -53,6 +54,7 @@ public class Controlador {
     public static boolean eliminarArticulo(String codigo) {
         return local.NextGen.modelo.DAO.ArticuloDAO.eliminar(codigo);
     }
+
     public static boolean actualizarArticulo(local.NextGen.modelo.Articulo articulo) {
         return local.NextGen.modelo.DAO.ArticuloDAO.actualizar(articulo);
     }
@@ -71,6 +73,7 @@ public class Controlador {
         }
         return clientes;
     }
+
     public static List<local.NextGen.modelo.Cliente> listarClientesEstandard() throws SQLException {
         List<local.NextGen.modelo.Cliente> clienteEstandard = local.NextGen.modelo.DAO.ClienteDAO.obtenerTodos("estandard");
         if (clienteEstandard.isEmpty()) {
@@ -96,6 +99,7 @@ public class Controlador {
         }
         return clientePremium;
     }
+
     public static boolean agregarCliente(local.NextGen.modelo.Cliente cliente) throws SQLException {
         return local.NextGen.modelo.DAO.ClienteDAO.insertar(cliente);
     }
@@ -156,15 +160,16 @@ public class Controlador {
         return local.NextGen.modelo.DAO.PedidoDAO.eliminar(numeroPedido);
     }
 
-    public static void listarPedidosPendientes() throws SQLException {
-        local.NextGen.modelo.DAO.PedidoDAO.listarTodos().stream()
+    public static List<local.NextGen.modelo.Pedido> listarPedidosPendientes() throws SQLException {
+        return local.NextGen.modelo.DAO.PedidoDAO.listarTodos().stream()
                 .filter(pedido -> !pedido.isEnviado())
                 .collect(Collectors.toList());
     }
 
-    public static void listarPedidosEnviados() throws SQLException {
-        local.NextGen.modelo.DAO.PedidoDAO.listarTodos().stream()
+    public static List<local.NextGen.modelo.Pedido> listarPedidosEnviados() throws SQLException {
+        return local.NextGen.modelo.DAO.PedidoDAO.listarTodos().stream()
                 .filter(local.NextGen.modelo.Pedido::isEnviado)
                 .collect(Collectors.toList());
     }
+
 }
