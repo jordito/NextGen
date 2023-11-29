@@ -36,7 +36,11 @@ public class VistaArticulo {
 
         local.NextGen.modelo.Articulo nuevoArticulo = new local.NextGen.modelo.Articulo(codigo, descripcion, precio, gastosEnvio, tiempoPreparacion);
 
-        local.NextGen.controlador.Controlador.agregarArticulo(nuevoArticulo);
+        try {
+            local.NextGen.controlador.Controlador.agregarArticulo(nuevoArticulo);
+        } catch (CustomException e) {
+            throw new RuntimeException(e);
+        }
         System.out.println("\u001B[32m\nArtículo introducido con éxito:\u001B[0m");
         System.out.println(nuevoArticulo);
     }
