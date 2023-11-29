@@ -51,20 +51,32 @@ public class DetallePedidoDAO {
         try (Connection conn = obtenerConexion();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            pstmt.setInt(1, detalle.getNumeroPedido());
-            pstmt.setString(2, detalle.getArticulo().getCodigo());
-            pstmt.setInt(3, detalle.getCantidad());
-            pstmt.setDouble(4, detalle.getPrecioVenta());
+            if (!existeDetalle(conn, detalle)) {
+                pstmt.setInt(1, detalle.getNumeroPedido());
+                pstmt.setString(2, detalle.getArticulo().getCodigo());
+                pstmt.setInt(3, detalle.getCantidad());
+                pstmt.setDouble(4, detalle.getPrecioVenta());
 
-            pstmt.executeUpdate();
+                pstmt.executeUpdate();
+            } else {
+                System.out.println("El detalle ya existe.");
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+    private static boolean existeDetalle(Connection conn, DetallePedido detalle) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM DetallePedido WHERE numero_pedido = ? AND codigo_articulo = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, detalle.getNumeroPedido());
+            pstmt.setString(2, detalle.getArticulo().getCodigo());
 
+            ResultSet rs = pstmt.executeQuery();
+            rs.next();
 
-
-
+            return rs.getInt(1) > 0;
+        }
+    }
     /**
      * Elimina un detalle de pedido de la base de datos.
      */
