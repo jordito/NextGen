@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Clase que representa un pedido realizado por un cliente.
@@ -13,11 +14,11 @@ import java.util.List;
  * el cliente que realizó el pedido y los detalles del mismo.
  */
 public class Pedido {
-    private int numeroPedido;
+    private static int numeroPedido;
     private Date fechaHora;
-    private Cliente cliente;
+    private local.NextGen.modelo.Cliente cliente;
     private boolean enviado;
-    private List<DetallePedido> detallesPedido;
+    private List<local.NextGen.modelo.DetallePedido> detallesPedido;
 
     /**
      * Constructor para crear un nuevo pedido.
@@ -26,7 +27,7 @@ public class Pedido {
      * @param cliente Cliente que realiza el pedido.
      * @param detallesPedido Lista de detalles del pedido.
      */
-    public Pedido(int numeroPedido, Date fechaHora, Cliente cliente, List<DetallePedido> detallesPedido) {
+    public Pedido(int numeroPedido, Date fechaHora, local.NextGen.modelo.Cliente cliente, List<local.NextGen.modelo.DetallePedido> detallesPedido) {
         this.numeroPedido = numeroPedido;
         this.fechaHora = fechaHora;
         this.cliente = cliente;
@@ -36,7 +37,7 @@ public class Pedido {
 
     // Getters y setters
 
-    public int getNumeroPedido() {
+    public static int getNumeroPedido() {
         return numeroPedido;
     }
 
@@ -52,11 +53,11 @@ public class Pedido {
         this.fechaHora = fechaHora;
     }
 
-    public Cliente getCliente() {
+    public local.NextGen.modelo.Cliente getCliente() {
         return cliente;
     }
 
-    public void setCliente(Cliente cliente) {
+    public void setCliente(local.NextGen.modelo.Cliente cliente) {
         this.cliente = cliente;
     }
 
@@ -68,11 +69,11 @@ public class Pedido {
         this.enviado = enviado;
     }
 
-    public List<DetallePedido> getDetallesPedido() {
+    public List<local.NextGen.modelo.DetallePedido> getDetallesPedido() {
         return detallesPedido;
     }
 
-    public void setDetallesPedido(List<DetallePedido> detallesPedido) {
+    public void setDetallesPedido(List<local.NextGen.modelo.DetallePedido> detallesPedido) {
         this.detallesPedido = detallesPedido;
     }
 
@@ -80,12 +81,23 @@ public class Pedido {
      * Calcula el precio total del pedido sumando los precios de todos los detalles.
      * @return Precio total del pedido.
      */
-    public BigDecimal precioTotal() {
-        BigDecimal total = BigDecimal.ZERO;
-        for (DetallePedido detalle : detallesPedido) {
-            total = total.add(detalle.getPrecioVenta().multiply(new BigDecimal(detalle.getCantidad())));
+    public Double precioTotal() {
+        Double total = 0.0;
+        for (local.NextGen.modelo.DetallePedido detalle : detallesPedido) {
+            total += detalle.getPrecioVenta() * detalle.getCantidad();
         }
         return total;
+    }
+    /**
+     * Agrega un detalle al pedido.
+     *
+     * @param detalle El detalle a agregar.
+     */
+    public void agregarDetalle(local.NextGen.modelo.DetallePedido detalle) {
+        if (detallesPedido == null) {
+            detallesPedido = new ArrayList<>();
+        }
+        detallesPedido.add(detalle);
     }
 
     /**
@@ -100,18 +112,12 @@ public class Pedido {
         String estadoPedido = isEnviado() ? "Enviado" : "Pendiente";
 
         StringBuilder detalles = new StringBuilder();
-        for (DetallePedido detalle : detallesPedido) {
+        detalles.append("\n\u001B[33mDetalles del Pedido:\u001B[0m\n");
+        for (local.NextGen.modelo.DetallePedido detalle : detallesPedido) {
             detalles.append(detalle.toString()).append("\n");
         }
 
-        return "Pedido{" +
-                "numeroPedido=" + numeroPedido +
-                ", fechaHora=" + fechaFormato +
-                ", clienteNIF=" + cliente.getNif() +
-                ", clienteNombre=" + cliente.getNombre() +
-                ", detallesPedido=\n" + detalles +
-                ", precioTotal=" + df.format(precioTotal()) + "€" +
-                ", estado='" + estadoPedido + '\'' +
-                '}';
+        return String.format("Pedido Número: %-5s| Fecha: %-10s | Cliente: %-10s | Estado: %-8s | Precio Total: %-8s %s",
+                numeroPedido, fechaFormato, cliente.getNif(), estadoPedido, df.format(precioTotal()) + "€", detalles);
     }
 }

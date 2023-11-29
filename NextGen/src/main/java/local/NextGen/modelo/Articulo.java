@@ -91,10 +91,9 @@ public class Articulo {
      */
     @Override
     public String toString() {
-        String separator = " | ";
-        String header = "Código       | Descripción                   | Precio   | Gastos de Envío    | Preparación (min)";
-        String data = String.format("%-13s" + separator + "%-29s" + separator + "%-8s" + separator + "%-18s" + separator + "%-16s",
-                codigo, descripcion, precio, gastosEnvio, tiempoPreparacion);
-        return header + "\n" + data + "\n";
+        return String.format("Código: %-5s| Descripción: %-15s| Precio: %-5s| Gastos de Envío: %-5s| Preparación: %-5s",
+                codigo, descripcion, precio + "€", gastosEnvio + "€", tiempoPreparacion + " min");
     }
+
+
 }
