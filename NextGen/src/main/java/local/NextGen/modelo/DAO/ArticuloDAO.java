@@ -9,7 +9,7 @@ import java.util.List;
  * Clase DAO para gestionar los artículos en la base de datos.
  */
 public class ArticuloDAO {
-    private Connection conexion;
+    private static Connection conexion;
 
     /**
      * Constructor de ArticuloDAO.
@@ -21,9 +21,8 @@ public class ArticuloDAO {
 
     /**
      * Obtiene todos los artículos de la base de datos.
-     * @return Una lista de objetos Articulo.
      */
-    public List<Articulo> obtenerTodos() {
+    public static List<Articulo> obtenerTodos() {
         List<Articulo> articulos = new ArrayList<>();
         String sql = "SELECT * FROM Articulos";
         try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
@@ -49,8 +48,10 @@ public class ArticuloDAO {
      * @return El objeto Articulo si se encuentra, o null si no existe.
      * @throws SQLException Si ocurre un error durante la consulta SQL.
      */
-    public Articulo obtenerPorCodigo(String codigo) throws SQLException {
-        String sql = "SELECT * FROM Articulos WHERE codigo = ?";
+    public static Articulo obtenerPorCodigo(String codigo) throws SQLException {
+        System.out.println("Código ingresado: " + codigo);
+
+        String sql = "SELECT * FROM Articulos WHERE LOWER(codigo) = LOWER(?)";
 
         try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
             stmt.setString(1, codigo);
@@ -62,27 +63,27 @@ public class ArticuloDAO {
                         rs.getString("descripcion"),
                         rs.getDouble("precio_venta"),
                         rs.getDouble("gastos_envio"),
-                        rs.getInt("tiempo_preparacion")
-                );
+                        rs.getInt("tiempo_preparacion"));
             }
         }
-        return null; // El artículo no fue encontrado
+        return null;
     }
 
 
 
     /**
      * Inserta un nuevo artículo en la base de datos.
+     *
      * @param articulo El objeto Articulo a insertar.
-     * @return true si la inserción fue exitosa, false en caso contrario.
      */
-    public boolean insertar(Articulo articulo) {
-        String sql = "INSERT INTO Articulos (descripcion, precio_venta, gastos_envio, tiempo_preparacion) VALUES (?, ?, ?, ?)";
+    public static void insertar(Articulo articulo) {
+        String sql = "INSERT INTO Articulos (codigo, descripcion, precio_venta, gastos_envio, tiempo_preparacion) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = conexion.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            stmt.setString(1, articulo.getDescripcion());
-            stmt.setDouble(2, articulo.getPrecio());
-            stmt.setDouble(3, articulo.getGastosEnvio());
-            stmt.setInt(4, articulo.getTiempoPreparacion());
+            stmt.setString(1, articulo.getCodigo());
+            stmt.setString(2, articulo.getDescripcion());
+            stmt.setDouble(3, articulo.getPrecio());
+            stmt.setDouble(4, articulo.getGastosEnvio());
+            stmt.setInt(5, articulo.getTiempoPreparacion());
             int affectedRows = stmt.executeUpdate();
             if (affectedRows > 0) {
                 try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
@@ -91,10 +92,8 @@ public class ArticuloDAO {
                     }
                 }
             }
-            return affectedRows > 0;
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
         }
     }
 
@@ -103,7 +102,7 @@ public class ArticuloDAO {
      * @param articulo El objeto Articulo con los datos a actualizar.
      * @return true si la actualización fue exitosa, false en caso contrario.
      */
-    public boolean actualizar(Articulo articulo) {
+    public static boolean actualizar(Articulo articulo) {
         String sql = "UPDATE Articulos SET descripcion = ?, precio_venta = ?, gastos_envio = ?, tiempo_preparacion = ? WHERE codigo = ?";
         try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
             stmt.setString(1, articulo.getDescripcion());
@@ -120,19 +119,20 @@ public class ArticuloDAO {
 
     /**
      * Elimina un artículo de la base de datos utilizando su código.
+     *
      * @param codigo El código del artículo a eliminar.
-     * @return true si la eliminación fue exitosa, false en caso contrario.
+     * @return
      */
-    public boolean eliminar(String codigo) {
+    public static boolean eliminar(String codigo) {
         String sql = "DELETE FROM Articulos WHERE codigo = ?";
         try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
             stmt.setString(1, codigo);
-            return stmt.executeUpdate() > 0;
+            int filasAfectadas = stmt.executeUpdate();
+            return filasAfectadas > 0;
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
         }
+        return false;
     }
-
 }
 

@@ -5,9 +5,10 @@ import local.NextGen.exceptions.CustomException;
 
 public class OnlineStore {
     public static void main(String[] args) throws CustomException {
-        GestionOs gestion = new GestionOs();
-        gestion.inicio();
+
+    GestionOs.iniciar();
     }
+
     public class CambiarColorTexto {
         public static void main(String[] args) {
             // Códigos ANSI para colores de texto

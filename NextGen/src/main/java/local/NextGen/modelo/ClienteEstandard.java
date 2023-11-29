@@ -1,12 +1,13 @@
 package local.NextGen.modelo;
-
+import java.util.HashMap;
+import java.util.Map;
 /**
  * Clase que representa un cliente estándar. Hereda de la clase abstracta Cliente.
  */
-public class ClienteEstandard extends Cliente {
+public abstract class ClienteEstandard extends local.NextGen.modelo.Cliente {
 
-    public ClienteEstandard(int idCliente, String nif, String nombre, String email, String direccion) {
-        super(idCliente, nif, nombre, email, direccion);
+    public ClienteEstandard(int idCliente, String nombre, String direccion, String nif, String email) {
+        super(idCliente, nombre, direccion, nif, email);
     }
 
     @Override
@@ -26,6 +27,6 @@ public class ClienteEstandard extends Cliente {
 
     @Override
     public String toString() {
-        return super.toString() + " (Estandard)";
+        return super.toString() + " \u001B[33m(Estandard)\u001B[0m";
     }
 }
