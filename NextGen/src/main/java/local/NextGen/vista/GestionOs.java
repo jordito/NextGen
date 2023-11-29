@@ -3,18 +3,18 @@ package local.NextGen.vista;
 
 import local.NextGen.controlador.Controlador;
 import local.NextGen.exceptions.CustomException;
-import  local.NextGen.modelo.Articulo;
+
+import java.sql.SQLException;
 import java.util.Scanner;
 
-public class GestionOs {
-    private Controlador controlador;
-    private Scanner teclado = new Scanner(System.in);
-
-    public GestionOs() {
+public class  GestionOs {
+    private static final Scanner teclado = new Scanner(System.in);
+    private final Controlador controlador;
+    public GestionOs() throws SQLException {
         controlador = new Controlador();
     }
 
-    private char pedirOpcion() {
+    private static char pedirOpcion() {
         String resp;
         System.out.println("Elige una opción del menú: ");
         resp = teclado.nextLine();
@@ -24,32 +24,39 @@ public class GestionOs {
         return resp.charAt(0);
     }
 
-    public void inicio() throws CustomException {
-        boolean salir = false;
-        char opcion;
+    public static void inicio() {
+        try {
+            boolean salir = false;
+            char opcion;
 
-      do {
-          System.out.println("╔══════════════════════════════╗");
-          System.out.println("║        MENÚ PRINCIPAL        ║");
-          System.out.println("╠══════════════════════════════╣");
-          System.out.println("║ 1. Gestión Articulos         ║");
-          System.out.println("║ 2. Gestión Clientes          ║");
-          System.out.println("║ 3. Gestión Pedidos           ║");
-          System.out.println("║ 0. Salir                     ║");
-          System.out.println("╚══════════════════════════════╝");
-          opcion = pedirOpcion();
-          switch (opcion) {
-              case '1' -> gestionArticulos();
-              case '2' -> gestionClientes();
-              case '3' -> gestionPedidos();
-              case '0' -> salir = true;
-              default ->
-                      System.out.println("\u001B[31m" + "Opción inválida. Por favor, elija una opción válida." + "\u001B[0m");
-          }
-        } while (!salir);
+            do {
+                System.out.println("╔══════════════════════════════╗");
+                System.out.println("║         MENÚ PRINCIPAL       ║");
+                System.out.println("╠══════════════════════════════╣");
+                System.out.println("║ 1. Gestión de Artículos      ║");
+                System.out.println("║ 2. Gestión de Pedidos        ║");
+                System.out.println("║ 3. Gestión de Clientes       ║");
+                System.out.println("║ 0. Salir                     ║");
+                System.out.println("╚══════════════════════════════╝");
+
+                opcion = pedirOpcion();
+
+                switch (opcion) {
+                    case '1' -> local.NextGen.vista.VistaArticulo.gestionArticulos();
+                    case '2' -> local.NextGen.vista.VistaPedido.gestionPedidos();
+                    case '3' -> local.NextGen.vista.VistaCliente.gestionClientes();
+                    case '0' -> salir = true;
+                    default ->
+                            System.out.println("\u001B[31m" + "Opción inválida. Por favor, elija una opción válida." + "\u001B[0m");
+                }
+            } while (!salir);
+
+        } catch (SQLException | CustomException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void gestionArticulos() throws CustomException {
+    /*public void gestionArticulos() throws CustomException, SQLException {
         Scanner scanner = new Scanner(System.in);
         boolean salir = false;
         char opcion;
@@ -72,10 +79,10 @@ public class GestionOs {
                         System.out.println("\u001B[31m" + "Opción inválida. Por favor, elija una opción válida." + "\u001B[0m");
             }
         } while (!salir);
-    }
+    }*/
 
 
-    public void gestionClientes() {
+    /*public void gestionClientes() throws SQLException {
         boolean salir = false;
         char opcion;
         do {
@@ -101,9 +108,9 @@ public class GestionOs {
                         System.out.println("\u001B[31m" + "Opción inválida. Por favor, elija una opción válida." + "\u001B[0m");
             }
         } while (!salir);
-    }
+    }*/
 
-    public void gestionPedidos() {
+    /*public void gestionPedidos() throws SQLException {
         boolean salir = false;
         char opcion;
         do {
@@ -129,5 +136,5 @@ public class GestionOs {
                         System.out.println("\u001B[31m" + "Opción inválida. Por favor, elija una opción válida." + "\u001B[0m");
             }
         } while (!salir);
-    }
+    }*/
 }
