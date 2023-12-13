@@ -22,7 +22,21 @@
             <version>8.0.33</version>
             <scope>compile</scope> <!-- Versión del conector compatible con tu versión de MySQL -->
         </dependency>
-
+        <!-- Dependencia para el core de Hibernate -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>6.4.0.Final</version>
+            <type>pom</type>
+        </dependency>
+        <!-- Dependencia para Hibernate Jpamodelgen -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-jpamodelgen</artifactId>
+            <version>6.4.0.Final</version>
+            <type>pom</type>
+            <scope>provided</scope>
+        </dependency>
         <!-- Otras dependencias que tu proyecto pueda necesitar -->
     </dependencies>
 
