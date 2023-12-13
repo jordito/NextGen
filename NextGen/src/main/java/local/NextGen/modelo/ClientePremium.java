@@ -5,12 +5,12 @@ import java.util.Map;
 /**
  * Clase que representa un cliente premium. Hereda de la clase abstracta Cliente.
  */
-public abstract class ClientePremium extends local.NextGen.modelo.Cliente {
+public abstract class ClientePremium extends Cliente {
     private double cuotaAnual;
     private double descuentoEnvio;
 
-    public ClientePremium(int idCliente, String nif, String nombre, String email, String direccion, double cuotaAnual, double descuentoEnvio) {
-        super(idCliente, nif, nombre, email, direccion);
+    public ClientePremium(int idCliente, String nombre, String direccion, String nif, String email, double cuotaAnual, double descuentoEnvio) {
+        super(idCliente, nombre, direccion, nif, email);
         this.cuotaAnual = cuotaAnual;
         this.descuentoEnvio = descuentoEnvio;
     }

@@ -26,9 +26,9 @@ public class VistaCliente {
             System.out.println("╚══════════════════════════════╝");
             opcion = pedirOpcion();
             switch (opcion) {
-                case '1' -> local.NextGen.controlador.Controlador.listarClientes();
-                case '2' -> local.NextGen.controlador.Controlador.listarClientesEstandard();
-                case '3' -> local.NextGen.controlador.Controlador.listarClientesPremium();
+                case '1' -> Controlador.listarClientes();
+                case '2' -> Controlador.listarClientesEstandard();
+                case '3' -> Controlador.listarClientesPremium();
                 case '4' -> agregarCliente();
                 case '5' -> eliminarCliente();
                 case '6' -> actualizarCliente();
@@ -47,32 +47,33 @@ public class VistaCliente {
     public static void agregarCliente() throws SQLException {
         System.out.println("\u001B[34mIngrese los datos del nuevo cliente:\u001B[0m");
 
-        System.out.print("\u001B[34mNIF:\u001B[0m ");
-        String nif = scanner.nextLine();
-
         System.out.print("\u001B[34mNombre:\u001B[0m ");
         String nombre = scanner.nextLine();
-
-        System.out.print("\u001B[34mEmail:\u001B[0m ");
-        String email = scanner.nextLine();
 
         System.out.print("\u001B[34mDirección:\u001B[0m ");
         String direccion = scanner.nextLine();
 
+        System.out.print("\u001B[34mNIF:\u001B[0m ");
+        String nif = scanner.nextLine();
+
+        System.out.print("\u001B[34mEmail:\u001B[0m ");
+        String email = scanner.nextLine();
+
+
         System.out.print("\u001B[34m¿Es cliente estándar? (S/N):\u001B[0m ");
         char opcion = scanner.nextLine().toUpperCase().charAt(0);
 
-        local.NextGen.modelo.Cliente cliente;
+        Cliente cliente;
 
         if (opcion == 'S') {
-            cliente = new local.NextGen.modelo.ClienteEstandard(0, nif, nombre, email, direccion) {
+            cliente = new ClienteEstandard(0, nombre, direccion, nif, email) {
                 @Override
                 public Map<String, Object> toMap() {
                     return null;
                 }
             };
         } else {
-            cliente = new local.NextGen.modelo.ClientePremium(0, nif, nombre, email, direccion, 0, 0) {
+            cliente = new ClientePremium(0, nombre, direccion, nif, email, 0, 0) {
                 @Override
                 public Map<String, Object> toMap() {
                     return null;
@@ -80,7 +81,7 @@ public class VistaCliente {
             };
         }
 
-        if (local.NextGen.controlador.Controlador.agregarCliente(cliente)) {
+        if (Controlador.agregarCliente(cliente)) {
             System.out.println("\u001B[32mCliente agregado con éxito\u001B[0m");
             System.out.println(cliente);
         } else {
@@ -94,7 +95,7 @@ public class VistaCliente {
 
         scanner.nextLine();
 
-        local.NextGen.modelo.Cliente cliente = local.NextGen.modelo.DAO.ClienteDAO.obtenerPorId(idCliente);
+        Cliente cliente = ClienteDAO.obtenerPorId(idCliente);
 
         if (cliente != null) {
             System.out.println("\u001B[34mDatos actuales del cliente:\u001B[0m");
@@ -114,7 +115,7 @@ public class VistaCliente {
             String nuevaDireccion = scanner.nextLine();
             cliente.setDireccion(nuevaDireccion);
 
-            if (local.NextGen.controlador.Controlador.actualizarCliente(cliente)) {
+            if (Controlador.actualizarCliente(cliente)) {
                 System.out.println("\u001B[32mCliente actualizado con éxito\u001B[0m");
             } else {
                 System.out.println("\u001B[31mError al actualizar el cliente\u001B[0m");
@@ -127,7 +128,7 @@ public class VistaCliente {
         System.out.print("\u001B[34mIngrese el NIF del cliente que desea eliminar: \u001B[0m");
         String nif = scanner.nextLine();
 
-        if (local.NextGen.controlador.Controlador.eliminarCliente(nif)) {
+        if (Controlador.eliminarCliente(nif)) {
             System.out.println("\u001B[32mCliente eliminado con éxito\u001B[0m");
         } else {
             System.out.println("\u001B[31mError al eliminar el cliente\u001B[0m");

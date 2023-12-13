@@ -107,7 +107,7 @@ public class DetallePedidoDAO {
                         rs.getInt("tiempo_preparacion")
                 );
             } else {
-                return null; // Puedes manejar el caso en que el artículo no se encuentre
+                return null;
             }
         }
     }

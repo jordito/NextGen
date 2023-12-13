@@ -1,3 +1,4 @@
+
 package local.NextGen.vista;
 import local.NextGen.controlador.Controlador;
 import local.NextGen.exceptions.CustomException;
@@ -8,7 +9,6 @@ import java.util.Scanner;
 public class  GestionOs {
     private static final Scanner teclado = new Scanner(System.in);
     private final Controlador controlador;
-
     public GestionOs() throws SQLException {
         controlador = new Controlador();
     }

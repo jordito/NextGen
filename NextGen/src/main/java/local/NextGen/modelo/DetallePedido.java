@@ -7,7 +7,7 @@ import java.text.DecimalFormat;
  */
 public class DetallePedido {
     private int numeroPedido;
-    private local.NextGen.modelo.Articulo articulo;
+    private Articulo articulo;
     private int cantidad;
 
     /**
@@ -17,7 +17,7 @@ public class DetallePedido {
      * @param articulo     El objeto Articulo en este detalle de pedido.
      * @param cantidad     La cantidad del artículo en este detalle.
      */
-    public DetallePedido(int numeroPedido, local.NextGen.modelo.Articulo articulo, int cantidad) {
+    public DetallePedido(int numeroPedido, Articulo articulo, int cantidad) {
         this.numeroPedido = numeroPedido;
         this.articulo = articulo;
         this.cantidad = cantidad;
@@ -33,11 +33,11 @@ public class DetallePedido {
         this.numeroPedido = numeroPedido;
     }
 
-    public local.NextGen.modelo.Articulo getArticulo() {
+    public Articulo getArticulo() {
         return articulo;
     }
 
-    public void setArticulo(local.NextGen.modelo.Articulo articulo) {
+    public void setArticulo(Articulo articulo) {
         this.articulo = articulo;
     }
 

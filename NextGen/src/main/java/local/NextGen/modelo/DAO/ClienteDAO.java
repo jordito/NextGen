@@ -27,8 +27,8 @@ public class ClienteDAO {
      *
      * @throws SQLException Si ocurre un error durante la consulta SQL.
      */
-    public static List<local.NextGen.modelo.Cliente> obtenerTodos(String tipoCliente) throws SQLException {
-        List<local.NextGen.modelo.Cliente> clientes = new ArrayList<>();
+    public static List<Cliente> obtenerTodos(String tipoCliente) throws SQLException {
+        List<Cliente> clientes = new ArrayList<>();
         String sql = "SELECT c.id_cliente, c.nombre, c.domicilio, c.NIF, c.email, ce.id_cliente AS estandard, cp.id_cliente AS premium, cp.cuota_anual, cp.descuento_envio " +
                 "FROM Clientes c " +
                 "LEFT JOIN ClientesEstandard ce ON c.id_cliente = ce.id_cliente " +
@@ -43,8 +43,8 @@ public class ClienteDAO {
         try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                local.NextGen.modelo.Cliente cliente = rs.getInt("estandard") > 0 ?
-                        new local.NextGen.modelo.ClienteEstandard(
+                Cliente cliente = rs.getInt("estandard") > 0 ?
+                        new ClienteEstandard(
                                 rs.getInt("id_cliente"),
                                 rs.getString("nombre"),
                                 rs.getString("domicilio"),
@@ -55,7 +55,7 @@ public class ClienteDAO {
                                 return null;
                             }
                         } :
-                        new local.NextGen.modelo.ClientePremium(
+                        new ClientePremium(
                                 rs.getInt("id_cliente"),
                                 rs.getString("nombre"),
                                 rs.getString("domicilio"),
@@ -73,68 +73,6 @@ public class ClienteDAO {
         }
         return clientes;
     }
-
-    /*/**
-     * Obtiene una lista de todos los clientes estándar de la base de datos.
-     *
-     * @throws SQLException Si ocurre un error durante la consulta SQL.
-     */
-    /*public static List<Cliente> obtenerClientesEstandard() throws SQLException {
-        List<Cliente> clientesEstandar = new ArrayList<>();
-        String sql = "SELECT * FROM ClientesEstandard";
-
-        try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                Cliente cliente = new ClienteEstandard(
-                        rs.getInt("id_cliente"),
-                        rs.getString("nombre"),
-                        rs.getString("domicilio"),
-                        rs.getString("NIF"),
-                        rs.getString("email")
-                ) {
-                    @Override
-                    public Map<String, Object> toMap() {
-                        return null;
-                    }
-                };
-                clientesEstandar.add(cliente);
-            }
-        } return clientesEstandar;
-    }
-
-    /**
-     * Obtiene una lista de todos los clientes premium de la base de datos.
-     *
-     * @throws SQLException Si ocurre un error durante la consulta SQL.
-     */
-    /*public static List<Cliente> obtenerClientesPremium() throws SQLException {
-        List<Cliente> clientesPremium = new ArrayList<>();
-        String sql = "SELECT * FROM ClientesPremium";
-
-        try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                Cliente cliente = new ClientePremium(
-                        rs.getInt("id_cliente"),
-                        rs.getString("nombre"),
-                        rs.getString("domicilio"),
-                        rs.getString("NIF"),
-                        rs.getString("email"),
-                        rs.getDouble("cuota_anual"),
-                        rs.getDouble("descuento_envio")
-                ) {
-                    @Override
-                    public Map<String, Object> toMap() {
-                        return null;
-                    }
-                };
-                clientesPremium.add(cliente);
-            }
-        } return clientesPremium;
-    }*/
-
-
     /**
      * Obtiene un cliente específico de la base de datos por su ID.
      *
@@ -142,7 +80,7 @@ public class ClienteDAO {
      * @return Un objeto Cliente si se encuentra, o null si no existe.
      * @throws SQLException Si ocurre un error durante la consulta SQL.
      */
-    public static local.NextGen.modelo.Cliente obtenerPorId(int idCliente) throws SQLException {
+    public static Cliente obtenerPorId(int idCliente) throws SQLException {
         String sql = "SELECT c.id_cliente, c.NIF, c.nombre, c.email, c.domicilio, " +
                 "ce.id_cliente AS estandard, cp.id_cliente AS premium, cp.cuota_anual, cp.descuento_envio " +
                 "FROM Clientes c " +
@@ -156,23 +94,23 @@ public class ClienteDAO {
 
             if (rs.next()) {
                 return rs.getInt("estandard") > 0 ?
-                        new local.NextGen.modelo.ClienteEstandard(
+                        new ClienteEstandard(
                                 rs.getInt("id_cliente"),
-                                rs.getString("NIF"),
                                 rs.getString("nombre"),
-                                rs.getString("email"),
-                                rs.getString("domicilio")) {
+                                rs.getString("domicilio"),
+                                rs.getString("NIF"),
+                                rs.getString("email")) {
                             @Override
                             public Map<String, Object> toMap() {
                                 return null;
                             }
                         } :
-                        new local.NextGen.modelo.ClientePremium(
+                        new ClientePremium(
                                 rs.getInt("id_cliente"),
-                                rs.getString("NIF"),
                                 rs.getString("nombre"),
-                                rs.getString("email"),
                                 rs.getString("domicilio"),
+                                rs.getString("NIF"),
+                                rs.getString("email"),
                                 rs.getDouble("cuota_anual"),
                                 rs.getDouble("descuento_envio")) {
                             @Override
@@ -192,14 +130,15 @@ public class ClienteDAO {
      * @return true si la inserción es exitosa, false de lo contrario.
      * @throws SQLException Si ocurre un error durante la inserción.
      */
-    public static boolean insertar(local.NextGen.modelo.Cliente cliente) throws SQLException {
-        String sqlCliente = "INSERT INTO Clientes (NIF, nombre, email, domicilio) VALUES (?, ?, ?, ?)";
+    public static boolean insertar(Cliente cliente) throws SQLException {
+        String sqlCliente = "INSERT INTO Clientes (nombre, domicilio, NIF, email) VALUES (?, ?, ?, ?)";
 
         try (PreparedStatement stmtCliente = conexion.prepareStatement(sqlCliente, Statement.RETURN_GENERATED_KEYS)) {
-            stmtCliente.setString(1, cliente.getNif());
-            stmtCliente.setString(2, cliente.getNombre());
-            stmtCliente.setString(3, cliente.getEmail());
-            stmtCliente.setString(4, cliente.getDireccion());
+            stmtCliente.setString(1, cliente.getNombre());
+            stmtCliente.setString(2, cliente.getDireccion());
+            stmtCliente.setString(3, cliente.getNif());
+            stmtCliente.setString(4, cliente.getEmail());
+
 
             int affectedRowsCliente = stmtCliente.executeUpdate();
 
@@ -207,10 +146,10 @@ public class ClienteDAO {
                 ResultSet generatedKeys = stmtCliente.getGeneratedKeys();
                 if (generatedKeys.next()) {
                     int idCliente = generatedKeys.getInt(1);
-                    if (cliente instanceof local.NextGen.modelo.ClienteEstandard) {
+                    if (cliente instanceof ClienteEstandard) {
                         return insertarClienteEstandard(idCliente);
-                    } else if (cliente instanceof local.NextGen.modelo.ClientePremium) {
-                        return insertarClientePremium(idCliente, (local.NextGen.modelo.ClientePremium) cliente);
+                    } else if (cliente instanceof ClientePremium) {
+                        return insertarClientePremium(idCliente, (ClientePremium) cliente);
                     } else {
                         return false;
                     }
@@ -249,7 +188,7 @@ public class ClienteDAO {
      * @return true si la inserción es exitosa, false de lo contrario.
      * @throws SQLException Si ocurre un error durante la inserción.
      */
-    private static boolean insertarClientePremium(int idCliente, local.NextGen.modelo.ClientePremium clientePremium) throws SQLException {
+    private static boolean insertarClientePremium(int idCliente, ClientePremium clientePremium) throws SQLException {
         String sqlPremium = "INSERT INTO ClientesPremium (id_cliente, cuota_anual, descuento_envio) VALUES (?, ?, ?)";
 
         try (PreparedStatement stmtPremium = conexion.prepareStatement(sqlPremium)) {
@@ -269,7 +208,7 @@ public class ClienteDAO {
      * @return true si la actualización es exitosa, false de lo contrario.
      * @throws SQLException Si ocurre un error durante la actualización.
      */
-    public static boolean actualizar(local.NextGen.modelo.Cliente cliente) {
+    public static boolean actualizar(Cliente cliente) {
         String sql = "UPDATE Clientes SET nombre = ?, email = ?, domicilio = ? WHERE id_cliente = ?";
         try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
             stmt.setString(1, cliente.getNombre());
@@ -369,8 +308,8 @@ public class ClienteDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace(); // Manejo de excepciones
-        }
+        e.printStackTrace(); // Manejo de excepciones
+    }
         return false;
     }
 }

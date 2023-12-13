@@ -92,7 +92,7 @@ public class Articulo {
     @Override
     public String toString() {
         return String.format("Código: %-5s| Descripción: %-15s| Precio: %-5s| Gastos de Envío: %-5s| Preparación: %-5s",
-                codigo, descripcion, precio + "€", gastosEnvio + "€", tiempoPreparacion + " min");
+                        codigo, descripcion, precio + "€", gastosEnvio + "€", tiempoPreparacion + " min");
     }
 
 

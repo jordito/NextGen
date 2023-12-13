@@ -5,7 +5,23 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8c754e8c-b9be-462d-aac4-cd24de6b03e7" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../NextGen/controlador/Controlador.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../NextGen/exceptions/CustomException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../NextGen/modelo/Articulo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../NextGen/modelo/Cliente.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../NextGen/modelo/ClienteEstandard.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../NextGen/modelo/ClientePremium.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../NextGen/modelo/Datos.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../NextGen/modelo/Lista.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../NextGen/modelo/ListaArticulos.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../NextGen/modelo/ListaClientes.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../NextGen/modelo/ListaPedidos.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../NextGen/modelo/Pedido.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../NextGen/test/ControladorTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../NextGen/vista/GestionOs.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../NextGen/vista/OnlineStore.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../README.md" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -13,7 +29,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -27,15 +43,13 @@
     <option name="showLibraryContents" value="true" />
     <option name="showVisibilityIcons" value="true" />
     <option name="sortByType" value="true" />
-    <option name="sortKey" value="BY_TYPE" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "Random",
-    "last_opened_file_path": "/run/media/prods/HDD/backup/Academico/Educativo/FP/Tercer Semestre/Programación orientada a objetos con acceso bbdd/NextGen",
+    "last_opened_file_path": "C:/Users/PC/OneDrive/DAM/FP 4to semestre/FP.058 - (P) Programación orientada a objetos con acceso a BBDD/Pruebas/NextGen-Random",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -43,7 +57,6 @@
     "project.structure.last.edited": "Project",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "vcs.Git",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -58,23 +71,10 @@
       <workItem from="1699925523938" duration="564000" />
       <workItem from="1699926096866" duration="14000" />
       <workItem from="1699926121317" duration="137000" />
-      <workItem from="1700331774587" duration="1132000" />
-      <workItem from="1700480211257" duration="817000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
-  </component>
-  <component name="Vcs.Log.Tabs.Properties">
-    <option name="TAB_STATES">
-      <map>
-        <entry key="MAIN">
-          <value>
-            <State />
-          </value>
-        </entry>
-      </map>
-    </option>
   </component>
 </project>

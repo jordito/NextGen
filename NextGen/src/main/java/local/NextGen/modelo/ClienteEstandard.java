@@ -4,7 +4,7 @@ import java.util.Map;
 /**
  * Clase que representa un cliente estándar. Hereda de la clase abstracta Cliente.
  */
-public abstract class ClienteEstandard extends local.NextGen.modelo.Cliente {
+public abstract class ClienteEstandard extends Cliente {
 
     public ClienteEstandard(int idCliente, String nombre, String direccion, String nif, String email) {
         super(idCliente, nombre, direccion, nif, email);

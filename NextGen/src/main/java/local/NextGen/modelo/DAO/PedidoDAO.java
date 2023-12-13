@@ -12,9 +12,9 @@ import java.util.List;
  */
 public class PedidoDAO {
     private static Connection conn = null;
-    private static local.NextGen.modelo.DAO.DetallePedidoDAO detallePedidoDAO = null;
-    private final local.NextGen.modelo.DAO.ClienteDAO clienteDAO;
-    private final local.NextGen.modelo.DAO.ArticuloDAO articuloDAO;
+    private static DetallePedidoDAO detallePedidoDAO = null;
+    private final ClienteDAO clienteDAO;
+    private final ArticuloDAO articuloDAO;
 
     /**
      * Constructor que establece la conexión a la base de datos y las dependencias con otras clases DAO.
@@ -23,9 +23,9 @@ public class PedidoDAO {
      */
     public PedidoDAO(Connection conn) {
         this.conn = conn;
-        this.detallePedidoDAO = new local.NextGen.modelo.DAO.DetallePedidoDAO(conn);
-        this.clienteDAO = new local.NextGen.modelo.DAO.ClienteDAO(conn);
-        this.articuloDAO = new local.NextGen.modelo.DAO.ArticuloDAO(conn);
+        this.detallePedidoDAO = new DetallePedidoDAO(conn);
+        this.clienteDAO = new ClienteDAO(conn);
+        this.articuloDAO = new ArticuloDAO(conn);
     }
 
     /**
@@ -34,7 +34,7 @@ public class PedidoDAO {
      * @param pedido El objeto Pedido a insertar.
      * @throws SQLException Si ocurre un error durante la inserción.
      */
-    public static int insertar(Connection conn, local.NextGen.modelo.Pedido pedido) throws SQLException {
+    public static int insertar(Connection conn, Pedido pedido) throws SQLException {
         int numeroPedidoGenerado = -1;
 
         String sql = "INSERT INTO Pedidos (fecha_hora_pedido, id_cliente) VALUES (?, ?)";
@@ -51,8 +51,8 @@ public class PedidoDAO {
                 if (generatedKeys.next()) {
                     numeroPedidoGenerado = generatedKeys.getInt(1);
 
-                    for (local.NextGen.modelo.DetallePedido detalle : pedido.getDetallesPedido()) {
-                        local.NextGen.modelo.DAO.DetallePedidoDAO.agregarDetalle(conn, new local.NextGen.modelo.DetallePedido(numeroPedidoGenerado, detalle.getArticulo(), detalle.getCantidad()));
+                    for (DetallePedido detalle : pedido.getDetallesPedido()) {
+                        DetallePedidoDAO.agregarDetalle(conn, new DetallePedido(numeroPedidoGenerado, detalle.getArticulo(), detalle.getCantidad()));
                     }
                 }
             }
@@ -89,14 +89,14 @@ public class PedidoDAO {
      * @return Una lista de objetos Pedido.
      * @throws SQLException Si ocurre un error durante la consulta SQL.
      */
-    public static List<local.NextGen.modelo.Pedido> listarTodos() throws SQLException {
-        List<local.NextGen.modelo.Pedido> pedidos = new ArrayList<>();
+    public static List<Pedido> listarTodos() throws SQLException {
+        List<Pedido> pedidos = new ArrayList<>();
         String sql = "SELECT * FROM Pedidos";
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
             while (rs.next()) {
-                local.NextGen.modelo.Pedido pedido = crearPedidoDesdeResultSet(rs);
+                Pedido pedido = crearPedidoDesdeResultSet(rs);
                 pedidos.add(pedido);
             }
         }
@@ -111,7 +111,7 @@ public class PedidoDAO {
      * @return El objeto Pedido si se encuentra, o null si no existe.
      * @throws SQLException Si ocurre un error durante la consulta SQL.
      */
-    public local.NextGen.modelo.Pedido obtenerPorNumero(int numeroPedido) throws SQLException {
+    public Pedido obtenerPorNumero(int numeroPedido) throws SQLException {
         String sql = "SELECT * FROM Pedidos WHERE numero_pedido = ?";
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, numeroPedido);
@@ -130,12 +130,12 @@ public class PedidoDAO {
      * @return Un objeto Pedido creado a partir de los datos del ResultSet.
      * @throws SQLException Si ocurre un error al acceder a los datos del ResultSet.
      */
-    private static local.NextGen.modelo.Pedido crearPedidoDesdeResultSet(ResultSet rs) throws SQLException {
+    private static Pedido crearPedidoDesdeResultSet(ResultSet rs) throws SQLException {
         int numeroPedido = rs.getInt("numero_pedido");
         Timestamp fechaHora = rs.getTimestamp("fecha_hora_pedido");
-        local.NextGen.modelo.Cliente cliente = local.NextGen.modelo.DAO.ClienteDAO.obtenerPorId(rs.getInt("id_cliente"));
-        List<local.NextGen.modelo.DetallePedido> detallesPedido = detallePedidoDAO.listarPorPedido(numeroPedido);
-        return new local.NextGen.modelo.Pedido(numeroPedido, new java.util.Date(fechaHora.getTime()), cliente, detallesPedido);
+        Cliente cliente = ClienteDAO.obtenerPorId(rs.getInt("id_cliente"));
+        List<DetallePedido> detallesPedido = detallePedidoDAO.listarPorPedido(numeroPedido);
+        return new Pedido(numeroPedido, new java.util.Date(fechaHora.getTime()), cliente, detallesPedido);
     }
 
     /**
@@ -158,6 +158,5 @@ public class PedidoDAO {
         return false;
     }
 }
-
 
 

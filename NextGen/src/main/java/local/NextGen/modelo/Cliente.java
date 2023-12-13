@@ -23,10 +23,11 @@ public abstract class Cliente {
      */
     public Cliente(int idCliente, String nombre, String direccion, String nif, String email) {
         this.idCliente = idCliente;
-        this.nif = nif;
         this.nombre = nombre;
-        this.email = email;
         this.direccion = direccion;
+        this.nif = nif;
+        this.email = email;
+
     }
 
     // Getters y setters
@@ -79,7 +80,7 @@ public abstract class Cliente {
     public String toString() {
         DecimalFormat df = new DecimalFormat("#.##");
         return String.format("ID Cliente: %-5s| Nombre: %-10s| Domicilio: %-15s| NIF: %-12s| Email: %-15s| Cuota Anual: %-5s| Descuento Envío: %-5s",
-                idCliente, nombre, direccion, nif, email, df.format(calcAnual()) + "€", df.format((descuentoEnv() * 100)) + "%");
+                     idCliente, nombre, direccion, nif, email, df.format(calcAnual()) + "€", df.format((descuentoEnv() * 100)) + "%");
     }
     public abstract Map<String, Object> toMap();
 }

@@ -16,9 +16,9 @@ import java.util.stream.Collectors;
 public class Pedido {
     private static int numeroPedido;
     private Date fechaHora;
-    private local.NextGen.modelo.Cliente cliente;
+    private Cliente cliente;
     private boolean enviado;
-    private List<local.NextGen.modelo.DetallePedido> detallesPedido;
+    private List<DetallePedido> detallesPedido;
 
     /**
      * Constructor para crear un nuevo pedido.
@@ -27,7 +27,7 @@ public class Pedido {
      * @param cliente Cliente que realiza el pedido.
      * @param detallesPedido Lista de detalles del pedido.
      */
-    public Pedido(int numeroPedido, Date fechaHora, local.NextGen.modelo.Cliente cliente, List<local.NextGen.modelo.DetallePedido> detallesPedido) {
+    public Pedido(int numeroPedido, Date fechaHora, Cliente cliente, List<DetallePedido> detallesPedido) {
         this.numeroPedido = numeroPedido;
         this.fechaHora = fechaHora;
         this.cliente = cliente;
@@ -53,11 +53,11 @@ public class Pedido {
         this.fechaHora = fechaHora;
     }
 
-    public local.NextGen.modelo.Cliente getCliente() {
+    public Cliente getCliente() {
         return cliente;
     }
 
-    public void setCliente(local.NextGen.modelo.Cliente cliente) {
+    public void setCliente(Cliente cliente) {
         this.cliente = cliente;
     }
 
@@ -69,11 +69,11 @@ public class Pedido {
         this.enviado = enviado;
     }
 
-    public List<local.NextGen.modelo.DetallePedido> getDetallesPedido() {
+    public List<DetallePedido> getDetallesPedido() {
         return detallesPedido;
     }
 
-    public void setDetallesPedido(List<local.NextGen.modelo.DetallePedido> detallesPedido) {
+    public void setDetallesPedido(List<DetallePedido> detallesPedido) {
         this.detallesPedido = detallesPedido;
     }
 
@@ -83,7 +83,7 @@ public class Pedido {
      */
     public Double precioTotal() {
         Double total = 0.0;
-        for (local.NextGen.modelo.DetallePedido detalle : detallesPedido) {
+        for (DetallePedido detalle : detallesPedido) {
             total += detalle.getPrecioVenta() * detalle.getCantidad();
         }
         return total;
@@ -93,7 +93,7 @@ public class Pedido {
      *
      * @param detalle El detalle a agregar.
      */
-    public void agregarDetalle(local.NextGen.modelo.DetallePedido detalle) {
+    public void agregarDetalle(DetallePedido detalle) {
         if (detallesPedido == null) {
             detallesPedido = new ArrayList<>();
         }
@@ -113,7 +113,7 @@ public class Pedido {
 
         StringBuilder detalles = new StringBuilder();
         detalles.append("\n\u001B[33mDetalles del Pedido:\u001B[0m\n");
-        for (local.NextGen.modelo.DetallePedido detalle : detallesPedido) {
+        for (DetallePedido detalle : detallesPedido) {
             detalles.append(detalle.toString()).append("\n");
         }
 

@@ -34,10 +34,10 @@ public class VistaArticulo {
         int tiempoPreparacion = scanner.nextInt();
         scanner.nextLine();
 
-        local.NextGen.modelo.Articulo nuevoArticulo = new local.NextGen.modelo.Articulo(codigo, descripcion, precio, gastosEnvio, tiempoPreparacion);
+        Articulo nuevoArticulo = new Articulo(codigo, descripcion, precio, gastosEnvio, tiempoPreparacion);
 
         try {
-            local.NextGen.controlador.Controlador.agregarArticulo(nuevoArticulo);
+            Controlador.agregarArticulo(nuevoArticulo);
         } catch (CustomException e) {
             throw new RuntimeException(e);
         }
@@ -49,7 +49,7 @@ public class VistaArticulo {
         System.out.print("\u001B[34mIngrese el código del artículo que desea eliminar: \u001B[0m");
         String codigo = scanner.nextLine();
 
-        if (local.NextGen.controlador.Controlador.eliminarArticulo(codigo)) {
+        if (Controlador.eliminarArticulo(codigo)) {
             System.out.println("\u001B[32mArtículo eliminado con éxito\u001B[0m");
         } else {
             System.out.println("\u001B[31mError al eliminar el artículo\u001B[0m");
@@ -59,7 +59,7 @@ public class VistaArticulo {
         System.out.print("\u001B[34mIngrese el código del artículo a actualizar: \u001B[0m");
         String codigo = scanner.nextLine();
 
-        local.NextGen.modelo.Articulo articulo = ArticuloDAO.obtenerPorCodigo(codigo);
+        Articulo articulo = ArticuloDAO.obtenerPorCodigo(codigo);
         if (articulo != null) {
             System.out.println("\u001B[34mDetalles actuales del artículo:\u001B[0m");
             System.out.println(articulo);
@@ -93,7 +93,7 @@ public class VistaArticulo {
                 articulo.setTiempoPreparacion(nuevoTiempoPreparacion);
             }
 
-            if (local.NextGen.controlador.Controlador.actualizarArticulo(articulo)) {
+            if (Controlador.actualizarArticulo(articulo)) {
                 System.out.println("\u001B[32mArtículo actualizado con éxito\u001B[0m");
                 System.out.println(articulo);
             } else {
@@ -117,13 +117,14 @@ public class VistaArticulo {
             System.out.println("╚══════════════════════════════╝");
             opcion = pedirOpcion();
             switch (opcion) {
-                case '1' -> local.NextGen.controlador.Controlador.listarArticulos();
+                case '1' -> Controlador.listarArticulos();
                 case '2' -> agregarNuevoArticulo();
                 case '3' -> actualizarArticulo();
                 case '4' -> eliminarArticulo();
-                case '0' -> local.NextGen.vista.GestionOs.iniciar();
+                case '0' -> GestionOs.iniciar();
                 default -> System.out.println("\u001B[31m" + "Opción inválida. Por favor, elija una opción válida." + "\u001B[0m");
             }
         } while (opcion != '0');
     }
 }
+

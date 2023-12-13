@@ -19,7 +19,8 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.33</version> <!-- Versión del conector compatible con tu versión de MySQL -->
+            <version>8.0.33</version>
+            <scope>compile</scope> <!-- Versión del conector compatible con tu versión de MySQL -->
         </dependency>
 
         <!-- Otras dependencias que tu proyecto pueda necesitar -->

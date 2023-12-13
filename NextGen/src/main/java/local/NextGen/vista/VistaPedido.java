@@ -1,4 +1,5 @@
 package local.NextGen.vista;
+import java.sql.Connection;
 import java.util.*;
 
 import local.NextGen.controlador.*;
@@ -12,11 +13,11 @@ import java.sql.SQLException;
 
 
 public class VistaPedido {
-    private static local.NextGen.controlador.Controlador controlador;
+    private static Controlador controlador;
     static Scanner scanner = new Scanner(System.in);
 
     // Constructor que recibe una instancia de Controlador
-    public VistaPedido(local.NextGen.controlador.Controlador controlador) {
+    public VistaPedido(Controlador controlador) {
         VistaPedido.controlador = controlador;
     }
     private static char pedirOpcion() {
@@ -44,7 +45,7 @@ public class VistaPedido {
 
             switch (opcion) {
                 case '1':
-                    local.NextGen.controlador.Controlador.listarPedidos();
+                    Controlador.listarPedidos();
                     break;
                 case '2':
                     agregarPedido();
@@ -74,7 +75,7 @@ public class VistaPedido {
         try {
             System.out.print("\u001B[34mIngrese el id del cliente:\u001B[0m ");
             int idCliente = scanner.nextInt();
-            Cliente cliente = local.NextGen.modelo.DAO.ClienteDAO.obtenerPorId(idCliente);
+            Cliente cliente = ClienteDAO.obtenerPorId(idCliente);
 
             if (cliente != null) {
                 Date fechaHora = new Date();
@@ -86,7 +87,7 @@ public class VistaPedido {
                     try {
                         System.out.print("\u001B[34mIngrese el código del artículo:\u001B[0m ");
                         String codigo = scanner.next();
-                        Articulo articulo = local.NextGen.modelo.DAO.ArticuloDAO.obtenerPorCodigo(codigo);
+                        Articulo articulo = ArticuloDAO.obtenerPorCodigo(codigo);
 
                         if (articulo != null) {
                             System.out.print("\u001B[34mIngrese la cantidad:\u001B[0m ");
@@ -108,7 +109,7 @@ public class VistaPedido {
                     }
                 }
 
-                Pedido resultadoPedido = local.NextGen.controlador.Controlador.agregarPedido(nuevoPedido);
+                Pedido resultadoPedido = Controlador.agregarPedido(nuevoPedido);
 
                 if (resultadoPedido != null) {
                     System.out.println("\u001B[32mPedido agregado con éxito\u001B[0m");
@@ -125,6 +126,8 @@ public class VistaPedido {
         }
     }
 
+
+
     private static void eliminarPedido() {
         try {
             System.out.print("\u001B[34mIngrese el número del pedido a eliminar: \u001B[0m");
@@ -140,8 +143,9 @@ public class VistaPedido {
             e.printStackTrace();
         }
     }
+
     public static void mostrarPedidosPendientes() throws SQLException {
-        List<local.NextGen.modelo.Pedido> pedidosPendientes = controlador.listarPedidosPendientes();
+        List<Pedido> pedidosPendientes = controlador.listarPedidosPendientes();
         if (pedidosPendientes.isEmpty()) {
             System.out.println("\u001B[31mNo hay pedidos pendientes en la base de datos.\u001B[0m");
         } else {
@@ -153,7 +157,7 @@ public class VistaPedido {
     }
 
     public static void mostrarPedidosEnviados() throws SQLException {
-        List<local.NextGen.modelo.Pedido> pedidosEnviados = controlador.listarPedidosEnviados();
+        List<Pedido> pedidosEnviados = controlador.listarPedidosEnviados();
         if (pedidosEnviados.isEmpty()) {
             System.out.println("\u001B[31mNo hay pedidos enviados en la base de datos.\u001B[0m");
         } else {
@@ -163,5 +167,5 @@ public class VistaPedido {
             }
         }
     }
-
 }
+

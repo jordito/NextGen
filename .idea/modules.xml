@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/NextGen.iml" filepath="$PROJECT_DIR$/.idea/NextGen.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/NextGen-Random.iml" filepath="$PROJECT_DIR$/.idea/NextGen-Random.iml" />
     </modules>
   </component>
 </project>

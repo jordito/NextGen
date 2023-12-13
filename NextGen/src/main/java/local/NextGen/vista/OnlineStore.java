@@ -1,15 +1,14 @@
 
 package local.NextGen.vista;
 
-import local.NextGen.exceptions.CustomException;
+import java.sql.SQLException;
 
 public class OnlineStore {
-    public static void main(String[] args) throws CustomException {
-
-    GestionOs.iniciar();
+    public static void main(String[] args) throws SQLException {
+        GestionOs gestion = new GestionOs();
+        gestion.iniciar();
     }
-
-    public class CambiarColorTexto {
+    public static class CambiarColorTexto {
         public static void main(String[] args) {
             // Códigos ANSI para colores de texto
             String RESET = "\u001B[0m";
