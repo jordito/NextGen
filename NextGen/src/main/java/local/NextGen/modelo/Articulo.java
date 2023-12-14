@@ -5,17 +5,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
-import java.io.Serializable;
-
 /**
  * Clase que representa un artículo con sus atributos.
  */
 
 @Entity
 @Table(name = "articulos")
-public class Articulo implements Serializable {
-    private static final long serialVersionUID = 1L;
-
+public class Articulo {
     @Id
     @Column(name = "codigo")
     private String codigo;

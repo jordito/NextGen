@@ -5,8 +5,8 @@
         <!-- JDBC Database connection settings -->
         <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
         <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/tienda</property>
-        <property name="hibernate.connection.username">user</property>
-        <property name="hibernate.connection.password">password</property>
+        <property name="hibernate.connection.username">root</property>
+        <property name="hibernate.connection.password">123456</property>
 
         <!-- JDBC connection pool settings -->
         <property name="hibernate.dbcp.min_size">5</property>
