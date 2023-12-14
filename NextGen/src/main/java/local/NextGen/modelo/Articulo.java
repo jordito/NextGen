@@ -1,13 +1,39 @@
 package local.NextGen.modelo;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+import java.io.Serializable;
+
 /**
  * Clase que representa un artículo con sus atributos.
  */
-public class Articulo {
+
+@Entity
+@Table(name = "articulos")
+public class Articulo implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    @Id
+    @Column(name = "codigo")
     private String codigo;
+
+    @Column(name = "descripcion")
     private String descripcion;
+
+    @Column(name = "precio_venta", precision = 2)
     private double precio;
+
+    @Column(name = "gastos_envio", precision = 2)
     private double gastosEnvio;
+
+    @Column(name = "tiempo_preparacion")
     private int tiempoPreparacion;
+
+    public Articulo() {
+    }
     /**
      * Constructor para crear un objeto Articulo con los detalles especificados.
      * @param codigo El código del artículo.
