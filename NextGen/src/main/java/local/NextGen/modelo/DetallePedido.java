@@ -1,14 +1,31 @@
 package local.NextGen.modelo;
 
+import jakarta.persistence.*;
+
 import java.text.DecimalFormat;
 
 /**
  * Clase que representa un detalle de un pedido, incluyendo información del artículo, cantidad y precio.
  */
+@Entity
+@Table(name = "detallepedido")
 public class DetallePedido {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "numero_pedido")
     private int numeroPedido;
+
+    @Column(name = "articulos")
     private Articulo articulo;
+
+    @Column(name = "cantidad")
     private int cantidad;
+
+    @Column(name = "precio_venta")
+    private int precioVenta;
+
+    public DetallePedido() {
+    }
 
     /**
      * Constructor para crear un detalle de pedido.

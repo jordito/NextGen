@@ -1,10 +1,19 @@
 package local.NextGen.modelo;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+
 import java.util.HashMap;
 import java.util.Map;
 /**
  * Clase que representa un cliente estándar. Hereda de la clase abstracta Cliente.
  */
+
+@Entity
+@Table(name = "clientes")
 public abstract class ClienteEstandard extends Cliente {
+
+    public ClienteEstandard() {
+    }
 
     public ClienteEstandard(int idCliente, String nombre, String direccion, String nif, String email) {
         super(idCliente, nombre, direccion, nif, email);

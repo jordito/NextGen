@@ -1,13 +1,27 @@
 
 package local.NextGen.modelo;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+
 import java.util.HashMap;
 import java.util.Map;
+
+@Entity
+@Table(name = "clientes")
 /**
  * Clase que representa un cliente premium. Hereda de la clase abstracta Cliente.
  */
 public abstract class ClientePremium extends Cliente {
+
+    @Column(name = "cuota_anual")
     private double cuotaAnual;
+
+    @Column(name = "descuento_envio")
     private double descuentoEnvio;
+
+    public ClientePremium() {
+    }
 
     public ClientePremium(int idCliente, String nombre, String direccion, String nif, String email, double cuotaAnual, double descuentoEnvio) {
         super(idCliente, nombre, direccion, nif, email);

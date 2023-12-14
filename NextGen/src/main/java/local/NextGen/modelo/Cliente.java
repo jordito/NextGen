@@ -1,17 +1,33 @@
 package local.NextGen.modelo;
 
+import jakarta.persistence.*;
+
 import java.text.DecimalFormat;
 import java.util.Map;
 
 /**
  * Clase abstracta que representa un cliente con sus atributos básicos.
  */
+
+
+@MappedSuperclass
 public abstract class Cliente {
+    @Id
+    @Column(name = "id_cliente")
     private int idCliente;
-    private String nif;
+
+    @Column(name = "nombre")
     private String nombre;
-    private String email;
+
+    @Column(name = "domicilio")
     private String direccion;
+    @Column(name = "NIF", length = 9)
+    private String nif;
+    @Column(name = "email")
+    private String email;
+
+    public Cliente() {
+    }
 
     /**
      * Constructor para crear un objeto Cliente con los detalles especificados.

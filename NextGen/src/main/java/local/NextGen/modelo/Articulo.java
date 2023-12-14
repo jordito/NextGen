@@ -30,6 +30,7 @@ public class Articulo {
 
     public Articulo() {
     }
+    
     /**
      * Constructor para crear un objeto Articulo con los detalles especificados.
      * @param codigo El código del artículo.

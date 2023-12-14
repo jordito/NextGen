@@ -1,5 +1,7 @@
 package local.NextGen.modelo;
 
+import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -13,12 +15,28 @@ import java.util.stream.Collectors;
  * Incluye información sobre el pedido, como el número de pedido, la fecha y hora,
  * el cliente que realizó el pedido y los detalles del mismo.
  */
+
+@Entity
+@Table(name = "pedidos")
 public class Pedido {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "numero_pedido")
     private static int numeroPedido;
+
+    @Column(name = "id_cliente")
+    private static int idCliente;
+
+    @Column(name = "fecha_hora_pedido")
     private Date fechaHora;
     private Cliente cliente;
+
+    @Column(name = "estado_pedido")
     private boolean enviado;
     private List<DetallePedido> detallesPedido;
+
+    public Pedido() {
+    }
 
     /**
      * Constructor para crear un nuevo pedido.
