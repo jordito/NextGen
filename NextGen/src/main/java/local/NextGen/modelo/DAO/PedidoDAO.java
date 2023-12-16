@@ -14,7 +14,7 @@ public class PedidoDAO {
     private static Connection conn = null;
     private static DetallePedidoDAO detallePedidoDAO = null;
     private final ClienteDAO clienteDAO;
-    private final ArticuloDAO articuloDAO;
+    // private final ArticuloDAO articuloDAO;
 
     /**
      * Constructor que establece la conexión a la base de datos y las dependencias con otras clases DAO.
@@ -25,7 +25,7 @@ public class PedidoDAO {
         this.conn = conn;
         this.detallePedidoDAO = new DetallePedidoDAO(conn);
         this.clienteDAO = new ClienteDAO(conn);
-        this.articuloDAO = new ArticuloDAO(conn);
+        //this.articuloDAO = new ArticuloDAO(conn);
     }
 
     /**

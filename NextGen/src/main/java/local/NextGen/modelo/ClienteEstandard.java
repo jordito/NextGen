@@ -1,5 +1,6 @@
 package local.NextGen.modelo;
 import jakarta.persistence.Entity;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import java.util.Map;
 
 @Entity
 @Table(name = "clientes")
+@PrimaryKeyJoinColumn(name = "id_cliente")
 public abstract class ClienteEstandard extends Cliente {
 
     public ClienteEstandard() {

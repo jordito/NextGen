@@ -59,7 +59,8 @@ public class VistaArticulo {
         System.out.print("\u001B[34mIngrese el código del artículo a actualizar: \u001B[0m");
         String codigo = scanner.nextLine();
 
-        Articulo articulo = ArticuloDAO.obtenerPorCodigo(codigo);
+        ArticuloDAO ad = new ArticuloDAO();
+        Articulo articulo = ad.obtenerPorCodigo(codigo);
         if (articulo != null) {
             System.out.println("\u001B[34mDetalles actuales del artículo:\u001B[0m");
             System.out.println(articulo);

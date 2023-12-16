@@ -29,10 +29,20 @@ public class Pedido {
 
     @Column(name = "fecha_hora_pedido")
     private Date fechaHora;
+
+    @OneToOne
+    @JoinColumn(name = "cliente_id")
     private Cliente cliente;
 
     @Column(name = "estado_pedido")
     private boolean enviado;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "detalle_pedido",
+            joinColumns = @JoinColumn(name = "numero_pedido"),
+            inverseJoinColumns = @JoinColumn(name = "codigo_articulo")
+    )
     private List<DetallePedido> detallesPedido;
 
     public Pedido() {

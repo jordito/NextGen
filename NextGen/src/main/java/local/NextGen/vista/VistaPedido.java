@@ -87,7 +87,8 @@ public class VistaPedido {
                     try {
                         System.out.print("\u001B[34mIngrese el código del artículo:\u001B[0m ");
                         String codigo = scanner.next();
-                        Articulo articulo = ArticuloDAO.obtenerPorCodigo(codigo);
+                        ArticuloDAO ad = new ArticuloDAO();
+                        Articulo articulo = ad.obtenerPorCodigo(codigo);
 
                         if (articulo != null) {
                             System.out.print("\u001B[34mIngrese la cantidad:\u001B[0m ");

@@ -17,7 +17,9 @@ import static local.NextGen.modelo.ConexionBD.obtenerConexion;
  * Utiliza DAOs para interactuar con la base de datos y realizar operaciones CRUD.
  */
 public class Controlador {
-    private final ArticuloDAO articuloDAO;
+
+
+    //private final ArticuloDAO articuloDAO = ArticuloDAO;
     private final ClienteDAO clienteDAO;
     private final PedidoDAO pedidoDAO;
 
@@ -27,7 +29,7 @@ public class Controlador {
      * @throws SQLException Si ocurre un error al establecer la conexión con la base de datos.
      */
     public Controlador() throws SQLException {
-        this.articuloDAO = Datos.getArticuloDAO();
+        //this.articuloDAO = ArticuloDAO;
         this.clienteDAO = Datos.getClienteDAO();
         this.pedidoDAO = Datos.getPedidoDAO();
     }
@@ -35,7 +37,8 @@ public class Controlador {
     // Métodos de operaciones para Artículos
 
     public static List<Articulo> listarArticulos() {
-        List<Articulo> articulos = ArticuloDAO.obtenerTodos();
+        ArticuloDAO ad = new ArticuloDAO();
+        List<Articulo> articulos = ad.obtenerTodos();
         if (articulos.isEmpty()) {
             System.out.println("\u001B[31mNo hay artículos en la base de datos.\u001B[0m");
         } else {
@@ -48,14 +51,17 @@ public class Controlador {
     }
 
     public static void agregarArticulo(Articulo articulo) throws CustomException {
-        ArticuloDAO.insertar(articulo);
+        ArticuloDAO ad = new ArticuloDAO();
+        ad.insertar(articulo);
     }
 
     public static boolean eliminarArticulo(String codigo) {
-        return ArticuloDAO.eliminar(codigo);
+        ArticuloDAO ad = new ArticuloDAO();
+        return ad.eliminar(codigo);
     }
     public static boolean actualizarArticulo(Articulo articulo) {
-        return ArticuloDAO.actualizar(articulo);
+        ArticuloDAO ad = new ArticuloDAO();
+        return ad.actualizar(articulo);
     }
 
     // Métodos de operaciones para Clientes

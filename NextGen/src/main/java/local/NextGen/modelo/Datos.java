@@ -21,9 +21,9 @@ public class Datos {
      * Obtiene una instancia de ArticuloDAO.
      * @return una instancia de ArticuloDAO.
      */
-    public static ArticuloDAO getArticuloDAO() throws SQLException {
+    /* public static ArticuloDAO getArticuloDAO() throws SQLException {
         return new ArticuloDAO(ConexionBD.obtenerConexion());
-    }
+    } */
 
     /**
      * Obtiene una instancia de PedidoDAO.
