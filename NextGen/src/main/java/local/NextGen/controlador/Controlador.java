@@ -53,7 +53,7 @@ public class Controlador {
         return articulos;
     }
 
-    public static void agregarArticulo(Articulo articulo) throws CustomException {
+    public static void agregarArticulo(Articulo articulo) throws DAOException {
         ArticuloDAO ad = new ArticuloDAO();
         ad.insertar(articulo);
     }

@@ -57,6 +57,7 @@ public class ArticuloDAO {
 
 
     public boolean insertar(Articulo articulo) {
+        boolean transactionSuccessful = false;
         // Inicializamos la transacción
         Transaction tx = null;
         // Obtenemos la sesión de hibernate a partir de la configuración y abrimos la sesión
@@ -65,6 +66,7 @@ public class ArticuloDAO {
                 tx = session.beginTransaction();
                 session.persist(articulo);
                 tx.commit();
+                transactionSuccessful = true;
             } catch (Exception e) {
                 // Mostramos el error
                 throw new DAOException("Error al insertar el artículo", e);
@@ -77,7 +79,7 @@ public class ArticuloDAO {
             // Mostramos el error
             throw new DAOException("Error al conectar con la base de datos", e);
         }
-        return true;
+        return transactionSuccessful;
     }
 
 

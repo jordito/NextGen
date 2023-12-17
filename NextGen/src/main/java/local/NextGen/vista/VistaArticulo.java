@@ -6,6 +6,8 @@ import local.NextGen.modelo.DAO.ArticuloDAO;
 import java.sql.SQLException;
 import java.util.Scanner;
 import local.NextGen.controlador.*;
+import local.NextGen.modelo.DAO.DAOException;
+
 public class VistaArticulo {
     static Scanner scanner = new Scanner(System.in);
 
@@ -36,13 +38,18 @@ public class VistaArticulo {
 
         Articulo nuevoArticulo = new Articulo(codigo, descripcion, precio, gastosEnvio, tiempoPreparacion);
 
+        boolean success = true;
         try {
             Controlador.agregarArticulo(nuevoArticulo);
-        } catch (CustomException e) {
-            throw new RuntimeException(e);
+        } catch (DAOException e) {
+            success = false;
         }
-        System.out.println("\u001B[32m\nArtículo introducido con éxito:\u001B[0m");
-        System.out.println(nuevoArticulo);
+        if (success) {
+            System.out.println("\u001B[32m\nArtículo introducido con éxito:\u001B[0m");
+            System.out.println(nuevoArticulo);
+        } else {
+            System.out.println("\u001B[31mError al introducir el artículo\u001B[0m");
+        }
     }
 
     private static void eliminarArticulo() {
