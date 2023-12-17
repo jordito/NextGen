@@ -1,9 +1,11 @@
 package local.NextGen.modelo;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import java.io.Serializable;
 
 /**
  * Clase que representa un artículo con sus atributos.
@@ -11,7 +13,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "articulos")
-public class Articulo {
+public class Articulo implements Serializable {
     @Id
     @Column(name = "codigo")
     private String codigo;

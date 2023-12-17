@@ -1,10 +1,9 @@
 package local.NextGen.modelo;
-import jakarta.persistence.Entity;
-import jakarta.persistence.PrimaryKeyJoinColumn;
-import jakarta.persistence.Table;
 
-import java.util.HashMap;
-import java.util.Map;
+import javax.persistence.Entity;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.Table;
+
 /**
  * Clase que representa un cliente estándar. Hereda de la clase abstracta Cliente.
  */

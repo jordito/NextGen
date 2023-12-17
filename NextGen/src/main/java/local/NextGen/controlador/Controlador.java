@@ -19,7 +19,7 @@ import static local.NextGen.modelo.ConexionBD.obtenerConexion;
 public class Controlador {
 
 
-    //private final ArticuloDAO articuloDAO = ArticuloDAO;
+    // private static final ArticuloDAO articuloDAO = new ArticuloDAO();
     private final ClienteDAO clienteDAO;
     private final PedidoDAO pedidoDAO;
 
@@ -30,6 +30,7 @@ public class Controlador {
      */
     public Controlador() throws SQLException {
         //this.articuloDAO = ArticuloDAO;
+        //this.articuloDAO = articuloDAO;
         this.clienteDAO = Datos.getClienteDAO();
         this.pedidoDAO = Datos.getPedidoDAO();
     }
@@ -37,8 +38,10 @@ public class Controlador {
     // Métodos de operaciones para Artículos
 
     public static List<Articulo> listarArticulos() {
-        ArticuloDAO ad = new ArticuloDAO();
-        List<Articulo> articulos = ad.obtenerTodos();
+
+        ArticuloDAO articuloDao = new ArticuloDAO();
+
+        List<Articulo> articulos = articuloDao.obtenerTodos();
         if (articulos.isEmpty()) {
             System.out.println("\u001B[31mNo hay artículos en la base de datos.\u001B[0m");
         } else {
@@ -171,7 +174,7 @@ public class Controlador {
 
     public static List<Pedido> listarPedidosEnviados() throws SQLException {
         return PedidoDAO.listarTodos().stream()
-                .filter(local.NextGen.modelo.Pedido::isEnviado)
+                .filter(Pedido::isEnviado)
                 .collect(Collectors.toList());
     }
 }

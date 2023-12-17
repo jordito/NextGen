@@ -1,6 +1,6 @@
 package local.NextGen.modelo;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 import java.text.DecimalFormat;
 

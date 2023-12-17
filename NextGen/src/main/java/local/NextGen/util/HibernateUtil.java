@@ -1,19 +1,27 @@
 package local.NextGen.util;
 
+import local.NextGen.modelo.Articulo;
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 
 public class HibernateUtil {
+    private static final SessionFactory sessionFactory;
 
-    private static final SessionFactory sessionFactory = buildSessionFactory();
-
-    private static SessionFactory buildSessionFactory() {
+    static {
         try {
-            // Creamos el SessionFactory a partir del archivo de config hibernate.cfg.xml
-            return new Configuration().configure().buildSessionFactory();
+            // Create the Configuration from hibernate.cfg.xml
+            Configuration configuration = new Configuration().configure();
+            configuration.addAnnotatedClass(Articulo.class);
+
+            // Build a StandardServiceRegistry
+            StandardServiceRegistryBuilder registryBuilder = new StandardServiceRegistryBuilder()
+                    .applySettings(configuration.getProperties());
+
+            // Build the SessionFactory
+            sessionFactory = configuration.buildSessionFactory(registryBuilder.build());
         } catch (Exception ex) {
-            // Mostrar la excepción
-            System.err.println("Initial SessionFactory creation failed: " + ex);
+            System.err.println("Initial SessionFactory creation failed. " + ex);
             throw new ExceptionInInitializerError(ex);
         }
     }
@@ -23,7 +31,7 @@ public class HibernateUtil {
     }
 
     public static void shutdown() {
-        // Cerrar la conexión
+        // Close caches and connection pools
         getSessionFactory().close();
     }
 }

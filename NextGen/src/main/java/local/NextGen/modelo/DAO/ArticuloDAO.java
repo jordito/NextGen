@@ -11,32 +11,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ArticuloDAO {
-
     public List<Articulo> obtenerTodos() {
 
-        Transaction tx = null;
         List<Articulo> articulos = new ArrayList<>();
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-
-            tx = session.beginTransaction();
             Query<Articulo> query = session.createQuery("FROM Articulo", Articulo.class);
             articulos = query.list();
-            session.close();
-            // Cerramos el session factory
-            HibernateUtil.shutdown();
-
 
         } catch (Exception e) {
-            if (tx!=null) tx.rollback();
-            e.printStackTrace();
+            throw new DAOException("Error al buscar los usuarios ", e);
         }
         return articulos;
     }
-
-
-
-
-
 
     public Articulo obtenerPorCodigo(String codigo) {
         // Obtenemos la sesión de hibernate a partir de la configuración

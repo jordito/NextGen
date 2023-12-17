@@ -1,6 +1,8 @@
 package local.NextGen.modelo;
 
-import jakarta.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 
 import java.text.DecimalFormat;
 import java.util.Map;

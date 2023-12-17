@@ -1,14 +1,12 @@
 package local.NextGen.modelo;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 
-import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Clase que representa un pedido realizado por un cliente.

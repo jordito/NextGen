@@ -26,8 +26,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>6.4.0.Final</version>
-            <type>pom</type>
+            <version>5.4.28.Final</version>
         </dependency>
         <!-- Dependencia para Hibernate Jpamodelgen -->
         <dependency>
