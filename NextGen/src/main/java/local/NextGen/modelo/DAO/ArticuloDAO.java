@@ -82,58 +82,72 @@ public class ArticuloDAO {
 
 
     public boolean actualizar(Articulo articulo) {
-        // Obtenemos la sesión de hibernate a partir de la configuración
-        SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
-
-        // Abrimos la sesión
-        Session session = sessionFactory.openSession();
+        boolean transactionSuccessful = false;
+        // Inicializamos la transacción
         Transaction tx = null;
-
-        try {
-            tx = session.beginTransaction();
-            Articulo articuloDel = session.get(Articulo.class, articulo);
-            session.remove(articuloDel);
-            tx.commit();
+        // Obtenemos la sesión de hibernate a partir de la configuración y abrimos la sesión
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            try {
+                tx = session.beginTransaction();
+                session.update(articulo);
+                tx.commit();
+                transactionSuccessful = true;
+            } catch (Exception e) {
+                try {
+                    // Hacemos rollback al haber habido un error
+                    if (tx != null) {
+                        tx.rollback();
+                    }
+                } catch (DAOException rollbackException) {
+                    // Mostramos el error
+                    throw new DAOException("Error al actualizar el artículo", e);
+                }
+            } finally {
+                // Cerramos la sesión
+                session.close();
+            }
         } catch (Exception e) {
-            if (tx!=null) tx.rollback();
-            e.printStackTrace();
-            return false;
-        } finally {
-            // Cerrar la sesión
-            session.close();
+            // Mostramos el error
+            throw new DAOException("Error al conectar con la base de datos", e);
         }
 
-        // Cerramos el session factory
-        HibernateUtil.shutdown();
-        return true;
+        return transactionSuccessful;
     }
 
-
     public boolean eliminar(String codigo){
-        // Obtenemos la sesión de hibernate a partir de la configuración
-        SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
-
-        // Abrimos la sesión
-        Session session = sessionFactory.openSession();
+        boolean transactionSuccessful = false;
+        // Inicializamos la transacción
         Transaction tx = null;
-
-        try {
-            tx = session.beginTransaction();
-            Articulo articuloDel = session.get(Articulo.class, codigo);
-            session.remove(articuloDel);
-            tx.commit();
+        // Obtenemos la sesión de hibernate a partir de la configuración y abrimos la sesión
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            try {
+                tx = session.beginTransaction();
+                Articulo articulo = session.get(Articulo.class, codigo);
+                session.remove(articulo);
+                tx.commit();
+                transactionSuccessful = true;
+            } catch (Exception e) {
+                try {
+                    // Hacemos rollback al haber habido un error
+                    if (tx != null) {
+                        tx.rollback();
+                    }
+                } catch (DAOException rollbackException) {
+                    // Mostramos el error
+                    throw new DAOException("El artículo con código + " +
+                            codigo +
+                            "artículo no existe", e);
+                }
+            } finally {
+                // Cerramos la sesión
+                session.close();
+            }
         } catch (Exception e) {
-            if (tx!=null) tx.rollback();
-            e.printStackTrace();
-            return false;
-        } finally {
-            // Cerrar la sesión
-            session.close();
+            // Mostramos el error
+            throw new DAOException("Error al conectar con la base de datos", e);
         }
 
-        // Cerramos el session factory
-        HibernateUtil.shutdown();
-        return true;
+        return transactionSuccessful;
 
     }
 
