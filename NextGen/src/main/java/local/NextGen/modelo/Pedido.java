@@ -22,14 +22,11 @@ public class Pedido {
     @Column(name = "numero_pedido")
     private int numeroPedido;
 
-    @Column(name = "id_cliente")
-    private int idCliente;
-
     @Column(name = "fecha_hora_pedido")
     private Date fechaHora;
 
-    @OneToOne
-    @JoinColumn(name = "cliente_id")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_cliente")
     private Cliente cliente;
 
     @Column(name = "estado_pedido")
@@ -59,16 +56,11 @@ public class Pedido {
         this.cliente = cliente;
         this.detallesPedido = detallesPedido;
         this.enviado = false;
+
     }
 
     // Getters y setters
-    public int getIdCliente() {
-        return idCliente;
-    }
 
-    public void setIdCliente(int idCliente) {
-        this.idCliente = idCliente;
-    }
 
     public int getNumeroPedido() {
         return numeroPedido;

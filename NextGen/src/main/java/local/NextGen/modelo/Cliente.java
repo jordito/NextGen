@@ -28,6 +28,9 @@ public abstract class Cliente implements Serializable {
     @Column(name = "email")
     private String email;
 
+    @OneToOne(mappedBy = "cliente")
+    private Pedido pedido;
+
     public Cliente() {
     }
 
