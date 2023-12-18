@@ -14,7 +14,7 @@ public class Datos {
      * @return una instancia de ClienteDAO.
      */
     public static ClienteDAO getClienteDAO() throws SQLException {
-        return new ClienteDAO(ConexionBD.obtenerConexion());
+        return new ClienteDAO();
     }
 
     /**

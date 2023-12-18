@@ -6,7 +6,7 @@ import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "clientes")
+@Table(name = "clientespremium")
 @PrimaryKeyJoinColumn(name = "id_cliente")
 /**
  * Clase que representa un cliente premium. Hereda de la clase abstracta Cliente.

@@ -1,9 +1,8 @@
 package local.NextGen.modelo;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.Map;
 
@@ -11,9 +10,10 @@ import java.util.Map;
  * Clase abstracta que representa un cliente con sus atributos básicos.
  */
 
-
-@MappedSuperclass
-public abstract class Cliente {
+@Entity
+@Table(name = "clientes")
+@Inheritance(strategy = InheritanceType.JOINED)
+public abstract class Cliente implements Serializable {
     @Id
     @Column(name = "id_cliente")
     private int idCliente;

@@ -26,6 +26,9 @@
 
         <!-- Indicamos las entidades -->
         <mapping class="local.NextGen.modelo.Articulo"/>
+        <mapping class="local.NextGen.modelo.Cliente"/>
+        <mapping class="local.NextGen.modelo.ClienteEstandard"/>
+        <mapping class="local.NextGen.modelo.ClientePremium"/>
 
     </session-factory>
 </hibernate-configuration>

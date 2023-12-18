@@ -1,6 +1,15 @@
 package local.NextGen.modelo.DAO;
 
-import local.NextGen.modelo.*;
+import local.NextGen.modelo.Cliente;
+import local.NextGen.modelo.ClienteEstandard;
+import local.NextGen.modelo.ClientePremium;
+import local.NextGen.util.HibernateUtil;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.query.NativeQuery;
+import org.hibernate.query.Query;
+
+import java.math.BigInteger;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,16 +20,6 @@ import java.util.Map;
  * Esta clase se encarga de realizar operaciones CRUD para clientes.
  */
 public class ClienteDAO {
-    private static Connection conexion;
-
-    /**
-     * Constructor que establece la conexión con la base de datos.
-     *
-     * @param conexion La conexión a la base de datos.
-     */
-    public ClienteDAO(Connection conexion) {
-        this.conexion = conexion;
-    }
 
     /**
      * Obtiene una lista de todos los clientes de la base de datos.
@@ -29,50 +28,93 @@ public class ClienteDAO {
      */
     public static List<Cliente> obtenerTodos(String tipoCliente) throws SQLException {
         List<Cliente> clientes = new ArrayList<>();
-        String sql = "SELECT c.id_cliente, c.nombre, c.domicilio, c.NIF, c.email, ce.id_cliente AS estandard, cp.id_cliente AS premium, cp.cuota_anual, cp.descuento_envio " +
-                "FROM Clientes c " +
-                "LEFT JOIN ClientesEstandard ce ON c.id_cliente = ce.id_cliente " +
-                "LEFT JOIN ClientesPremium cp ON c.id_cliente = cp.id_cliente";
 
-        if ("estandard".equalsIgnoreCase(tipoCliente)) {
-            sql += " WHERE ce.id_cliente IS NOT NULL AND cp.id_cliente IS NULL";
-        } else if ("premium".equalsIgnoreCase(tipoCliente)) {
-            sql += " WHERE cp.id_cliente IS NOT NULL AND ce.id_cliente IS NULL";
-        }
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            try {
 
-        try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                Cliente cliente = rs.getInt("estandard") > 0 ?
-                        new ClienteEstandard(
-                                rs.getInt("id_cliente"),
-                                rs.getString("nombre"),
-                                rs.getString("domicilio"),
-                                rs.getString("NIF"),
-                                rs.getString("email")) {
-                            @Override
-                            public Map<String, Object> toMap() {
-                                return null;
-                            }
-                        } :
-                        new ClientePremium(
-                                rs.getInt("id_cliente"),
-                                rs.getString("nombre"),
-                                rs.getString("domicilio"),
-                                rs.getString("NIF"),
-                                rs.getString("email"),
-                                rs.getDouble("cuota_anual"),
-                                rs.getDouble("descuento_envio")) {
-                            @Override
-                            public Map<String, Object> toMap() {
-                                return null;
-                            }
-                        };
-                clientes.add(cliente);
+                String hql = "SELECT c.idCliente, c.nombre, c.direccion, c.nif, c.email, ce.idCliente AS estandard, cp.idCliente AS premium, cp.cuotaAnual, cp.descuentoEnvio FROM Cliente c" +
+                        " LEFT JOIN ClienteEstandard ce ON c.idCliente = ce.idCliente" +
+                        " LEFT JOIN ClientePremium cp ON c.idCliente = cp.idCliente";
+
+
+                if ("estandard".equalsIgnoreCase(tipoCliente)) {
+                    hql += " WHERE ce.idCliente IS NOT NULL AND cp.idCliente IS NULL";
+                } else if ("premium".equalsIgnoreCase(tipoCliente)) {
+                    hql += " WHERE cp.idCliente IS NOT NULL AND ce.idCliente IS NULL";
+
+                }
+
+
+                Query<Object[]> query = session.createQuery(hql, Object[].class);
+                List<Object[]> results = query.getResultList();
+
+                int idCliente = 0;
+                String nombre = "";
+                String direccion = "";
+                String NIF = "";
+                String email = "";
+                int estandard = 0;
+                int premium = 0;
+                double cuotaAnual = 0;
+                double descuentoEnv = 0;
+                for (Object[] result : results) {
+                    idCliente = (Integer) result[0];
+                    nombre = (String) result[1];
+                    direccion = (String) result[2];
+                    NIF = (String) result[3];
+                    email = (String) result[4];
+                    if (result[5] != null) {
+                        estandard = (Integer) result[5];
+                    } else {
+                        estandard = 0;
+                    }
+
+                    if (result[6] != null) {
+                        premium = (Integer) result[6];
+                    } else {
+                        premium = 0;
+                    }
+
+                    if (result[7] != null) {
+                        cuotaAnual = (double) result[7];
+                    }
+
+                    if (result[8] != null) {
+                        descuentoEnv = (double) result[8];
+                    }
+
+                    Cliente cliente = estandard > 0 ? new ClienteEstandard(
+                            idCliente, nombre, direccion, NIF, email) {
+                        @Override
+                        public Map<String, Object> toMap() {
+                            return null;
+                        }
+                    }
+                            : new ClientePremium(
+                            idCliente, nombre, direccion, NIF, email, cuotaAnual, descuentoEnv) {
+                        @Override
+                        public Map<String, Object> toMap() {
+                            return null;
+                        }
+                    };
+                    clientes.add(cliente);
+                }
+
+            } catch (Exception e) {
+                // Mostramos el error
+                throw new DAOException("Error al buscar los usuarios", e);
+            } finally {
+                // Cerrar la sesión
+                session.close();
             }
+        } catch (Exception e) {
+            // Mostramos el error
+            throw new DAOException("Error al conectar con la base de datos", e);
         }
+
         return clientes;
     }
+
     /**
      * Obtiene un cliente específico de la base de datos por su ID.
      *
@@ -81,46 +123,65 @@ public class ClienteDAO {
      * @throws SQLException Si ocurre un error durante la consulta SQL.
      */
     public static Cliente obtenerPorId(int idCliente) throws SQLException {
-        String sql = "SELECT c.id_cliente, c.NIF, c.nombre, c.email, c.domicilio, " +
-                "ce.id_cliente AS estandard, cp.id_cliente AS premium, cp.cuota_anual, cp.descuento_envio " +
-                "FROM Clientes c " +
-                "LEFT JOIN ClientesEstandard ce ON c.id_cliente = ce.id_cliente " +
-                "LEFT JOIN ClientesPremium cp ON c.id_cliente = cp.id_cliente " +
-                "WHERE c.id_cliente = ?";
+        Cliente cliente = null;
+        List<Cliente> clientes = null;
 
-        try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
-            stmt.setInt(1, idCliente);
-            ResultSet rs = stmt.executeQuery();
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            try {
 
-            if (rs.next()) {
-                return rs.getInt("estandard") > 0 ?
-                        new ClienteEstandard(
-                                rs.getInt("id_cliente"),
-                                rs.getString("nombre"),
-                                rs.getString("domicilio"),
-                                rs.getString("NIF"),
-                                rs.getString("email")) {
-                            @Override
-                            public Map<String, Object> toMap() {
-                                return null;
-                            }
-                        } :
-                        new ClientePremium(
-                                rs.getInt("id_cliente"),
-                                rs.getString("nombre"),
-                                rs.getString("domicilio"),
-                                rs.getString("NIF"),
-                                rs.getString("email"),
-                                rs.getDouble("cuota_anual"),
-                                rs.getDouble("descuento_envio")) {
+                //String hql = "SELECT c FROM Cliente c WHERE idCliente = :idCliente";
+
+                // Quizás la forma más sucia de hacer esta query, pero de cualquier otra manera daba errores por el polimorfismo
+                String hql = "SELECT c.idCliente, c.nombre, c.direccion, c.nif, c.email, ce.idCliente AS estandard, cp.idCliente AS premium, cp.cuotaAnual, cp.descuentoEnvio FROM Cliente c" +
+                        " LEFT JOIN ClienteEstandard ce ON c.idCliente = ce.idCliente" +
+                        " LEFT JOIN ClientePremium cp ON c.idCliente = cp.idCliente" +
+                        " WHERE c.idCliente = :idCliente";
+
+                Query<Object[]> query = session.createQuery(hql, Object[].class).setParameter("idCliente", idCliente);
+                Object[] result = !query.getResultList().isEmpty() ? query.getResultList().get(0) : null;
+
+                if (result != null) {
+
+                    String nombre = (String) result[1];
+                    String direccion = (String) result[2];
+                    String NIF = (String) result[3];
+                    String email = (String) result[4];
+
+                    if (result[5] != null) {
+                        cliente = new ClienteEstandard(
+                                idCliente, nombre, direccion, NIF, email) {
                             @Override
                             public Map<String, Object> toMap() {
                                 return null;
                             }
                         };
+                    }
+
+                    if (result[6] != null) {
+                        double cuotaAnual = 0;
+                        double descuentoEnv = 0;
+                        cliente = new ClientePremium(
+                                idCliente, nombre, direccion, NIF, email, cuotaAnual, descuentoEnv) {
+                            @Override
+                            public Map<String, Object> toMap() {
+                                return null;
+                            }
+                        };
+                    }
+                }
+            } catch (Exception e) {
+                // Mostramos el error
+                throw new DAOException("Error al buscar el usuario", e);
+            } finally {
+                // Cerrar la sesión
+                session.close();
             }
+        } catch (Exception e) {
+            // Mostramos el error
+            throw new DAOException("Error al conectar con la base de datos", e);
         }
-        return null; // El cliente no fue encontrado
+
+        return cliente;
     }
 
     /**
@@ -131,35 +192,46 @@ public class ClienteDAO {
      * @throws SQLException Si ocurre un error durante la inserción.
      */
     public static boolean insertar(Cliente cliente) throws SQLException {
-        String sqlCliente = "INSERT INTO Clientes (nombre, domicilio, NIF, email) VALUES (?, ?, ?, ?)";
+        boolean transactionSuccessful = false;
+        Transaction tx = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            try {
 
-        try (PreparedStatement stmtCliente = conexion.prepareStatement(sqlCliente, Statement.RETURN_GENERATED_KEYS)) {
-            stmtCliente.setString(1, cliente.getNombre());
-            stmtCliente.setString(2, cliente.getDireccion());
-            stmtCliente.setString(3, cliente.getNif());
-            stmtCliente.setString(4, cliente.getEmail());
+                tx = session.beginTransaction();
+                String sql = "INSERT INTO clientes (id_cliente, nombre, domicilio, NIF, email) VALUES (:idCliente, :nombre, :direccion, :nif, :email)";
+                NativeQuery<?> query = session.createNativeQuery(sql);
 
+                query.setParameter("idCliente", cliente.getIdCliente());
+                query.setParameter("nombre", cliente.getNombre());
+                query.setParameter("direccion", cliente.getDireccion());
+                query.setParameter("nif", cliente.getNif());
+                query.setParameter("email", cliente.getEmail());
 
-            int affectedRowsCliente = stmtCliente.executeUpdate();
+                int result = query.executeUpdate();
 
-            if (affectedRowsCliente > 0) {
-                ResultSet generatedKeys = stmtCliente.getGeneratedKeys();
-                if (generatedKeys.next()) {
-                    int idCliente = generatedKeys.getInt(1);
+                if (result > 0) {
+                    tx.commit();
+                    transactionSuccessful = true;
+
                     if (cliente instanceof ClienteEstandard) {
-                        return insertarClienteEstandard(idCliente);
+                        return insertarClienteEstandard((BigInteger) session.createNativeQuery("SELECT LAST_INSERT_ID()").uniqueResult());
                     } else if (cliente instanceof ClientePremium) {
-                        return insertarClientePremium(idCliente, (ClientePremium) cliente);
-                    } else {
-                        return false;
+                        return insertarClientePremium((BigInteger) session.createNativeQuery("SELECT LAST_INSERT_ID()").uniqueResult(), (ClientePremium) cliente);
                     }
-                } else {
-                    return false;
+                    session.close();
                 }
-            } else {
-                return false;
+            } catch (Exception e) {
+                // Mostramos el error
+                throw new DAOException("Error al guardar el usuario", e);
+            } finally {
+                // Cerrar la sesión
+
             }
+        } catch (Exception e) {
+            // Mostramos el error
+            throw new DAOException("Error al conectar con la base de datos", e);
         }
+        return transactionSuccessful;
     }
 
     /**
@@ -169,15 +241,36 @@ public class ClienteDAO {
      * @return true si la inserción es exitosa, false de lo contrario.
      * @throws SQLException Si ocurre un error durante la inserción.
      */
-    private static boolean insertarClienteEstandard(int idCliente) throws SQLException {
-        String sqlEstandard = "INSERT INTO ClientesEstandard (id_cliente) VALUES (?)";
+    private static boolean insertarClienteEstandard(BigInteger idCliente) throws SQLException {
 
-        try (PreparedStatement stmtEstandard = conexion.prepareStatement(sqlEstandard)) {
-            stmtEstandard.setInt(1, idCliente);
+        boolean transactionSuccessful = false;
+        Transaction tx = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            try {
+                tx = session.beginTransaction();
+                String sql = "INSERT INTO clientesestandard (id_cliente) VALUES (:idCliente)";
+                NativeQuery<?> query = session.createNativeQuery(sql);
+                query.setParameter("idCliente", idCliente);
 
-            int affectedRowsEstandard = stmtEstandard.executeUpdate();
-            return affectedRowsEstandard > 0;
+
+                int result = query.executeUpdate();
+
+                if (result > 0) {
+                    tx.commit();
+                    transactionSuccessful = true;
+                }
+            } catch (Exception e) {
+                // Mostramos el error
+                throw new DAOException("Error al guardar el usuario", e);
+            } finally {
+                // Cerrar la sesión
+                session.close();
+            }
+        } catch (Exception e) {
+            // Mostramos el error
+            throw new DAOException("Error al conectar con la base de datos", e);
         }
+        return transactionSuccessful;
     }
 
     /**
@@ -188,17 +281,39 @@ public class ClienteDAO {
      * @return true si la inserción es exitosa, false de lo contrario.
      * @throws SQLException Si ocurre un error durante la inserción.
      */
-    private static boolean insertarClientePremium(int idCliente, ClientePremium clientePremium) throws SQLException {
+    private static boolean insertarClientePremium(BigInteger idCliente, ClientePremium clientePremium) throws SQLException {
         String sqlPremium = "INSERT INTO ClientesPremium (id_cliente, cuota_anual, descuento_envio) VALUES (?, ?, ?)";
 
-        try (PreparedStatement stmtPremium = conexion.prepareStatement(sqlPremium)) {
-            stmtPremium.setInt(1, idCliente);
-            stmtPremium.setDouble(2, clientePremium.getCuotaAnual());
-            stmtPremium.setDouble(3, clientePremium.getDescuentoEnvio());
+        boolean transactionSuccessful = false;
+        Transaction tx = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            try {
+                tx = session.beginTransaction();
+                String sql = "INSERT INTO clientespremium (id_cliente, cuota_anual, descuento_envio) VALUES (:idCliente, :cuotaAnual, :descuentoEnvio)";
+                NativeQuery<?> query = session.createNativeQuery(sql);
+                query.setParameter("idCliente", idCliente);
+                query.setParameter("cuotaAnual", clientePremium.getCuotaAnual());
+                query.setParameter("descuentoEnvio", clientePremium.getDescuentoEnvio());
 
-            int affectedRowsPremium = stmtPremium.executeUpdate();
-            return affectedRowsPremium > 0;
+                int result = query.executeUpdate();
+
+                if (result > 0) {
+                    tx.commit();
+                    transactionSuccessful = true;
+                }
+            } catch (Exception e) {
+                // Mostramos el error
+                throw new DAOException("Error al guardar el usuario", e);
+            } finally {
+                // Cerrar la sesión
+                session.close();
+            }
+        } catch (Exception e) {
+            // Mostramos el error
+            throw new DAOException("Error al conectar con la base de datos", e);
         }
+        return transactionSuccessful;
+
     }
 
     /**
@@ -209,19 +324,37 @@ public class ClienteDAO {
      * @throws SQLException Si ocurre un error durante la actualización.
      */
     public static boolean actualizar(Cliente cliente) {
-        String sql = "UPDATE Clientes SET nombre = ?, email = ?, domicilio = ? WHERE id_cliente = ?";
-        try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
-            stmt.setString(1, cliente.getNombre());
-            stmt.setString(2, cliente.getEmail());
-            stmt.setString(3, cliente.getDireccion());
-            stmt.setInt(4, cliente.getIdCliente());
+        boolean transactionSuccessful = false;
+        Transaction tx = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            try {
+                tx = session.beginTransaction();
+                String sql = "UPDATE clientes SET nombre = :nombre, email = :email, domicilio = :domicilio WHERE id_cliente = :idCliente";
 
-            int affectedRows = stmt.executeUpdate();
-            return affectedRows > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+                NativeQuery<?> query = session.createNativeQuery(sql);
+                query.setParameter("nombre", cliente.getNombre());
+                query.setParameter("email", cliente.getEmail());
+                query.setParameter("domicilio", cliente.getDireccion());
+                query.setParameter("idCliente", cliente.getIdCliente());
+
+                int result = query.executeUpdate();
+
+                if (result > 0) {
+                    tx.commit();
+                    transactionSuccessful = true;
+                }
+            } catch (Exception e) {
+                // Mostramos el error
+                throw new DAOException("Error al actualizar el usuario", e);
+            } finally {
+                // Cerrar la sesión
+                session.close();
+            }
+        } catch (Exception e) {
+            // Mostramos el error
+            throw new DAOException("Error al conectar con la base de datos", e);
         }
+        return transactionSuccessful;
     }
 
     /**
@@ -232,20 +365,42 @@ public class ClienteDAO {
      * @throws SQLException Si ocurre un error durante la eliminación.
      */
     public static boolean eliminarPorNIF(String nif) throws SQLException {
-        int idCliente = obtenerIdClientePorNIF(nif);
-        if (idCliente == -1) {
-            return false;
-        }
-        eliminarClienteEstandard(idCliente);
-        eliminarClientePremium(idCliente);
-        String sqlEliminarCliente = "DELETE FROM Clientes WHERE NIF = ?";
-        try (PreparedStatement stmtEliminarCliente = conexion.prepareStatement(sqlEliminarCliente)) {
-            stmtEliminarCliente.setString(1, nif);
-            int affectedRowsCliente = stmtEliminarCliente.executeUpdate();
+        boolean transactionSuccessful = false;
+        Transaction tx = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            int idCliente = obtenerIdClientePorNIF(nif);
+            if (idCliente == -1) {
+                return false;
+            }
+            eliminarClienteEstandard(idCliente);
+            eliminarClientePremium(idCliente);
+            try {
+                tx = session.beginTransaction();
+                String sql = "DELETE FROM clientes WHERE nif = :nif";
 
-            return affectedRowsCliente > 0;
+                NativeQuery<?> query = session.createNativeQuery(sql);
+                query.setParameter("nif", nif);
+
+                int result = query.executeUpdate();
+
+                if (result > 0) {
+                    tx.commit();
+                    transactionSuccessful = true;
+                }
+            } catch (Exception e) {
+                // Mostramos el error
+                throw new DAOException("Error al actualizar el usuario", e);
+            } finally {
+                // Cerrar la sesión
+                session.close();
+            }
+        } catch (Exception e) {
+            // Mostramos el error
+            throw new DAOException("Error al conectar con la base de datos", e);
         }
+        return transactionSuccessful;
     }
+
     /**
      * Elimina un cliente de la tabla ClientesEstandard asociado a un cliente existente.
      *
@@ -254,12 +409,36 @@ public class ClienteDAO {
      * @throws SQLException Si ocurre un error durante la eliminación.
      */
     private static void eliminarClienteEstandard(int idCliente) throws SQLException {
-        String sql = "DELETE FROM ClientesEstandard WHERE id_cliente = ?";
-        try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
-            stmt.setInt(1, idCliente);
-            stmt.executeUpdate();
+        //String hql = "DELETE FROM Cliente c WHERE id_cliente = :idCliente";
+        boolean transactionSuccessful = false;
+        Transaction tx = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            try {
+                tx = session.beginTransaction();
+                String sql = "DELETE FROM clientesestandard WHERE id_cliente = :idCliente";
+
+                NativeQuery<?> query = session.createNativeQuery(sql);
+                query.setParameter("idCliente", idCliente);
+
+                int result = query.executeUpdate();
+
+                if (result > 0) {
+                    tx.commit();
+                    transactionSuccessful = true;
+                }
+            } catch (Exception e) {
+                // Mostramos el error
+                throw new DAOException("Error al eliminar el usuario", e);
+            } finally {
+                // Cerrar la sesión
+                session.close();
+            }
+        } catch (Exception e) {
+            // Mostramos el error
+            throw new DAOException("Error al conectar con la base de datos", e);
         }
     }
+
     /**
      * Elimina un cliente de la tabla ClientesPremium asociado a un cliente existente.
      *
@@ -268,10 +447,32 @@ public class ClienteDAO {
      * @throws SQLException Si ocurre un error durante la eliminación.
      */
     private static void eliminarClientePremium(int idCliente) throws SQLException {
-        String sql = "DELETE FROM ClientesPremium WHERE id_cliente = ?";
-        try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
-            stmt.setInt(1, idCliente);
-            stmt.executeUpdate();
+        boolean transactionSuccessful = false;
+        Transaction tx = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            try {
+                tx = session.beginTransaction();
+                String sql = "DELETE FROM clientespremium WHERE id_cliente = :idCliente";
+
+                NativeQuery<?> query = session.createNativeQuery(sql);
+                query.setParameter("idCliente", idCliente);
+
+                int result = query.executeUpdate();
+
+                if (result > 0) {
+                    tx.commit();
+                    transactionSuccessful = true;
+                }
+            } catch (Exception e) {
+                // Mostramos el error
+                throw new DAOException("Error al eliminar el usuario", e);
+            } finally {
+                // Cerrar la sesión
+                session.close();
+            }
+        } catch (Exception e) {
+            // Mostramos el error
+            throw new DAOException("Error al conectar con la base de datos", e);
         }
     }
 
@@ -283,12 +484,35 @@ public class ClienteDAO {
      * @throws SQLException Si ocurre un error durante la consulta SQL.
      */
     private static int obtenerIdClientePorNIF(String nif) throws SQLException {
-        String sql = "SELECT id_cliente FROM Clientes WHERE NIF = ?";
-        try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
-            stmt.setString(1, nif);
-            ResultSet rs = stmt.executeQuery();
-            return rs.next() ? rs.getInt("id_cliente") : -1;
+        Cliente cliente = null;
+        List<Cliente> clientes = null;
+        int idCliente = -1;
+
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            try {
+
+                String hql = "SELECT c.idCliente FROM Cliente c" +
+                        " WHERE c.nif = :nif";
+
+                Query<Integer> query = session.createQuery(hql, Integer.class).setParameter("nif", nif);
+                int result = !query.getResultList().isEmpty() ? query.getResultList().get(0) : null;
+
+                if (result != -1) idCliente = result;
+            } catch (Exception e) {
+                // Mostramos el error
+                return -1;
+
+
+            } finally {
+                // Cerrar la sesión
+                session.close();
+            }
+        } catch (Exception e) {
+            // Mostramos el error
+            throw new DAOException("Error al conectar con la base de datos", e);
         }
+
+        return idCliente;
     }
 
     /**
@@ -300,16 +524,40 @@ public class ClienteDAO {
      */
     public boolean existeNIF(String nif) throws SQLException {
         String sql = "SELECT COUNT(*) FROM Clientes WHERE NIF = ?";
-        try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
-            stmt.setString(1, nif);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt(1) > 0;
-                }
+
+        Cliente cliente = null;
+        List<Cliente> clientes = null;
+        long result = -1;
+        boolean transactionSuccessful = false;
+
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            try {
+
+                //String hql = "SELECT c FROM Cliente c WHERE idCliente = :idCliente";
+
+                // Quizás la forma más sucia de hacer esta query, pero de cualquier otra manera daba errores por el polimorfismo
+                String hql = "SELECT COUNT(*) FROM Cliente c" +
+                        " WHERE c.nif = :nif";
+
+                Query<Long> query = session.createQuery(hql, Long.class).setParameter("nif", nif);
+                result = query.uniqueResult();
+
+                if (result > 0) transactionSuccessful = true;
+
+
+            } catch (Exception e) {
+                // Mostramos el error
+                throw new DAOException("Error al buscar el usuario", e);
+            } finally {
+                // Cerrar la sesión
+                session.close();
             }
-        } catch (SQLException e) {
-        e.printStackTrace(); // Manejo de excepciones
+        } catch (Exception e) {
+            // Mostramos el error
+            throw new DAOException("Error al conectar con la base de datos", e);
+        }
+
+        return transactionSuccessful;
     }
-        return false;
-    }
+
 }

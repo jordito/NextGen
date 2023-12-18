@@ -12,6 +12,7 @@ public class VistaCliente {
     public static void gestionClientes() throws SQLException {
         boolean salir = false;
         char opcion;
+        ClienteDAO cd = new ClienteDAO();
         do {
             System.out.println("╔══════════════════════════════╗");
             System.out.println("║     GESTIÓN CLIENTES         ║");
@@ -32,6 +33,7 @@ public class VistaCliente {
                 case '4' -> agregarCliente();
                 case '5' -> eliminarCliente();
                 case '6' -> actualizarCliente();
+                //case '7' -> cd.obtenerIdClientePorNIF("tata");
                 case '0' -> salir = true;
                 default ->
                         System.out.println("\u001B[31m" + "Opción inválida. Por favor, elija una opción válida." + "\u001B[0m");
@@ -44,6 +46,7 @@ public class VistaCliente {
         System.out.print("Ingrese la opción deseada: ");
         return scanner.nextLine().charAt(0);
     }
+
     public static void agregarCliente() throws SQLException {
         System.out.println("\u001B[34mIngrese los datos del nuevo cliente:\u001B[0m");
 
@@ -124,6 +127,7 @@ public class VistaCliente {
             System.out.println("\u001B[31mCliente no encontrado\u001B[0m");
         }
     }
+
     private static void eliminarCliente() throws SQLException {
         System.out.print("\u001B[34mIngrese el NIF del cliente que desea eliminar: \u001B[0m");
         String nif = scanner.nextLine();
@@ -134,4 +138,5 @@ public class VistaCliente {
             System.out.println("\u001B[31mError al eliminar el cliente\u001B[0m");
         }
     }
+
 }

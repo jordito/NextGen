@@ -20,7 +20,7 @@ public class Controlador {
 
 
     // private static final ArticuloDAO articuloDAO = new ArticuloDAO();
-    private final ClienteDAO clienteDAO;
+    // private final ClienteDAO clienteDAO;
     private final PedidoDAO pedidoDAO;
 
     /**
@@ -31,7 +31,7 @@ public class Controlador {
     public Controlador() throws SQLException {
         //this.articuloDAO = ArticuloDAO;
         //this.articuloDAO = articuloDAO;
-        this.clienteDAO = Datos.getClienteDAO();
+        //this.clienteDAO = Datos.getClienteDAO();
         this.pedidoDAO = Datos.getPedidoDAO();
     }
 
@@ -70,6 +70,7 @@ public class Controlador {
     // Métodos de operaciones para Clientes
 
     public static List<Cliente> listarClientes() throws SQLException {
+        ClienteDAO cd = new ClienteDAO();
         List<Cliente> clientes = ClienteDAO.obtenerTodos("");
         if (clientes.isEmpty()) {
             System.out.println("\u001B[31mNo hay clientes en la base de datos.\u001B[0m");
@@ -81,6 +82,7 @@ public class Controlador {
         }
         return clientes;
     }
+
     public static List<Cliente> listarClientesEstandard() throws SQLException {
         List<Cliente> clienteEstandard = ClienteDAO.obtenerTodos("estandard");
         if (clienteEstandard.isEmpty()) {
@@ -93,7 +95,6 @@ public class Controlador {
         }
         return clienteEstandard;
     }
-
     public static List<Cliente> listarClientesPremium() throws SQLException {
         List<Cliente> clientePremium = ClienteDAO.obtenerTodos("premium");
         if (clientePremium.isEmpty()) {
@@ -106,13 +107,16 @@ public class Controlador {
         }
         return clientePremium;
     }
+
     public static boolean agregarCliente(Cliente cliente) throws SQLException {
-        return ClienteDAO.insertar(cliente);
+        Cliente c = cliente;
+        return ClienteDAO.insertar(c);
     }
 
     public static boolean eliminarCliente(String nif) throws SQLException {
         return ClienteDAO.eliminarPorNIF(nif);
     }
+
 
     public static boolean actualizarCliente(Cliente cliente) throws SQLException {
         return ClienteDAO.actualizar(cliente);

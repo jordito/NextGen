@@ -9,7 +9,7 @@ import javax.persistence.Table;
  */
 
 @Entity
-@Table(name = "clientes")
+@Table(name = "clientesestandard")
 @PrimaryKeyJoinColumn(name = "id_cliente")
 public abstract class ClienteEstandard extends Cliente {
 

@@ -10,7 +10,14 @@ import org.hibernate.query.Query;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Clase DAO para gestionar los artículos en la base de datos.
+ */
 public class ArticuloDAO {
+
+    /**
+     * Obtiene todos los artículos de la base de datos.
+     */
     public List<Articulo> obtenerTodos() {
 
         List<Articulo> articulos = new ArrayList<>();
@@ -32,6 +39,13 @@ public class ArticuloDAO {
         return articulos;
     }
 
+    /**
+     * Obtiene un artículo específico de la base de datos por su código.
+     *
+     * @param codigo El código del artículo a buscar.
+     * @return El objeto Articulo si se encuentra, o null si no existe.
+     * @throws SQLException Si ocurre un error durante la consulta SQL.
+     */
     public Articulo obtenerPorCodigo(String codigo) {
         Articulo articulo = null;
         // Obtenemos la sesión de hibernate a partir de la configuración y abrimos la sesión
@@ -55,7 +69,11 @@ public class ArticuloDAO {
         return articulo;
     }
 
-
+    /**
+     * Inserta un nuevo artículo en la base de datos.
+     *
+     * @param articulo El objeto Articulo a insertar.
+     */
     public boolean insertar(Articulo articulo) {
         boolean transactionSuccessful = false;
         // Inicializamos la transacción
@@ -82,7 +100,11 @@ public class ArticuloDAO {
         return transactionSuccessful;
     }
 
-
+    /**
+     * Actualiza los datos de un artículo en la base de datos.
+     * @param articulo El objeto Articulo con los datos a actualizar.
+     * @return true si la actualización fue exitosa, false en caso contrario.
+     */
     public boolean actualizar(Articulo articulo) {
         boolean transactionSuccessful = false;
         // Inicializamos la transacción
@@ -116,6 +138,12 @@ public class ArticuloDAO {
         return transactionSuccessful;
     }
 
+    /**
+     * Elimina un artículo de la base de datos utilizando su código.
+     *
+     * @param codigo El código del artículo a eliminar.
+     * @return
+     */
     public boolean eliminar(String codigo){
         boolean transactionSuccessful = false;
         // Inicializamos la transacción

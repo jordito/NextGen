@@ -24,7 +24,7 @@ public class PedidoDAO {
     public PedidoDAO(Connection conn) {
         this.conn = conn;
         this.detallePedidoDAO = new DetallePedidoDAO(conn);
-        this.clienteDAO = new ClienteDAO(conn);
+        this.clienteDAO = new ClienteDAO();
         //this.articuloDAO = new ArticuloDAO(conn);
     }
 
