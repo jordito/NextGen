@@ -2,6 +2,10 @@ package local.NextGen.modelo.DAO;
 
 import local.NextGen.modelo.Articulo;
 import local.NextGen.modelo.DetallePedido;
+import local.NextGen.util.HibernateUtil;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,105 +14,95 @@ import static local.NextGen.modelo.ConexionBD.obtenerConexion;
 
 public class DetallePedidoDAO {
 
-    private static Connection conexion;
+    public List<DetallePedido> listarPorPedido(int numeroPedido) {
+        List<DetallePedido> detalles = null;
 
-    public DetallePedidoDAO(Connection conexion) {
-        this.conexion = conexion;
-    }
-
-    /**
-     * Recupera los detalles de un pedido específico.
-     *
-     * @param numeroPedido El número del pedido cuyos detalles se quieren recuperar.
-     * @return Una lista de objetos DetallePedido asociados con el número de pedido.
-     * @throws SQLException Si ocurre un error durante la consulta SQL.
-     */
-    public List<DetallePedido> listarPorPedido(int numeroPedido) throws SQLException {
-        List<DetallePedido> detalles = new ArrayList<>();
-        String sql = "SELECT * FROM DetallePedido WHERE numero_pedido = ?";
-
-        try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
-            stmt.setInt(1, numeroPedido);
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                DetallePedido detalle = new DetallePedido(
-                        rs.getInt("numero_pedido"),
-                        obtenerArticuloPorCodigo(rs.getString("codigo_articulo")),
-                        rs.getInt("cantidad"));
-                detalles.add(detalle);
-            }
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            // Usa HQL (Hibernate Query Language) en lugar de SQL
+            String hql = "FROM DetallePedido WHERE numeroPedido = :numeroPedido";
+            detalles = session.createQuery(hql, DetallePedido.class)
+                    .setParameter("numeroPedido", numeroPedido)
+                    .getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
         return detalles;
     }
 
     /**
      * Agrega un detalle de pedido a la base de datos.
      */
-    public static void agregarDetalle(Connection conn, DetallePedido detalle) {
-        String sql = "INSERT INTO DetallePedido (numero_pedido, codigo_articulo, cantidad, precio_venta) VALUES (?, ?, ?, ?)";
+    public void agregarDetalle(DetallePedido detalle) {
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
 
-        try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            if (!existeDetalle(conn, detalle)) {
-                pstmt.setInt(1, detalle.getNumeroPedido());
-                pstmt.setString(2, detalle.getArticulo().getCodigo());
-                pstmt.setInt(3, detalle.getCantidad());
-                pstmt.setDouble(4, detalle.getPrecioVenta());
-
-                pstmt.executeUpdate();
+            // Usa el método save para guardar la entidad en lugar de SQL directo
+            if (!existeDetalle(session, detalle)) {
+                session.save(detalle);
+                transaction.commit();
             } else {
                 System.out.println("El detalle ya existe.");
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static boolean existeDetalle(Connection conn, DetallePedido detalle) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM DetallePedido WHERE numero_pedido = ? AND codigo_articulo = ?";
-
-        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, detalle.getNumeroPedido());
-            pstmt.setString(2, detalle.getArticulo().getCodigo());
-
-            try (ResultSet rs = pstmt.executeQuery()) {
-                return rs.next() && rs.getInt(1) > 0;
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
             }
-        } catch (SQLException e) {
             e.printStackTrace();
-            return false;
         }
     }
+
+    private boolean existeDetalle(Session session, DetallePedido detalle) {
+        // Utiliza HQL para la verificación en lugar de SQL directo
+        String hql = "SELECT COUNT(*) FROM DetallePedido WHERE numeroPedido = :numeroPedido AND articulo.codigo = :codigoArticulo";
+
+        Long count = session.createQuery(hql, Long.class)
+                .setParameter("numeroPedido", detalle.getNumeroPedido())
+                .setParameter("codigoArticulo", detalle.getArticulo().getCodigo())
+                .uniqueResult();
+
+        return count != null && count > 0;
+    }
+
     /**
      * Elimina un detalle de pedido de la base de datos.
      */
     public boolean eliminarPorPedido(int numeroPedido) {
-        String sql = "DELETE FROM DetallePedido WHERE numero_pedido = ?";
-        try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
-            stmt.setInt(1, numeroPedido);
-            return stmt.executeUpdate() > 0;
-        } catch (SQLException e) {
+        Transaction transaction = null;
+
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+
+            // Usa HQL para la eliminación en lugar de SQL directo
+            String hql = "DELETE FROM DetallePedido WHERE numeroPedido = :numeroPedido";
+            int result = session.createQuery(hql)
+                    .setParameter("numeroPedido", numeroPedido)
+                    .executeUpdate();
+
+            transaction.commit();
+
+            return result > 0;
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
             e.printStackTrace();
             return false;
         }
     }
+
     // Método auxiliar para obtener un objeto Articulo por su código
-    private Articulo obtenerArticuloPorCodigo(String codigoArticulo) throws SQLException {
-        String sql = "SELECT * FROM Articulos WHERE codigo = ?";
-        try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
-            stmt.setString(1, codigoArticulo);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return new Articulo(
-                        rs.getString("codigo"),
-                        rs.getString("descripcion"),
-                        rs.getDouble("precio_venta"),
-                        rs.getDouble("gastos_envio"),
-                        rs.getInt("tiempo_preparacion")
-                );
-            } else {
-                return null;
-            }
+    private Articulo obtenerArticuloPorCodigo(String codigoArticulo) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            // Utiliza HQL para la consulta en lugar de SQL directo
+            String hql = "FROM Articulo WHERE codigo = :codigoArticulo";
+            return session.createQuery(hql, Articulo.class)
+                    .setParameter("codigoArticulo", codigoArticulo)
+                    .uniqueResult();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }

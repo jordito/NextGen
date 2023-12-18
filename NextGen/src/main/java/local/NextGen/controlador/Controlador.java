@@ -21,7 +21,7 @@ public class Controlador {
 
     // private static final ArticuloDAO articuloDAO = new ArticuloDAO();
     // private final ClienteDAO clienteDAO;
-    private final PedidoDAO pedidoDAO;
+    //private final PedidoDAO pedidoDAO;
 
     /**
      * Constructor de Controlador.
@@ -32,7 +32,7 @@ public class Controlador {
         //this.articuloDAO = ArticuloDAO;
         //this.articuloDAO = articuloDAO;
         //this.clienteDAO = Datos.getClienteDAO();
-        this.pedidoDAO = Datos.getPedidoDAO();
+        //this.pedidoDAO = Datos.getPedidoDAO();
     }
 
     // Métodos de operaciones para Artículos
@@ -125,7 +125,8 @@ public class Controlador {
     // Métodos de operaciones para Pedidos
 
     public static List<Pedido> listarPedidos() throws SQLException {
-        List<Pedido> pedidos = PedidoDAO.listarTodos();
+        PedidoDAO pd = new PedidoDAO();
+        List<Pedido> pedidos = pd.listarTodos();
         if (pedidos.isEmpty()) {
             System.out.println("\u001B[31mNo hay pedidos en la base de datos.\u001B[0m");
         } else {
@@ -139,16 +140,18 @@ public class Controlador {
 
 
     public static Pedido agregarPedido(Pedido pedido) throws SQLException {
+        PedidoDAO pd = new PedidoDAO();
+        DetallePedidoDAO dpd = new DetallePedidoDAO();
         try (Connection conn = obtenerConexion()) {
             conn.setAutoCommit(false);
 
             try {
-                int numeroPedidoGenerado = PedidoDAO.insertar(conn, pedido);
+                int numeroPedidoGenerado = pd.insertar(pedido);
 
                 if (numeroPedidoGenerado > 0) {
                     for (DetallePedido detalle : pedido.getDetallesPedido()) {
                         detalle.setNumeroPedido(numeroPedidoGenerado);
-                        DetallePedidoDAO.agregarDetalle(conn, detalle);
+                        dpd.agregarDetalle(detalle);
                     }
 
                     conn.commit();  // Confirmar transacción
@@ -167,17 +170,20 @@ public class Controlador {
     }
 
     public static boolean eliminarPedido(int numeroPedido) throws SQLException {
-        return PedidoDAO.eliminar(numeroPedido);
+        PedidoDAO pd = new PedidoDAO();
+        return pd.eliminar(numeroPedido);
     }
 
     public static List<Pedido> listarPedidosPendientes() throws SQLException {
-        return PedidoDAO.listarTodos().stream()
+        PedidoDAO pd = new PedidoDAO();
+        return pd.listarTodos().stream()
                 .filter(pedido -> !pedido.isEnviado())
                 .collect(Collectors.toList());
     }
 
     public static List<Pedido> listarPedidosEnviados() throws SQLException {
-        return PedidoDAO.listarTodos().stream()
+        PedidoDAO pd = new PedidoDAO();
+        return pd.listarTodos().stream()
                 .filter(Pedido::isEnviado)
                 .collect(Collectors.toList());
     }

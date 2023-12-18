@@ -29,6 +29,7 @@
         <mapping class="local.NextGen.modelo.Cliente"/>
         <mapping class="local.NextGen.modelo.ClienteEstandard"/>
         <mapping class="local.NextGen.modelo.ClientePremium"/>
-
+        <mapping class="local.NextGen.modelo.Pedido"/>
+        <mapping class="local.NextGen.modelo.DetallePedido"/>
     </session-factory>
 </hibernate-configuration>

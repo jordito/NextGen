@@ -1,9 +1,6 @@
 package local.NextGen.util;
 
-import local.NextGen.modelo.Articulo;
-import local.NextGen.modelo.Cliente;
-import local.NextGen.modelo.ClienteEstandard;
-import local.NextGen.modelo.ClientePremium;
+import local.NextGen.modelo.*;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
@@ -19,6 +16,8 @@ public class HibernateUtil {
             configuration.addAnnotatedClass(Cliente.class);
             configuration.addAnnotatedClass(ClienteEstandard.class);
             configuration.addAnnotatedClass(ClientePremium.class);
+            configuration.addAnnotatedClass(Pedido.class);
+            configuration.addAnnotatedClass(DetallePedido.class);
 
             // Build a StandardServiceRegistry
             StandardServiceRegistryBuilder registryBuilder = new StandardServiceRegistryBuilder()

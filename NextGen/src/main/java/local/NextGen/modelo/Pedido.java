@@ -20,10 +20,10 @@ public class Pedido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "numero_pedido")
-    private static int numeroPedido;
+    private int numeroPedido;
 
     @Column(name = "id_cliente")
-    private static int idCliente;
+    private int idCliente;
 
     @Column(name = "fecha_hora_pedido")
     private Date fechaHora;
@@ -62,8 +62,15 @@ public class Pedido {
     }
 
     // Getters y setters
+    public int getIdCliente() {
+        return idCliente;
+    }
 
-    public static int getNumeroPedido() {
+    public void setIdCliente(int idCliente) {
+        this.idCliente = idCliente;
+    }
+
+    public int getNumeroPedido() {
         return numeroPedido;
     }
 

@@ -29,15 +29,20 @@ public class Datos {
      * Obtiene una instancia de PedidoDAO.
      * @return una instancia de PedidoDAO.
      */
+
+    /*
     public static PedidoDAO getPedidoDAO() throws SQLException {
         return new PedidoDAO(ConexionBD.obtenerConexion());
     }
+    */
 
     /**
      * Obtiene una instancia de DetallePedidoDAO.
      * @return una instancia de DetallePedidoDAO.
      */
+      /*
     public static DetallePedidoDAO getDetallePedidoDAO() throws SQLException {
         return new DetallePedidoDAO(ConexionBD.obtenerConexion());
     }
+    */
 }
