@@ -37,9 +37,9 @@ public class Pedido {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "detalle_pedido",
-            joinColumns = @JoinColumn(name = "numero_pedido"),
-            inverseJoinColumns = @JoinColumn(name = "codigo_articulo")
+            name = "detallepedido",
+            joinColumns = @JoinColumn(name = "numeroPedido"),
+            inverseJoinColumns = @JoinColumn(name = "codigoArticulo")
     )
     private List<DetallePedido> detallesPedido;
 
