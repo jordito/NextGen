@@ -29,16 +29,8 @@ public class PedidoDAO {
             transaction = session.beginTransaction();
 
             // Usa HQL para la inserción en lugar de SQL directo
-          String bfp = "before persist";
-//            Pedido np = new Pedido();
-//            np.setCliente((ClientePremium) pedido.getCliente());
-//            np.setFechaHora(pedido.getFechaHora());
-//            np.setEstadoPedido(pedido.getEstadoPedido());
-//            session.persist(pedido);
-
             String sql = "INSERT INTO pedidos (id_cliente, fecha_hora_pedido, estado_pedido) VALUES (:idCliente, :fecha_hora_pedido, :estado_pedido)";
             NativeQuery<?> query = session.createNativeQuery(sql);
-
             query.setParameter("idCliente", pedido.getCliente().getIdCliente());
             query.setParameter("fecha_hora_pedido", pedido.getFechaHora());
             query.setParameter("estado_pedido", pedido.getEstadoPedido().name());
@@ -46,22 +38,14 @@ public class PedidoDAO {
             int result = query.executeUpdate();
 
             if (result > 0) {
-
                 transaction.commit();
             int test = 0;
                 numeroPedidoGenerado = (BigInteger) session.createNativeQuery("SELECT LAST_INSERT_ID()").uniqueResult();
             }
-            bfp = "after persist";
-
-            bfp = "afffter persist";
-
-
-
         } catch (Exception e) {
             throw new DAOException("Error al crear el pedido", e);
             //e.printStackTrace();
         }
-
         return numeroPedidoGenerado.intValue();
     }
 
@@ -76,25 +60,12 @@ public class PedidoDAO {
             transaction = session.beginTransaction();
 
             // Usa HQL para la eliminación en lugar de SQL directo
-//            String hql = "DELETE FROM Pedido WHERE pedido = :pedido";
-//            int result = session.createQuery(hql)
-//                    .setParameter("pedido", pedido)
-//                    .executeUpdate();
-
-
             dpd.eliminarPorPedido(pedido);
             session.delete(pedido);
-//            if (result > 0) {
-//                dpd.eliminarPorPedido(pedido);
-//            }
-
             transaction.commit();
 
             return true;
         } catch (Exception e) {
-//            if (transaction != null) {
-//                transaction.rollback();
-//            }
             e.printStackTrace();
             return false;
         }

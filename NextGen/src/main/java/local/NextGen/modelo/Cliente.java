@@ -65,7 +65,6 @@ public abstract class Cliente implements Serializable {
     }
 
     // Getters y setters
-
     public int getIdCliente() {
         return idCliente;
     }

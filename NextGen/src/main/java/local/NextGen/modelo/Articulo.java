@@ -49,6 +49,8 @@ public class Articulo implements Serializable {
         this.gastosEnvio = gastosEnvio;
         this.tiempoPreparacion = tiempoPreparacion;
     }
+
+    // Getters y setters
     /**
      * Obtiene el código del artículo.
      * @return El código del artículo.

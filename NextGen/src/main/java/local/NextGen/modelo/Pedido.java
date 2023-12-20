@@ -62,8 +62,6 @@ public class Pedido implements Serializable {
     }
 
     // Getters y setters
-
-
     public int getNumeroPedido() {
         return numeroPedido;
     }
@@ -110,9 +108,9 @@ public class Pedido implements Serializable {
      */
     public Double precioTotal() {
         Double total = 0.0;
-        /*for (DetallePedido detalle : detallesPedido) {
+        for (DetallePedido detalle : detallesPedido) {
             total += detalle.getPrecioVenta() * detalle.getCantidad();
-        }*/
+        }
         return total;
     }
     /**

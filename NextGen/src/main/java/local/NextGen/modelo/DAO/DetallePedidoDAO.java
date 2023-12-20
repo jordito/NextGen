@@ -20,8 +20,6 @@ public class DetallePedidoDAO {
 
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             // Usa HQL (Hibernate Query Language) en lugar de SQL
-
-
             String hql = "FROM DetallePedido WHERE pedido = :numeroPedido";
             detalles = session.createQuery(hql, DetallePedido.class)
                     .setParameter("numeroPedido", pedido)

@@ -18,25 +18,7 @@ import static local.NextGen.modelo.ConexionBD.obtenerConexion;
  */
 public class Controlador {
 
-
-    // private static final ArticuloDAO articuloDAO = new ArticuloDAO();
-    // private final ClienteDAO clienteDAO;
-    //private final PedidoDAO pedidoDAO;
-
-    /**
-     * Constructor de Controlador.
-     * Inicializa los DAOs utilizando la fábrica de DAOs 'Datos'.
-     * @throws SQLException Si ocurre un error al establecer la conexión con la base de datos.
-     */
-    public Controlador() throws SQLException {
-        //this.articuloDAO = ArticuloDAO;
-        //this.articuloDAO = articuloDAO;
-        //this.clienteDAO = Datos.getClienteDAO();
-        //this.pedidoDAO = Datos.getPedidoDAO();
-    }
-
     // Métodos de operaciones para Artículos
-
     public static List<Articulo> listarArticulos() {
 
         ArticuloDAO articuloDao = new ArticuloDAO();
@@ -68,7 +50,6 @@ public class Controlador {
     }
 
     // Métodos de operaciones para Clientes
-
     public static List<Cliente> listarClientes() throws SQLException {
         ClienteDAO cd = new ClienteDAO();
         List<Cliente> clientes = ClienteDAO.obtenerTodos("");
@@ -95,6 +76,7 @@ public class Controlador {
         }
         return clienteEstandard;
     }
+
     public static List<Cliente> listarClientesPremium() throws SQLException {
         List<Cliente> clientePremium = ClienteDAO.obtenerTodos("premium");
         if (clientePremium.isEmpty()) {
@@ -117,13 +99,11 @@ public class Controlador {
         return ClienteDAO.eliminarPorNIF(nif);
     }
 
-
     public static boolean actualizarCliente(Cliente cliente) throws SQLException {
         return ClienteDAO.actualizar(cliente);
     }
 
     // Métodos de operaciones para Pedidos
-
     public static List<Pedido> listarPedidos() throws SQLException {
         PedidoDAO pd = new PedidoDAO();
         List<Pedido> pedidos = pd.listarTodos();
@@ -138,39 +118,25 @@ public class Controlador {
         return pedidos;
     }
 
-
     public static Pedido agregarPedido(Pedido pedido) throws SQLException {
         PedidoDAO pd = new PedidoDAO();
         DetallePedidoDAO dpd = new DetallePedidoDAO();
-
-
-//        try (Connection conn = obtenerConexion()) {
-//            conn.setAutoCommit(false);
-//
-//            try {
+            try {
                 int numeroPedidoGenerado = pd.insertar(pedido);
-
                 if (numeroPedidoGenerado > 0) {
                     for (DetallePedido detalle : pedido.getDetallesPedido()) {
                         pedido.setNumeroPedido(numeroPedidoGenerado);
                         detalle.setPedido(pedido);
-
                         dpd.agregarDetalle(detalle);
                     }
-
-//                    conn.commit();  // Confirmar transacción
                     return pedido;
                 } else {
                     System.out.println("Error al agregar el pedido. No se generó un número de pedido válido.");
-//                    conn.rollback();
                     return null;
                 }
-//            } catch (SQLException e) {
-//                conn.rollback();
-//                e.printStackTrace();
-//                return null;
-//            }
-//        }
+            } catch (DAOException e) {
+                return null;
+            }
     }
 
     public static boolean eliminarPedido(int numeroPedido) throws SQLException {
@@ -179,22 +145,17 @@ public class Controlador {
         return pd.eliminar(pedido);
     }
 
-    public static List<Pedido> listarPedidosPendientes() throws SQLException {
+    public static List<Pedido> listarPedidosPendientes() throws DAOException {
         PedidoDAO pd = new PedidoDAO();
         return pd.listarTodos().stream()
                 .filter(pedido -> pedido.getEstadoPedido() == Pedido.EstadoPedido.PENDIENTE)
                 .collect(Collectors.toList());
-
-
-        //return null;
     }
 
-    public static List<Pedido> listarPedidosEnviados() throws SQLException {
+    public static List<Pedido> listarPedidosEnviados() throws DAOException {
         PedidoDAO pd = new PedidoDAO();
         return pd.listarTodos().stream()
                 .filter(pedido -> pedido.getEstadoPedido() == Pedido.EstadoPedido.ENVIADO)
                 .collect(Collectors.toList());
-
-        // return null;
     }
 }

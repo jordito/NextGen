@@ -44,7 +44,7 @@ public class ArticuloDAO {
      *
      * @param codigo El código del artículo a buscar.
      * @return El objeto Articulo si se encuentra, o null si no existe.
-     * @throws SQLException Si ocurre un error durante la consulta SQL.
+     * @throws DAOException Si ocurre un error durante la transacción.
      */
     public Articulo obtenerPorCodigo(String codigo) {
         Articulo articulo = null;
@@ -141,8 +141,8 @@ public class ArticuloDAO {
     /**
      * Elimina un artículo de la base de datos utilizando su código.
      *
-     * @param codigo El código del artículo a eliminar.
-     * @return
+     * @param codigo                    El código del artículo a eliminar.
+     * @return transactionSuccessful    El resultado de la transacción
      */
     public boolean eliminar(String codigo){
         boolean transactionSuccessful = false;

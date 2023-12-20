@@ -11,22 +11,16 @@ import java.text.DecimalFormat;
 @Entity
 @Table(name = "detallepedido")
 public class DetallePedido implements Serializable {
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private int id;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "numero_pedido")
-    //@Column(name = "numero_pedido")
     private Pedido pedido;
 
     @ManyToOne
     @JoinColumn(name = "codigo_articulo")
-    //@Column(name = "codigo_articulo")
     private Articulo articulo;
 
     @Column(name = "cantidad")
@@ -41,7 +35,8 @@ public class DetallePedido implements Serializable {
     /**
      * Constructor para crear un detalle de pedido.
      *
-     * @param numeroPedido El número del pedido al que pertenece este detalle.
+     * @param id           El ID del pedido al que pertenece este detalle.
+     * @param pedido       El pedido al que pertenece este detalle.
      * @param articulo     El objeto Articulo en este detalle de pedido.
      * @param cantidad     La cantidad del artículo en este detalle.
      */
@@ -53,17 +48,7 @@ public class DetallePedido implements Serializable {
         this.precioVenta = articulo.getPrecio();
     }
 
-    // Getters y Setters
-
-//    public int getNumeroPedido() {
-//        return numeroPedido;
-//    }
-//
-//    public void setNumeroPedido(int numeroPedido) {
-//        this.numeroPedido = numeroPedido;
-//    }
-
-
+    // Getters y setters
     public int getId() {
         return id;
     }
