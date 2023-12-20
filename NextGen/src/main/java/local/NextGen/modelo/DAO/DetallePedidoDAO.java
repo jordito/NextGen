@@ -2,6 +2,7 @@ package local.NextGen.modelo.DAO;
 
 import local.NextGen.modelo.Articulo;
 import local.NextGen.modelo.DetallePedido;
+import local.NextGen.modelo.Pedido;
 import local.NextGen.util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -14,14 +15,16 @@ import static local.NextGen.modelo.ConexionBD.obtenerConexion;
 
 public class DetallePedidoDAO {
 
-    public List<DetallePedido> listarPorPedido(int numeroPedido) {
+    public List<DetallePedido> listarPorPedido(Pedido pedido) {
         List<DetallePedido> detalles = null;
 
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             // Usa HQL (Hibernate Query Language) en lugar de SQL
-            String hql = "FROM DetallePedido WHERE numeroPedido = :numeroPedido";
+
+
+            String hql = "FROM DetallePedido WHERE pedido = :numeroPedido";
             detalles = session.createQuery(hql, DetallePedido.class)
-                    .setParameter("numeroPedido", numeroPedido)
+                    .setParameter("numeroPedido", pedido)
                     .getResultList();
         } catch (Exception e) {
             e.printStackTrace();

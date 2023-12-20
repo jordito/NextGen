@@ -1,5 +1,7 @@
 package local.NextGen.modelo;
 
+import local.NextGen.modelo.DAO.DetallePedidoDAO;
+
 import javax.persistence.*;
 
 import java.io.Serializable;
@@ -137,12 +139,15 @@ public class Pedido implements Serializable {
 
 
         StringBuilder detalles = new StringBuilder();
+
+        DetallePedidoDAO dpd = new DetallePedidoDAO();
+        List<DetallePedido> pedidoDetalles = dpd.listarPorPedido(this);
         detalles.append("\n\u001B[33mDetalles del Pedido:\u001B[0m\n");
-        /*for (DetallePedido detalle : detallesPedido) {
+        for (DetallePedido detalle : pedidoDetalles) {
             detalles.append(detalle.toString()).append("\n");
         }
 
-         */
+
 
         return String.format("Pedido Número: %-5s| Fecha: %-10s | Cliente: %-10s | Estado: %-8s | Precio Total: %-8s %s",
                 numeroPedido, fechaFormato, cliente.getNif(), estadoPedido, df.format(precioTotal()) + "€", detalles);
