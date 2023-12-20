@@ -3,11 +3,8 @@ import java.sql.Connection;
 import java.util.*;
 
 import local.NextGen.controlador.*;
-import local.NextGen.modelo.Articulo;
-import local.NextGen.modelo.Cliente;
+import local.NextGen.modelo.*;
 import local.NextGen.modelo.DAO.*;
-import local.NextGen.modelo.DetallePedido;
-import local.NextGen.modelo.Pedido;
 
 import java.sql.SQLException;
 
@@ -69,17 +66,26 @@ public class VistaPedido {
     }
     public static void agregarPedido() {
         Scanner scanner = new Scanner(System.in);
-
+        ClienteDAO cd = new ClienteDAO();
         System.out.println("\u001B[34mAgregar Nuevo Pedido:\u001B[0m");
 
         try {
             System.out.print("\u001B[34mIngrese el id del cliente:\u001B[0m ");
             int idCliente = scanner.nextInt();
-            Cliente cliente = ClienteDAO.obtenerPorId(idCliente);
+            Cliente cliente = cd.obtenerPorId(idCliente);
+//            Cliente n = null;
+//            boolean test = cliente instanceof ClienteEstandard;
+//            boolean test2 = cliente instanceof ClientePremium;
+//
+//            if (cliente instanceof ClientePremium) {
+//               cliente = (ClientePremium) cliente;
+//            }
+            int i = 0;
+
 
             if (cliente != null) {
                 Date fechaHora = new Date();
-                Pedido nuevoPedido = new Pedido(0, fechaHora, cliente, new ArrayList<>());
+                Pedido nuevoPedido = new Pedido(0, fechaHora, cliente, new ArrayList<>(), Pedido.EstadoPedido.PENDIENTE);
 
                 boolean agregarOtroDetalle = true;
 
@@ -95,7 +101,7 @@ public class VistaPedido {
                             int cantidad = scanner.nextInt();
                             scanner.nextLine();
 
-                            DetallePedido detalle = new DetallePedido(0, articulo, cantidad);
+                            DetallePedido detalle = new DetallePedido(nuevoPedido, articulo, cantidad);
                             nuevoPedido.agregarDetalle(detalle);
 
                             System.out.print("\u001B[34m¿Desea agregar otro artículo? (S/N):\u001B[0m ");
@@ -110,6 +116,7 @@ public class VistaPedido {
                     }
                 }
 
+                // problem is here
                 Pedido resultadoPedido = Controlador.agregarPedido(nuevoPedido);
 
                 if (resultadoPedido != null) {

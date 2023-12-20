@@ -38,7 +38,8 @@ CREATE TABLE Pedidos (
     numero_pedido INT AUTO_INCREMENT PRIMARY KEY,
     id_cliente INT NOT NULL,
     fecha_hora_pedido DATETIME NOT NULL,
-    estado_pedido ENUM('Pendiente', 'Enviado') NOT NULL DEFAULT 'Pendiente',
+    -- estado_pedido ENUM('PENDIENTE', 'ENVIADO') NOT NULL DEFAULT 'PENDIENTE',
+    estado_pedido VARCHAR(20) NOT NULL DEFAULT("PENDIENTE"),
     FOREIGN KEY (id_cliente) REFERENCES Clientes(id_cliente)
 );
 

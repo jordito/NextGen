@@ -4,6 +4,7 @@ import javax.persistence.*;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -13,6 +14,7 @@ import java.util.Map;
 @Entity
 @Table(name = "clientes")
 @Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "tipo_cliente", discriminatorType = DiscriminatorType.STRING)
 public abstract class Cliente implements Serializable {
     @Id
     @Column(name = "id_cliente")
@@ -27,6 +29,8 @@ public abstract class Cliente implements Serializable {
     private String nif;
     @Column(name = "email")
     private String email;
+    @Column(name = "tipo_cliente")
+    private String tipoCliente;
 
     @OneToOne(mappedBy = "cliente")
     private Pedido pedido;
@@ -48,7 +52,16 @@ public abstract class Cliente implements Serializable {
         this.direccion = direccion;
         this.nif = nif;
         this.email = email;
+        this.tipoCliente = "Estandard";
+    }
 
+    public Cliente(int idCliente, String nombre, String direccion, String nif, String email, String tipoCliente) {
+        this.idCliente = idCliente;
+        this.nombre = nombre;
+        this.direccion = direccion;
+        this.nif = nif;
+        this.email = email;
+        this.tipoCliente = tipoCliente;
     }
 
     // Getters y setters
@@ -93,9 +106,26 @@ public abstract class Cliente implements Serializable {
         this.direccion = direccion;
     }
 
+    public String getTipoCliente() {
+        return tipoCliente;
+    }
+
+    public void setTipoCliente(String tipoCliente) {
+        this.tipoCliente = tipoCliente;
+    }
+
     public abstract String tipoCliente();
     public abstract float calcAnual();
     public abstract float descuentoEnv();
+
+    public static Cliente createCliente(String tipoCliente) {
+        if ("Estandard".equals(tipoCliente)) {
+            return new ClienteEstandard();
+        } else if ("Premium".equals(tipoCliente)) {
+            return new ClientePremium();
+        }
+        return null;
+    }
 
     @Override
     public String toString() {

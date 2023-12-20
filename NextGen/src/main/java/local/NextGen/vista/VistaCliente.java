@@ -95,10 +95,11 @@ public class VistaCliente {
     public static void actualizarCliente() throws SQLException {
         System.out.print("\u001B[34mIngrese el Id del cliente a actualizar: \u001B[0m");
         int idCliente = scanner.nextInt();
-
         scanner.nextLine();
 
-        Cliente cliente = ClienteDAO.obtenerPorId(idCliente);
+        ClienteDAO cd = new ClienteDAO();
+
+        Cliente cliente = cd.obtenerPorId(idCliente);
 
         if (cliente != null) {
             System.out.println("\u001B[34mDatos actuales del cliente:\u001B[0m");

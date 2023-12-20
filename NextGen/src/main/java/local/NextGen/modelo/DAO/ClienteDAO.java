@@ -122,7 +122,7 @@ public class ClienteDAO {
      * @return Un objeto Cliente si se encuentra, o null si no existe.
      * @throws SQLException Si ocurre un error durante la consulta SQL.
      */
-    public static Cliente obtenerPorId(int idCliente) throws SQLException {
+    public Cliente obtenerPorId(int idCliente) throws SQLException {
         Cliente cliente = null;
         List<Cliente> clientes = null;
 
@@ -198,7 +198,7 @@ public class ClienteDAO {
             try {
 
                 tx = session.beginTransaction();
-                String sql = "INSERT INTO clientes (id_cliente, nombre, domicilio, NIF, email) VALUES (:idCliente, :nombre, :direccion, :nif, :email)";
+                String sql = "INSERT INTO clientes (id_cliente, nombre, domicilio, NIF, email, tipo_cliente) VALUES (:idCliente, :nombre, :direccion, :nif, :email, :tipoCliente)";
                 NativeQuery<?> query = session.createNativeQuery(sql);
 
                 query.setParameter("idCliente", cliente.getIdCliente());
@@ -206,6 +206,7 @@ public class ClienteDAO {
                 query.setParameter("direccion", cliente.getDireccion());
                 query.setParameter("nif", cliente.getNif());
                 query.setParameter("email", cliente.getEmail());
+                query.setParameter("tipoCliente", cliente.getTipoCliente());
 
                 int result = query.executeUpdate();
 

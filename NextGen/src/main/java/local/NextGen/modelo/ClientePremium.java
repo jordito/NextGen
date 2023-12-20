@@ -1,23 +1,25 @@
 package local.NextGen.modelo;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Map;
 
 @Entity
 @Table(name = "clientespremium")
 @PrimaryKeyJoinColumn(name = "id_cliente")
+@DiscriminatorValue("Premium")
 /**
  * Clase que representa un cliente premium. Hereda de la clase abstracta Cliente.
  */
-public abstract class ClientePremium extends Cliente {
+public class ClientePremium extends Cliente {
 
     @Column(name = "cuota_anual")
     private double cuotaAnual;
 
     @Column(name = "descuento_envio")
     private double descuentoEnvio;
+
+    @Column(name = "tipo_cliente")
+    private String tipoCliente;
 
     public ClientePremium() {
     }
@@ -26,11 +28,22 @@ public abstract class ClientePremium extends Cliente {
         super(idCliente, nombre, direccion, nif, email);
         this.cuotaAnual = cuotaAnual;
         this.descuentoEnvio = descuentoEnvio;
+        this.tipoCliente = "Premium";
     }
 
     @Override
     public String tipoCliente() {
         return "Premium";
+    }
+
+    @Override
+    public String getTipoCliente() {
+        return tipoCliente;
+    }
+
+    @Override
+    public void setTipoCliente(String tipoCliente) {
+        this.tipoCliente = tipoCliente;
     }
 
     @Override
@@ -62,5 +75,10 @@ public abstract class ClientePremium extends Cliente {
     @Override
     public String toString() {
         return super.toString() + " \u001B[34m(Premium)\u001B[0m";
+    }
+
+    @Override
+    public Map<String, Object> toMap() {
+        return null;
     }
 }

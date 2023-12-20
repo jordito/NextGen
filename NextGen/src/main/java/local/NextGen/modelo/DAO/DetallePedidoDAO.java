@@ -47,7 +47,7 @@ public class DetallePedidoDAO {
             }
         } catch (Exception e) {
             if (transaction != null) {
-                transaction.rollback();
+                //transaction.rollback();
             }
             e.printStackTrace();
         }
@@ -55,11 +55,11 @@ public class DetallePedidoDAO {
 
     private boolean existeDetalle(Session session, DetallePedido detalle) {
         // Utiliza HQL para la verificación en lugar de SQL directo
-        String hql = "SELECT COUNT(*) FROM DetallePedido WHERE numeroPedido = :numeroPedido AND articulo.codigo = :codigoArticulo";
+        String hql = "SELECT COUNT(*) FROM DetallePedido WHERE numeroPedido = :numeroPedido AND articulo = :articulo";
 
         Long count = session.createQuery(hql, Long.class)
-                .setParameter("numeroPedido", detalle.getNumeroPedido())
-                .setParameter("codigoArticulo", detalle.getArticulo().getCodigo())
+                .setParameter("numeroPedido", detalle.getPedido().getNumeroPedido())
+                .setParameter("articulo", detalle.getArticulo())
                 .uniqueResult();
 
         return count != null && count > 0;

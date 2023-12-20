@@ -4,7 +4,10 @@ import local.NextGen.modelo.*;
 import local.NextGen.util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.query.NativeQuery;
+import org.hibernate.query.Query;
 
+import java.math.BigInteger;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,29 +31,46 @@ public class PedidoDAO {
      */
     public int insertar(Pedido pedido) {
         Transaction transaction = null;
-        int numeroPedidoGenerado = -1;
+        BigInteger numeroPedidoGenerado = null;
 
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
 
             // Usa HQL para la inserción en lugar de SQL directo
-            session.save(pedido);
+          String bfp = "before persist";
+//            Pedido np = new Pedido();
+//            np.setCliente((ClientePremium) pedido.getCliente());
+//            np.setFechaHora(pedido.getFechaHora());
+//            np.setEstadoPedido(pedido.getEstadoPedido());
+//            session.persist(pedido);
 
-            numeroPedidoGenerado = pedido.getNumeroPedido();
+            String sql = "INSERT INTO pedidos (id_cliente, fecha_hora_pedido, estado_pedido) VALUES (:idCliente, :fecha_hora_pedido, :estado_pedido)";
+            NativeQuery<?> query = session.createNativeQuery(sql);
 
-            for (DetallePedido detalle : pedido.getDetallesPedido()) {
-                detallePedidoDAO.agregarDetalle(new DetallePedido(numeroPedidoGenerado, detalle.getArticulo(), detalle.getCantidad()));
+            query.setParameter("idCliente", pedido.getCliente().getIdCliente());
+            query.setParameter("fecha_hora_pedido", pedido.getFechaHora());
+            query.setParameter("estado_pedido", pedido.getEstadoPedido().name());
+
+            int result = query.executeUpdate();
+
+            if (result > 0) {
+
+                transaction.commit();
+            int test = 0;
+                numeroPedidoGenerado = (BigInteger) session.createNativeQuery("SELECT LAST_INSERT_ID()").uniqueResult();
             }
+            bfp = "after persist";
 
-            transaction.commit();
+            bfp = "afffter persist";
+
+
+
         } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
-            e.printStackTrace();
+            throw new DAOException("Error al crear el pedido", e);
+            //e.printStackTrace();
         }
 
-        return numeroPedidoGenerado;
+        return numeroPedidoGenerado.intValue();
     }
 
     /**

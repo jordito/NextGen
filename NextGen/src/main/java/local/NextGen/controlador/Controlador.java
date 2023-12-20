@@ -142,31 +142,33 @@ public class Controlador {
     public static Pedido agregarPedido(Pedido pedido) throws SQLException {
         PedidoDAO pd = new PedidoDAO();
         DetallePedidoDAO dpd = new DetallePedidoDAO();
-        try (Connection conn = obtenerConexion()) {
-            conn.setAutoCommit(false);
 
-            try {
+
+//        try (Connection conn = obtenerConexion()) {
+//            conn.setAutoCommit(false);
+//
+//            try {
                 int numeroPedidoGenerado = pd.insertar(pedido);
 
                 if (numeroPedidoGenerado > 0) {
                     for (DetallePedido detalle : pedido.getDetallesPedido()) {
-                        detalle.setNumeroPedido(numeroPedidoGenerado);
+                        detalle.setPedido(pedido);
                         dpd.agregarDetalle(detalle);
                     }
 
-                    conn.commit();  // Confirmar transacción
+//                    conn.commit();  // Confirmar transacción
                     return pedido;
                 } else {
                     System.out.println("Error al agregar el pedido. No se generó un número de pedido válido.");
-                    conn.rollback();
+//                    conn.rollback();
                     return null;
                 }
-            } catch (SQLException e) {
-                conn.rollback();
-                e.printStackTrace();
-                return null;
-            }
-        }
+//            } catch (SQLException e) {
+//                conn.rollback();
+//                e.printStackTrace();
+//                return null;
+//            }
+//        }
     }
 
     public static boolean eliminarPedido(int numeroPedido) throws SQLException {
@@ -176,15 +178,20 @@ public class Controlador {
 
     public static List<Pedido> listarPedidosPendientes() throws SQLException {
         PedidoDAO pd = new PedidoDAO();
-        return pd.listarTodos().stream()
+        /*return pd.listarTodos().stream()
                 .filter(pedido -> !pedido.isEnviado())
                 .collect(Collectors.toList());
+
+         */
+        return null;
     }
 
     public static List<Pedido> listarPedidosEnviados() throws SQLException {
         PedidoDAO pd = new PedidoDAO();
-        return pd.listarTodos().stream()
+        /*return pd.listarTodos().stream()
                 .filter(Pedido::isEnviado)
                 .collect(Collectors.toList());
+                */
+         return null;
     }
 }

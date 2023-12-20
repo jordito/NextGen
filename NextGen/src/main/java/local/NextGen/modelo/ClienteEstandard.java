@@ -1,8 +1,7 @@
 package local.NextGen.modelo;
 
-import javax.persistence.Entity;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Map;
 
 /**
  * Clase que representa un cliente estándar. Hereda de la clase abstracta Cliente.
@@ -11,18 +10,33 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "clientesestandard")
 @PrimaryKeyJoinColumn(name = "id_cliente")
-public abstract class ClienteEstandard extends Cliente {
+@DiscriminatorValue("Estandard")
+public class ClienteEstandard extends Cliente {
+
+    @Column(name = "tipo_cliente")
+    private String tipoCliente;
 
     public ClienteEstandard() {
     }
 
     public ClienteEstandard(int idCliente, String nombre, String direccion, String nif, String email) {
         super(idCliente, nombre, direccion, nif, email);
+        this.tipoCliente = "Estandard";
     }
 
     @Override
     public String tipoCliente() {
         return "Estandard";
+    }
+
+    @Override
+    public String getTipoCliente() {
+        return tipoCliente;
+    }
+
+    @Override
+    public void setTipoCliente(String tipoCliente) {
+        this.tipoCliente = tipoCliente;
     }
 
     @Override
@@ -38,5 +52,10 @@ public abstract class ClienteEstandard extends Cliente {
     @Override
     public String toString() {
         return super.toString() + " \u001B[33m(Estandard)\u001B[0m";
+    }
+
+    @Override
+    public Map<String, Object> toMap() {
+        return null;
     }
 }

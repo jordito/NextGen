@@ -1,11 +1,9 @@
 package local.NextGen.modelo;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Clase que representa un artículo con sus atributos.
@@ -29,6 +27,9 @@ public class Articulo implements Serializable {
 
     @Column(name = "tiempo_preparacion")
     private int tiempoPreparacion;
+
+    @OneToMany(mappedBy = "articulo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DetallePedido> detallesPedido;
 
     public Articulo() {
     }

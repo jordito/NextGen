@@ -2,6 +2,7 @@ package local.NextGen.modelo;
 
 import javax.persistence.*;
 
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -16,7 +17,11 @@ import java.util.List;
 
 @Entity
 @Table(name = "pedidos")
-public class Pedido {
+public class Pedido implements Serializable {
+    public enum EstadoPedido {
+        PENDIENTE,
+        ENVIADO
+    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "numero_pedido")
@@ -29,15 +34,11 @@ public class Pedido {
     @JoinColumn(name = "id_cliente")
     private Cliente cliente;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "estado_pedido")
-    private boolean enviado;
+    private EstadoPedido estadoPedido;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "detallepedido",
-            joinColumns = @JoinColumn(name = "numeroPedido"),
-            inverseJoinColumns = @JoinColumn(name = "codigoArticulo")
-    )
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
     private List<DetallePedido> detallesPedido;
 
     public Pedido() {
@@ -50,13 +51,12 @@ public class Pedido {
      * @param cliente Cliente que realiza el pedido.
      * @param detallesPedido Lista de detalles del pedido.
      */
-    public Pedido(int numeroPedido, Date fechaHora, Cliente cliente, List<DetallePedido> detallesPedido) {
+    public Pedido(int numeroPedido, Date fechaHora, Cliente cliente, List<DetallePedido> detallesPedido, EstadoPedido estadoPedido) {
         this.numeroPedido = numeroPedido;
         this.fechaHora = fechaHora;
         this.cliente = cliente;
         this.detallesPedido = detallesPedido;
-        this.enviado = false;
-
+        this.estadoPedido = estadoPedido;
     }
 
     // Getters y setters
@@ -86,12 +86,12 @@ public class Pedido {
         this.cliente = cliente;
     }
 
-    public boolean isEnviado() {
-        return enviado;
+    public EstadoPedido getEstadoPedido() {
+        return estadoPedido;
     }
 
-    public void setEnviado(boolean enviado) {
-        this.enviado = enviado;
+    public void setEstadoPedido(EstadoPedido estadoPedido) {
+        this.estadoPedido = estadoPedido;
     }
 
     public List<DetallePedido> getDetallesPedido() {
@@ -108,9 +108,9 @@ public class Pedido {
      */
     public Double precioTotal() {
         Double total = 0.0;
-        for (DetallePedido detalle : detallesPedido) {
+        /*for (DetallePedido detalle : detallesPedido) {
             total += detalle.getPrecioVenta() * detalle.getCantidad();
-        }
+        }*/
         return total;
     }
     /**
@@ -134,13 +134,15 @@ public class Pedido {
         DecimalFormat df = new DecimalFormat("#.##");
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         String fechaFormato = dateFormat.format(fechaHora);
-        String estadoPedido = isEnviado() ? "Enviado" : "Pendiente";
+
 
         StringBuilder detalles = new StringBuilder();
         detalles.append("\n\u001B[33mDetalles del Pedido:\u001B[0m\n");
-        for (DetallePedido detalle : detallesPedido) {
+        /*for (DetallePedido detalle : detallesPedido) {
             detalles.append(detalle.toString()).append("\n");
         }
+
+         */
 
         return String.format("Pedido Número: %-5s| Fecha: %-10s | Cliente: %-10s | Estado: %-8s | Precio Total: %-8s %s",
                 numeroPedido, fechaFormato, cliente.getNif(), estadoPedido, df.format(precioTotal()) + "€", detalles);

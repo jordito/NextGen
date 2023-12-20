@@ -12,17 +12,22 @@ import java.text.DecimalFormat;
 public class DetallePedido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "numero_pedido")
-    private int numeroPedido;
+    private int id;
+    @JoinColumn(name = "numero_pedido")
+    @ManyToOne
+    //@Column(name = "numero_pedido")
+    private Pedido pedido;
 
-    @Column(name = "articulos")
+    @JoinColumn(name = "codigo_articulo")
+    @ManyToOne
+    //@Column(name = "codigo_articulo")
     private Articulo articulo;
 
     @Column(name = "cantidad")
     private int cantidad;
 
     @Column(name = "precio_venta")
-    private int precioVenta;
+    private double precioVenta;
 
     public DetallePedido() {
     }
@@ -34,20 +39,30 @@ public class DetallePedido {
      * @param articulo     El objeto Articulo en este detalle de pedido.
      * @param cantidad     La cantidad del artículo en este detalle.
      */
-    public DetallePedido(int numeroPedido, Articulo articulo, int cantidad) {
-        this.numeroPedido = numeroPedido;
+    public DetallePedido(Pedido pedido, Articulo articulo, int cantidad) {
+        this.pedido = pedido;
         this.articulo = articulo;
         this.cantidad = cantidad;
+        this.precioVenta = articulo.getPrecio();
     }
 
     // Getters y Setters
 
-    public int getNumeroPedido() {
-        return numeroPedido;
+//    public int getNumeroPedido() {
+//        return numeroPedido;
+//    }
+//
+//    public void setNumeroPedido(int numeroPedido) {
+//        this.numeroPedido = numeroPedido;
+//    }
+
+
+    public Pedido getPedido() {
+        return pedido;
     }
 
-    public void setNumeroPedido(int numeroPedido) {
-        this.numeroPedido = numeroPedido;
+    public void setPedido(Pedido pedido) {
+        this.pedido = pedido;
     }
 
     public Articulo getArticulo() {
@@ -76,6 +91,14 @@ public class DetallePedido {
             return articulo.getPrecio();
         } else {
             return 0.0;
+        }
+    }
+
+    public void setPrecioVenta(double precioVenta) {
+        if (articulo != null) {
+            this.precioVenta = precioVenta;
+        } else {
+            this.precioVenta = 0.0;
         }
     }
 
