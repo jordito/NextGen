@@ -45,11 +45,12 @@ CREATE TABLE Pedidos (
 
 -- Tabla DetallePedido para manejar relación muchos a muchos entre Pedidos y Articulos
 CREATE TABLE DetallePedido (
+    id INT AUTO_INCREMENT,
     numero_pedido INT,
     codigo_articulo VARCHAR(50),
     cantidad INT CHECK (cantidad > 0),
     precio_venta DECIMAL(10, 2),
-    PRIMARY KEY (numero_pedido, codigo_articulo),
+    PRIMARY KEY (id),
     FOREIGN KEY (numero_pedido) REFERENCES Pedidos(numero_pedido) ON DELETE CASCADE,
     FOREIGN KEY (codigo_articulo) REFERENCES Articulos(codigo)
 );

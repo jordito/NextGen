@@ -101,7 +101,11 @@ public class VistaPedido {
                             int cantidad = scanner.nextInt();
                             scanner.nextLine();
 
-                            DetallePedido detalle = new DetallePedido(nuevoPedido, articulo, cantidad);
+//                            DetallePedido detalle = new DetallePedido(nuevoPedido, articulo, cantidad);
+                            DetallePedido detalle = new DetallePedido();
+                            detalle.setPedido(nuevoPedido);
+                            detalle.setArticulo(articulo);
+                            detalle.setCantidad(cantidad);
                             nuevoPedido.agregarDetalle(detalle);
 
                             System.out.print("\u001B[34m¿Desea agregar otro artículo? (S/N):\u001B[0m ");

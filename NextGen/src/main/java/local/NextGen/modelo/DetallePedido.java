@@ -2,6 +2,7 @@ package local.NextGen.modelo;
 
 import javax.persistence.*;
 
+import java.io.Serializable;
 import java.text.DecimalFormat;
 
 /**
@@ -9,17 +10,22 @@ import java.text.DecimalFormat;
  */
 @Entity
 @Table(name = "detallepedido")
-public class DetallePedido {
+public class DetallePedido implements Serializable {
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    private int id;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    @JoinColumn(name = "numero_pedido")
+    private Integer id;
+
     @ManyToOne
+    @JoinColumn(name = "numero_pedido")
     //@Column(name = "numero_pedido")
     private Pedido pedido;
 
-    @JoinColumn(name = "codigo_articulo")
     @ManyToOne
+    @JoinColumn(name = "codigo_articulo")
     //@Column(name = "codigo_articulo")
     private Articulo articulo;
 
@@ -39,7 +45,8 @@ public class DetallePedido {
      * @param articulo     El objeto Articulo en este detalle de pedido.
      * @param cantidad     La cantidad del artículo en este detalle.
      */
-    public DetallePedido(Pedido pedido, Articulo articulo, int cantidad) {
+    public DetallePedido(int id, Pedido pedido, Articulo articulo, int cantidad) {
+        this.id = id;
         this.pedido = pedido;
         this.articulo = articulo;
         this.cantidad = cantidad;
@@ -56,6 +63,14 @@ public class DetallePedido {
 //        this.numeroPedido = numeroPedido;
 //    }
 
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public Pedido getPedido() {
         return pedido;

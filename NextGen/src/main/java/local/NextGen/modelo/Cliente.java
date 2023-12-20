@@ -32,8 +32,8 @@ public abstract class Cliente implements Serializable {
     @Column(name = "tipo_cliente")
     private String tipoCliente;
 
-    @OneToOne(mappedBy = "cliente")
-    private Pedido pedido;
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Pedido> pedidos;
 
     public Cliente() {
     }

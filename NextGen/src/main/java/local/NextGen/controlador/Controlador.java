@@ -152,7 +152,9 @@ public class Controlador {
 
                 if (numeroPedidoGenerado > 0) {
                     for (DetallePedido detalle : pedido.getDetallesPedido()) {
+                        pedido.setNumeroPedido(numeroPedidoGenerado);
                         detalle.setPedido(pedido);
+
                         dpd.agregarDetalle(detalle);
                     }
 
@@ -178,20 +180,20 @@ public class Controlador {
 
     public static List<Pedido> listarPedidosPendientes() throws SQLException {
         PedidoDAO pd = new PedidoDAO();
-        /*return pd.listarTodos().stream()
-                .filter(pedido -> !pedido.isEnviado())
+        return pd.listarTodos().stream()
+                .filter(pedido -> pedido.getEstadoPedido() == Pedido.EstadoPedido.PENDIENTE)
                 .collect(Collectors.toList());
 
-         */
-        return null;
+
+        //return null;
     }
 
     public static List<Pedido> listarPedidosEnviados() throws SQLException {
         PedidoDAO pd = new PedidoDAO();
-        /*return pd.listarTodos().stream()
-                .filter(Pedido::isEnviado)
+        return pd.listarTodos().stream()
+                .filter(pedido -> pedido.getEstadoPedido() == Pedido.EstadoPedido.ENVIADO)
                 .collect(Collectors.toList());
-                */
-         return null;
+
+        // return null;
     }
 }

@@ -55,10 +55,10 @@ public class DetallePedidoDAO {
 
     private boolean existeDetalle(Session session, DetallePedido detalle) {
         // Utiliza HQL para la verificación en lugar de SQL directo
-        String hql = "SELECT COUNT(*) FROM DetallePedido WHERE numeroPedido = :numeroPedido AND articulo = :articulo";
+        String hql = "SELECT COUNT(*) FROM DetallePedido WHERE pedido = :pedido AND articulo = :articulo";
 
         Long count = session.createQuery(hql, Long.class)
-                .setParameter("numeroPedido", detalle.getPedido().getNumeroPedido())
+                .setParameter("pedido", detalle.getPedido())
                 .setParameter("articulo", detalle.getArticulo())
                 .uniqueResult();
 

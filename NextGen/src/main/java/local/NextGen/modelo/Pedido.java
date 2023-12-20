@@ -30,7 +30,7 @@ public class Pedido implements Serializable {
     @Column(name = "fecha_hora_pedido")
     private Date fechaHora;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "id_cliente")
     private Cliente cliente;
 
@@ -38,7 +38,7 @@ public class Pedido implements Serializable {
     @Column(name = "estado_pedido")
     private EstadoPedido estadoPedido;
 
-    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DetallePedido> detallesPedido;
 
     public Pedido() {
