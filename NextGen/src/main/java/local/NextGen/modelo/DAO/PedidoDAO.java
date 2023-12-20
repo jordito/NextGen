@@ -18,14 +18,6 @@ import java.util.List;
  * Esta clase se encarga de realizar operaciones CRUD (Crear, Leer, Actualizar, Eliminar) para los pedidos.
  */
 public class PedidoDAO {
-    private DetallePedidoDAO detallePedidoDAO = null;
-    private final ClienteDAO clienteDAO;
-
-    public PedidoDAO() {
-        this.detallePedidoDAO = new DetallePedidoDAO();
-        this.clienteDAO = new ClienteDAO();
-    }
-
     /**
      * Inserta un nuevo pedido en la base de datos.
      */
@@ -76,29 +68,33 @@ public class PedidoDAO {
     /**
      * Elimina un pedido de la base de datos.
      */
-    public boolean eliminar(int numeroPedido) {
+    public boolean eliminar(Pedido pedido) {
+        DetallePedidoDAO dpd = new DetallePedidoDAO();
         Transaction transaction = null;
 
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
 
             // Usa HQL para la eliminación en lugar de SQL directo
-            String hql = "DELETE FROM Pedido WHERE numeroPedido = :numeroPedido";
-            int result = session.createQuery(hql)
-                    .setParameter("numeroPedido", numeroPedido)
-                    .executeUpdate();
+//            String hql = "DELETE FROM Pedido WHERE pedido = :pedido";
+//            int result = session.createQuery(hql)
+//                    .setParameter("pedido", pedido)
+//                    .executeUpdate();
 
-            if (result > 0) {
-                detallePedidoDAO.eliminarPorPedido(numeroPedido);
-            }
+
+            dpd.eliminarPorPedido(pedido);
+            session.delete(pedido);
+//            if (result > 0) {
+//                dpd.eliminarPorPedido(pedido);
+//            }
 
             transaction.commit();
 
-            return result > 0;
+            return true;
         } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
+//            if (transaction != null) {
+//                transaction.rollback();
+//            }
             e.printStackTrace();
             return false;
         }

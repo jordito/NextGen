@@ -175,7 +175,8 @@ public class Controlador {
 
     public static boolean eliminarPedido(int numeroPedido) throws SQLException {
         PedidoDAO pd = new PedidoDAO();
-        return pd.eliminar(numeroPedido);
+        Pedido pedido = pd.obtenerPorNumero(numeroPedido);
+        return pd.eliminar(pedido);
     }
 
     public static List<Pedido> listarPedidosPendientes() throws SQLException {

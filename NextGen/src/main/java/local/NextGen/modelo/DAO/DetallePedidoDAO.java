@@ -71,16 +71,16 @@ public class DetallePedidoDAO {
     /**
      * Elimina un detalle de pedido de la base de datos.
      */
-    public boolean eliminarPorPedido(int numeroPedido) {
+    public boolean eliminarPorPedido(Pedido pedido) {
         Transaction transaction = null;
 
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
 
             // Usa HQL para la eliminación en lugar de SQL directo
-            String hql = "DELETE FROM DetallePedido WHERE numeroPedido = :numeroPedido";
+            String hql = "DELETE FROM DetallePedido WHERE pedido = :pedido";
             int result = session.createQuery(hql)
-                    .setParameter("numeroPedido", numeroPedido)
+                    .setParameter("pedido", pedido)
                     .executeUpdate();
 
             transaction.commit();
