@@ -108,7 +108,9 @@ public class Pedido implements Serializable {
      */
     public Double precioTotal() {
         Double total = 0.0;
-        for (DetallePedido detalle : detallesPedido) {
+        DetallePedidoDAO dpd = new DetallePedidoDAO();
+        List<DetallePedido> pedidoDetalles = dpd.listarPorPedido(this);
+        for (DetallePedido detalle : pedidoDetalles) {
             total += detalle.getPrecioVenta() * detalle.getCantidad();
         }
         return total;
