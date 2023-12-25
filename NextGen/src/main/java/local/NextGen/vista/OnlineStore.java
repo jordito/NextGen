@@ -1,27 +1,14 @@
-
 package local.NextGen.vista;
 
 import local.NextGen.exceptions.CustomException;
 
+/**
+ * Esta clase representa una tienda en línea y se encarga de iniciar la aplicación.
+ */
 public class OnlineStore {
-    public static void main(String[] args) throws CustomException {
-
-    GestionOs.iniciar();
-    }
-
-    public class CambiarColorTexto {
-        public static void main(String[] args) {
-            // Códigos ANSI para colores de texto
-            String RESET = "\u001B[0m";
-            String RED = "\u001B[31m";
-            String GREEN = "\u001B[32m";
-            String YELLOW = "\u001B[33m";
-            String BLUE = "\u001B[34m";
-
-            System.out.println(RED + "Este texto es rojo." + RESET);
-            System.out.println(GREEN + "Este texto es verde." + RESET);
-            System.out.println(YELLOW + "Este texto es amarillo." + RESET);
-            System.out.println(BLUE + "Este texto es azul." + RESET);
-        }
+    public static void main(String[] args) {
+        // Iniciar la aplicación JavaFX a través de la clase GestionOs
+        GestionOs.launch(GestionOs.class, args);
     }
 }
+

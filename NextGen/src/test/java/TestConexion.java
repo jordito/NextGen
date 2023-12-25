@@ -1,29 +1,34 @@
-
-import local.NextGen.modelo.ConexionBD;
-import java.sql.Connection;
-import java.sql.SQLException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 
 public class TestConexion {
 
     public static void main(String[] args) {
-        Connection conexion = null;
+        // Configurar la sesión de Hibernate
+        SessionFactory sessionFactory = new Configuration()
+                .configure("hibernate.cfg.xml") // Nombre del archivo de configuración de Hibernate
+                .buildSessionFactory();
+
+        Session session = null;
         try {
-            conexion = ConexionBD.obtenerConexion();
-            if (conexion != null) {
+            // Obtener una sesión de Hibernate
+            session = sessionFactory.openSession();
+
+            if (session != null) {
                 System.out.println("Conexión establecida con éxito.");
             }
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Error al conectar a la base de datos.");
         } finally {
-            if (conexion != null) {
-                try {
-                    conexion.close();
-                    System.out.println("Conexión cerrada.");
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+            if (session != null) {
+                session.close(); // Cerrar la sesión de Hibernate
+                System.out.println("Conexión cerrada.");
             }
         }
+
+        // Cerrar la fábrica de sesiones de Hibernate al finalizar
+        sessionFactory.close();
     }
 }

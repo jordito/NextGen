@@ -1,0 +1,27 @@
+
+<hibernate-configuration>
+    <session-factory>
+        <!-- Propiedades de conexión a la base de datos -->
+        <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+        <property name="hibernate.connection.url">jdbc:mysql://127.0.0.1:3306/tienda</property>
+        <property name="hibernate.connection.username">root</property>
+        <property name="hibernate.connection.password">1@@.oX?$C&lt;B&gt;</property>
+
+
+        <!-- Especificar el dialecto que se utiliza en la base de datos -->
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQL8Dialect</property>
+
+        <!-- Configuraciones opcionales -->
+        <property name="show_sql">true</property>
+        <property name="format_sql">true</property>
+        <property name="hibernate.hbm2ddl.auto">update</property>
+
+        <!-- Mapeo de entidades -->
+        <mapping class="local.NextGen.modelo.entidades.Cliente"/>
+        <mapping class="local.NextGen.modelo.entidades.ClienteEstandard"/>
+        <mapping class="local.NextGen.modelo.entidades.ClientePremium"/>
+        <mapping class="local.NextGen.modelo.entidades.Articulo"/>
+        <mapping class="local.NextGen.modelo.entidades.Pedido"/>
+        <mapping class="local.NextGen.modelo.entidades.DetallePedido"/>
+    </session-factory>
+</hibernate-configuration>
