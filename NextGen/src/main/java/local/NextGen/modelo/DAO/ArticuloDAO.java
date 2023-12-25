@@ -1,138 +1,108 @@
 package local.NextGen.modelo.DAO;
 
-import local.NextGen.modelo.Articulo;
-import java.sql.*;
-import java.util.ArrayList;
+import local.NextGen.modelo.entidades.Articulo;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+
 import java.util.List;
 
 /**
- * Clase DAO para gestionar los artículos en la base de datos.
+ * Clase ArticuloDAO para la gestión de operaciones de base de datos relacionadas con entidades Articulo.
+ * Utiliza Hibernate para realizar operaciones CRUD (Crear, Leer, Actualizar, Eliminar).
  */
 public class ArticuloDAO {
-    private static Connection conexion;
+    private SessionFactory sessionFactory;
 
     /**
      * Constructor de ArticuloDAO.
-     * @param conexion La conexión a la base de datos.
+     *
+     * @param sessionFactory Instancia de SessionFactory para la conexión con la base de datos.
      */
-    public ArticuloDAO(Connection conexion) {
-        this.conexion = conexion;
+    public ArticuloDAO(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
     }
 
     /**
-     * Obtiene todos los artículos de la base de datos.
+     * Obtiene todos los artículos disponibles en la base de datos.
+     *
+     * @return Lista de objetos Articulo.
      */
-    public static List<Articulo> obtenerTodos() {
-        List<Articulo> articulos = new ArrayList<>();
-        String sql = "SELECT * FROM Articulos";
-        try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                articulos.add(new Articulo(
-                        rs.getString("codigo"),
-                        rs.getString("descripcion"),
-                        rs.getDouble("precio_venta"),
-                        rs.getDouble("gastos_envio"),
-                        rs.getInt("tiempo_preparacion")
-                ));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public List<Articulo> obtenerTodos() {
+        try (Session session = sessionFactory.openSession()) {
+            return session.createQuery("from Articulo", Articulo.class).list();
         }
-        return articulos;
     }
+
     /**
-     * Obtiene un artículo específico de la base de datos por su código.
+     * Obtiene un artículo por su código único.
      *
      * @param codigo El código del artículo a buscar.
-     * @return El objeto Articulo si se encuentra, o null si no existe.
-     * @throws SQLException Si ocurre un error durante la consulta SQL.
+     * @return El artículo si existe, null en caso contrario.
      */
-    public static Articulo obtenerPorCodigo(String codigo) throws SQLException {
-        System.out.println("Código ingresado: " + codigo);
-
-        String sql = "SELECT * FROM Articulos WHERE LOWER(codigo) = LOWER(?)";
-
-        try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
-            stmt.setString(1, codigo);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                return new Articulo(
-                        rs.getString("codigo"),
-                        rs.getString("descripcion"),
-                        rs.getDouble("precio_venta"),
-                        rs.getDouble("gastos_envio"),
-                        rs.getInt("tiempo_preparacion"));
-            }
+    public Articulo obtenerPorCodigo(String codigo) {
+        try (Session session = sessionFactory.openSession()) {
+            return session.get(Articulo.class, codigo);
         }
-        return null;
     }
-
-
 
     /**
      * Inserta un nuevo artículo en la base de datos.
      *
-     * @param articulo El objeto Articulo a insertar.
+     * @param articulo El artículo a insertar.
      */
-    public static void insertar(Articulo articulo) {
-        String sql = "INSERT INTO Articulos (codigo, descripcion, precio_venta, gastos_envio, tiempo_preparacion) VALUES (?, ?, ?, ?, ?)";
-        try (PreparedStatement stmt = conexion.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            stmt.setString(1, articulo.getCodigo());
-            stmt.setString(2, articulo.getDescripcion());
-            stmt.setDouble(3, articulo.getPrecio());
-            stmt.setDouble(4, articulo.getGastosEnvio());
-            stmt.setInt(5, articulo.getTiempoPreparacion());
-            int affectedRows = stmt.executeUpdate();
-            if (affectedRows > 0) {
-                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-                    if (generatedKeys.next()) {
-                        articulo.setCodigo(generatedKeys.getString(1));
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public void insertar(Articulo articulo) {
+        Transaction tx = null;
+        try (Session session = sessionFactory.openSession()) {
+            tx = session.beginTransaction();
+            session.save(articulo);
+            tx.commit();
+        } catch (Exception e) {
+            if (tx != null) tx.rollback();
+            throw e;
         }
     }
 
     /**
-     * Actualiza los datos de un artículo en la base de datos.
-     * @param articulo El objeto Articulo con los datos a actualizar.
-     * @return true si la actualización fue exitosa, false en caso contrario.
+     * Actualiza un artículo existente en la base de datos.
+     *
+     * @param articulo El artículo con la información actualizada.
+     * @return Verdadero si la actualización es exitosa, falso en caso contrario.
      */
-    public static boolean actualizar(Articulo articulo) {
-        String sql = "UPDATE Articulos SET descripcion = ?, precio_venta = ?, gastos_envio = ?, tiempo_preparacion = ? WHERE codigo = ?";
-        try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
-            stmt.setString(1, articulo.getDescripcion());
-            stmt.setDouble(2, articulo.getPrecio());
-            stmt.setDouble(3, articulo.getGastosEnvio());
-            stmt.setInt(4, articulo.getTiempoPreparacion());
-            stmt.setString(5, articulo.getCodigo());
-            return stmt.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public boolean actualizar(Articulo articulo) {
+        Transaction tx = null;
+        try (Session session = sessionFactory.openSession()) {
+            tx = session.beginTransaction();
+            session.update(articulo);
+            tx.commit();
+            return true;
+        } catch (Exception e) {
+            if (tx != null) tx.rollback();
             return false;
         }
     }
 
     /**
-     * Elimina un artículo de la base de datos utilizando su código.
+     * Elimina un artículo de la base de datos basándose en su código.
      *
      * @param codigo El código del artículo a eliminar.
-     * @return
+     * @return Verdadero si la eliminación es exitosa, falso en caso contrario.
      */
-    public static boolean eliminar(String codigo) {
-        String sql = "DELETE FROM Articulos WHERE codigo = ?";
-        try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
-            stmt.setString(1, codigo);
-            int filasAfectadas = stmt.executeUpdate();
-            return filasAfectadas > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public boolean eliminar(String codigo) {
+        Transaction tx = null;
+        try (Session session = sessionFactory.openSession()) {
+            tx = session.beginTransaction();
+            Articulo articulo = session.get(Articulo.class, codigo);
+            if (articulo != null) {
+                session.delete(articulo);
+                tx.commit();
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            if (tx != null) tx.rollback();
+            return false;
         }
-        return false;
     }
 }
 

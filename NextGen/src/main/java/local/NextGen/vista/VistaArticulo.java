@@ -1,125 +1,214 @@
 package local.NextGen.vista;
-import local.NextGen.exceptions.CustomException;
-import local.NextGen.modelo.*;
-import local.NextGen.modelo.DAO.ArticuloDAO;
 
-import java.sql.SQLException;
-import java.util.Scanner;
-import local.NextGen.controlador.*;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import local.NextGen.controlador.ControladorArticulo;
+import local.NextGen.modelo.entidades.Articulo;
+
+import java.math.BigDecimal;
+import java.util.List;
+
 public class VistaArticulo {
-    static Scanner scanner = new Scanner(System.in);
 
-    private static char pedirOpcion() {
-        System.out.print("Ingrese la opción deseada: ");
-        return scanner.nextLine().charAt(0);
-    }
-    private static void agregarNuevoArticulo() {
-        System.out.println("\u001B[34mIngrese los detalles del nuevo artículo:\u001B[0m");
+    private ControladorArticulo controladorArticulo;
 
-        System.out.print("\u001B[34mCodigo:  \u001B[0m");
-        String codigo = scanner.nextLine();
-
-        System.out.print("\u001B[34mDescripción: \u001B[0m");
-        String descripcion = scanner.nextLine();
-
-        System.out.print("\u001B[34mPrecio: \u001B[0m");
-        double precio = scanner.nextDouble();
-        scanner.nextLine();
-
-        System.out.print("\u001B[34mGastos de envío: \u001B[0m");
-        double gastosEnvio = scanner.nextDouble();
-        scanner.nextLine();
-
-        System.out.print("\u001B[34mTiempo de preparación: \u001B[0m");
-        int tiempoPreparacion = scanner.nextInt();
-        scanner.nextLine();
-
-        local.NextGen.modelo.Articulo nuevoArticulo = new local.NextGen.modelo.Articulo(codigo, descripcion, precio, gastosEnvio, tiempoPreparacion);
-
-        local.NextGen.controlador.Controlador.agregarArticulo(nuevoArticulo);
-        System.out.println("\u001B[32m\nArtículo introducido con éxito:\u001B[0m");
-        System.out.println(nuevoArticulo);
+    public VistaArticulo(ControladorArticulo controlador) {
+        this.controladorArticulo = controlador;
     }
 
-    private static void eliminarArticulo() {
-        System.out.print("\u001B[34mIngrese el código del artículo que desea eliminar: \u001B[0m");
-        String codigo = scanner.nextLine();
+    public void gestionArticulos() {
+        Stage stage = new Stage();
+        stage.setTitle("Gestión de Artículos");
 
-        if (local.NextGen.controlador.Controlador.eliminarArticulo(codigo)) {
-            System.out.println("\u001B[32mArtículo eliminado con éxito\u001B[0m");
-        } else {
-            System.out.println("\u001B[31mError al eliminar el artículo\u001B[0m");
+        TableView<Articulo> tablaArticulos = new TableView<>();
+        configurarColumnasTabla(tablaArticulos);
+
+        Button btnListar = new Button("Listar Artículos");
+        Button btnAgregar = new Button("Agregar Artículo");
+        Button btnActualizar = new Button("Actualizar Artículo");
+        Button btnEliminar = new Button("Eliminar Artículo");
+
+        btnListar.setOnAction(e -> listarArticulos(tablaArticulos));
+        btnAgregar.setOnAction(e -> agregarNuevoArticulo(tablaArticulos));
+        btnActualizar.setOnAction(e -> actualizarArticulo(tablaArticulos));
+        btnEliminar.setOnAction(e -> eliminarArticulo(tablaArticulos));
+
+        VBox layout = new VBox(10, btnListar, btnAgregar, btnActualizar, btnEliminar, tablaArticulos);
+        Scene scene = new Scene(layout, 600, 400);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    private void configurarColumnasTabla(TableView<Articulo> tabla) {
+        TableColumn<Articulo, String> columnaCodigo = new TableColumn<>("Código");
+        columnaCodigo.setCellValueFactory(new PropertyValueFactory<>("codigo"));
+
+        TableColumn<Articulo, String> columnaDescripcion = new TableColumn<>("Descripción");
+        columnaDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
+
+        TableColumn<Articulo, BigDecimal> columnaPrecio = new TableColumn<>("Precio");
+        columnaPrecio.setCellValueFactory(new PropertyValueFactory<>("precioVenta"));
+
+        TableColumn<Articulo, BigDecimal> columnaGastosEnvio = new TableColumn<>("Gastos de Envío");
+        columnaGastosEnvio.setCellValueFactory(new PropertyValueFactory<>("gastosEnvio"));
+
+        TableColumn<Articulo, Integer> columnaTiempoPreparacion = new TableColumn<>("Tiempo de Preparación");
+        columnaTiempoPreparacion.setCellValueFactory(new PropertyValueFactory<>("tiempoPreparacion"));
+
+        tabla.getColumns().addAll(columnaCodigo, columnaDescripcion, columnaPrecio, columnaGastosEnvio, columnaTiempoPreparacion);
+    }
+
+    private void listarArticulos(TableView<Articulo> tabla) {
+        List<Articulo> articulos = controladorArticulo.listarArticulos();
+        tabla.getItems().setAll(articulos);
+    }
+
+    private void agregarNuevoArticulo(TableView<Articulo> tabla) {
+        // Ventana para agregar un nuevo artículo
+        Stage dialogStage = createDialogStage("Agregar Nuevo Artículo");
+
+        GridPane grid = new GridPane();
+        grid.setVgap(10);
+        grid.setHgap(10);
+        grid.setPadding(new Insets(10));
+
+        TextField txtCodigo = new TextField();
+        txtCodigo.setPromptText("Código");
+        TextField txtDescripcion = new TextField();
+        txtDescripcion.setPromptText("Descripción");
+        TextField txtPrecio = new TextField();
+        txtPrecio.setPromptText("Precio");
+        TextField txtGastosEnvio = new TextField();
+        txtGastosEnvio.setPromptText("Gastos de Envío");
+        TextField txtTiempoPreparacion = new TextField();
+        txtTiempoPreparacion.setPromptText("Tiempo de Preparación");
+
+        Button btnConfirmar = new Button("Agregar");
+        btnConfirmar.setOnAction(e -> {
+            try {
+                Articulo nuevoArticulo = new Articulo(
+                        txtCodigo.getText(),
+                        txtDescripcion.getText(),
+                        new BigDecimal(txtPrecio.getText()),
+                        new BigDecimal(txtGastosEnvio.getText()),
+                        Integer.parseInt(txtTiempoPreparacion.getText())
+                );
+                controladorArticulo.agregarArticulo(nuevoArticulo);
+                listarArticulos(tabla);
+                dialogStage.close();
+            } catch (NumberFormatException ex) {
+                // Manejar error de formato de números
+            }
+        });
+
+        grid.add(new Label("Código:"), 0, 0);
+        grid.add(txtCodigo, 1, 0);
+        grid.add(new Label("Descripción:"), 0, 1);
+        grid.add(txtDescripcion, 1, 1);
+        grid.add(new Label("Precio:"), 0, 2);
+        grid.add(txtPrecio, 1, 2);
+        grid.add(new Label("Gastos de Envío:"), 0, 3);
+        grid.add(txtGastosEnvio, 1, 3);
+        grid.add(new Label("Tiempo de Preparación:"), 0, 4);
+        grid.add(txtTiempoPreparacion, 1, 4);
+        grid.add(btnConfirmar, 1, 5);
+
+        Scene scene = new Scene(grid);
+        dialogStage.setScene(scene);
+        dialogStage.show();
+    }
+    private void actualizarArticulo(TableView<Articulo> tabla) {
+        Articulo articuloSeleccionado = tabla.getSelectionModel().getSelectedItem();
+        if (articuloSeleccionado == null) {
+            // Mostrar mensaje de error o indicación para seleccionar un artículo
+            return;
         }
+
+        Stage dialogStage = createDialogStage("Actualizar Artículo");
+
+        GridPane grid = new GridPane();
+        grid.setVgap(10);
+        grid.setHgap(10);
+        grid.setPadding(new Insets(10));
+
+        TextField txtDescripcion = new TextField(articuloSeleccionado.getDescripcion());
+        TextField txtPrecio = new TextField(articuloSeleccionado.getPrecioVenta().toString());
+        TextField txtGastosEnvio = new TextField(articuloSeleccionado.getGastosEnvio().toString());
+        TextField txtTiempoPreparacion = new TextField(String.valueOf(articuloSeleccionado.getTiempoPreparacion()));
+
+        Button btnConfirmar = new Button("Actualizar");
+        btnConfirmar.setOnAction(e -> {
+            try {
+                articuloSeleccionado.setDescripcion(txtDescripcion.getText());
+                articuloSeleccionado.setPrecioVenta(new BigDecimal(txtPrecio.getText()));
+                articuloSeleccionado.setGastosEnvio(new BigDecimal(txtGastosEnvio.getText()));
+                articuloSeleccionado.setTiempoPreparacion(Integer.parseInt(txtTiempoPreparacion.getText()));
+
+                controladorArticulo.actualizarArticulo(articuloSeleccionado);
+                listarArticulos(tabla);
+                dialogStage.close();
+            } catch (NumberFormatException ex) {
+                // Manejar error de formato de números
+            }
+        });
+
+        grid.add(new Label("Descripción:"), 0, 0);
+        grid.add(txtDescripcion, 1, 0);
+        grid.add(new Label("Precio:"), 0, 1);
+        grid.add(txtPrecio, 1, 1);
+        grid.add(new Label("Gastos de Envío:"), 0, 2);
+        grid.add(txtGastosEnvio, 1, 2);
+        grid.add(new Label("Tiempo de Preparación:"), 0, 3);
+        grid.add(txtTiempoPreparacion, 1, 3);
+        grid.add(btnConfirmar, 1, 4);
+
+        Scene scene = new Scene(grid);
+        dialogStage.setScene(scene);
+        dialogStage.show();
     }
-    public static void actualizarArticulo() throws SQLException {
-        System.out.print("\u001B[34mIngrese el código del artículo a actualizar: \u001B[0m");
-        String codigo = scanner.nextLine();
 
-        local.NextGen.modelo.Articulo articulo = ArticuloDAO.obtenerPorCodigo(codigo);
-        if (articulo != null) {
-            System.out.println("\u001B[34mDetalles actuales del artículo:\u001B[0m");
-            System.out.println(articulo);
-
-            System.out.println("\u001B[34mIngrese los nuevos detalles (presione Enter para mantener los actuales):\u001B[0m");
-
-            System.out.print("\u001B[34mNueva descripción: \u001B[0m");
-            String nuevaDescripcion = scanner.nextLine().trim();
-            if (!nuevaDescripcion.isEmpty()) {
-                articulo.setDescripcion(nuevaDescripcion);
-            }
-
-            System.out.print("\u001B[34mNuevo precio: \u001B[0m");
-            String nuevoPrecioStr = scanner.nextLine().trim();
-            if (!nuevoPrecioStr.isEmpty()) {
-                double nuevoPrecio = Double.parseDouble(nuevoPrecioStr);
-                articulo.setPrecio(nuevoPrecio);
-            }
-
-            System.out.print("\u001B[34mNuevos gastos de envío: \u001B[0m");
-            String nuevosGastosEnvioStr = scanner.nextLine().trim();
-            if (!nuevosGastosEnvioStr.isEmpty()) {
-                double nuevosGastosEnvio = Double.parseDouble(nuevosGastosEnvioStr);
-                articulo.setGastosEnvio(nuevosGastosEnvio);
-            }
-
-            System.out.print("\u001B[34mNuevo tiempo de preparación: \u001B[0m");
-            String nuevoTiempoPreparacionStr = scanner.nextLine().trim();
-            if (!nuevoTiempoPreparacionStr.isEmpty()) {
-                int nuevoTiempoPreparacion = Integer.parseInt(nuevoTiempoPreparacionStr);
-                articulo.setTiempoPreparacion(nuevoTiempoPreparacion);
-            }
-
-            if (local.NextGen.controlador.Controlador.actualizarArticulo(articulo)) {
-                System.out.println("\u001B[32mArtículo actualizado con éxito\u001B[0m");
-                System.out.println(articulo);
-            } else {
-                System.out.println("\u001B[31mError al actualizar el artículo\u001B[0m");
-            }
-        } else {
-            System.out.println("\u001B[31mNo se encontró ningún artículo con el código proporcionado\u001B[0m");
+    private void eliminarArticulo(TableView<Articulo> tabla) {
+        Articulo articuloSeleccionado = tabla.getSelectionModel().getSelectedItem();
+        if (articuloSeleccionado == null) {
+            // Mostrar mensaje de error o indicación para seleccionar un artículo
+            return;
         }
+
+        Stage dialogStage = createDialogStage("Eliminar Artículo");
+
+        GridPane grid = new GridPane();
+        grid.setVgap(10);
+        grid.setHgap(10);
+        grid.setPadding(new Insets(10));
+
+        Label lblConfirmacion = new Label("¿Está seguro de que desea eliminar el artículo seleccionado?");
+        Button btnConfirmar = new Button("Eliminar");
+        btnConfirmar.setOnAction(e -> {
+            controladorArticulo.eliminarArticulo(articuloSeleccionado.getCodigo());
+            listarArticulos(tabla);
+            dialogStage.close();
+        });
+
+        grid.add(lblConfirmacion, 0, 0);
+        grid.add(btnConfirmar, 0, 1);
+
+        Scene scene = new Scene(grid);
+        dialogStage.setScene(scene);
+        dialogStage.show();
     }
-    public static void gestionArticulos() throws CustomException, SQLException {
-        char opcion;
-        do {
-            System.out.println("╔══════════════════════════════╗");
-            System.out.println("║     GESTIÓN ARTICULOS        ║");
-            System.out.println("╠══════════════════════════════╣");
-            System.out.println("║ 1. Listar Articulos          ║");
-            System.out.println("║ 2. Añadir Articulo           ║");
-            System.out.println("║ 3. Actualizar Articulo       ║");
-            System.out.println("║ 4. Eliminar Articulo         ║");
-            System.out.println("║ 0. Salir                     ║");
-            System.out.println("╚══════════════════════════════╝");
-            opcion = pedirOpcion();
-            switch (opcion) {
-                case '1' -> local.NextGen.controlador.Controlador.listarArticulos();
-                case '2' -> agregarNuevoArticulo();
-                case '3' -> actualizarArticulo();
-                case '4' -> eliminarArticulo();
-                case '0' -> local.NextGen.vista.GestionOs.iniciar();
-                default -> System.out.println("\u001B[31m" + "Opción inválida. Por favor, elija una opción válida." + "\u001B[0m");
-            }
-        } while (opcion != '0');
+
+    private Stage createDialogStage(String title) {
+        Stage dialogStage = new Stage();
+        dialogStage.setTitle(title);
+        dialogStage.initModality(Modality.WINDOW_MODAL);
+        return dialogStage;
     }
 }
+
+

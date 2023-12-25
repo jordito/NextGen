@@ -1,114 +1,86 @@
 package local.NextGen.modelo.DAO;
 
-import local.NextGen.modelo.Articulo;
-import local.NextGen.modelo.DetallePedido;
-import java.sql.*;
-import java.util.ArrayList;
+import local.NextGen.modelo.entidades.DetallePedido;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
+
 import java.util.List;
 
-import static local.NextGen.modelo.ConexionBD.obtenerConexion;
-
+/**
+ * Clase DAO para la entidad DetallePedido.
+ * Proporciona métodos para acceder y manipular los datos de detalles de pedidos en la base de datos.
+ */
 public class DetallePedidoDAO {
-
-    private static Connection conexion;
-
-    public DetallePedidoDAO(Connection conexion) {
-        this.conexion = conexion;
-    }
+    private SessionFactory sessionFactory;
 
     /**
-     * Recupera los detalles de un pedido específico.
+     * Constructor de la clase DetallePedidoDAO.
      *
-     * @param numeroPedido El número del pedido cuyos detalles se quieren recuperar.
-     * @return Una lista de objetos DetallePedido asociados con el número de pedido.
-     * @throws SQLException Si ocurre un error durante la consulta SQL.
+     * @param sessionFactory La fábrica de sesiones de Hibernate.
      */
-    public List<DetallePedido> listarPorPedido(int numeroPedido) throws SQLException {
-        List<DetallePedido> detalles = new ArrayList<>();
-        String sql = "SELECT * FROM DetallePedido WHERE numero_pedido = ?";
-
-        try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
-            stmt.setInt(1, numeroPedido);
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                DetallePedido detalle = new DetallePedido(
-                        rs.getInt("numero_pedido"),
-                        obtenerArticuloPorCodigo(rs.getString("codigo_articulo")),
-                        rs.getInt("cantidad"));
-                detalles.add(detalle);
-            }
-        }
-        return detalles;
+    public DetallePedidoDAO(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
     }
 
     /**
-     * Agrega un detalle de pedido a la base de datos.
+     * Agrega un nuevo detalle de pedido a la base de datos utilizando una sesión existente.
+     * No se encarga de abrir o cerrar la sesión, ni de manejar la transacción.
+     *
+     * @param detalle El detalle de pedido a agregar.
+     * @param session La sesión de Hibernate activa.
      */
-    public static void agregarDetalle(Connection conn, DetallePedido detalle) {
-        String sql = "INSERT INTO DetallePedido (numero_pedido, codigo_articulo, cantidad, precio_venta) VALUES (?, ?, ?, ?)";
-
-        try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            if (!existeDetalle(conn, detalle)) {
-                pstmt.setInt(1, detalle.getNumeroPedido());
-                pstmt.setString(2, detalle.getArticulo().getCodigo());
-                pstmt.setInt(3, detalle.getCantidad());
-                pstmt.setDouble(4, detalle.getPrecioVenta());
-
-                pstmt.executeUpdate();
-            } else {
-                System.out.println("El detalle ya existe.");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public void agregarDetalle(DetallePedido detalle, Session session) {
+        if (!existeDetalle(detalle, session)) {
+            session.save(detalle);
+        } else {
+            System.out.println("El detalle ya existe.");
         }
     }
 
-    private static boolean existeDetalle(Connection conn, DetallePedido detalle) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM DetallePedido WHERE numero_pedido = ? AND codigo_articulo = ?";
 
-        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, detalle.getNumeroPedido());
-            pstmt.setString(2, detalle.getArticulo().getCodigo());
-
-            try (ResultSet rs = pstmt.executeQuery()) {
-                return rs.next() && rs.getInt(1) > 0;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
     /**
-     * Elimina un detalle de pedido de la base de datos.
+     * Verifica si un detalle de pedido ya existe en la base de datos utilizando una sesión existente.
+     * No se encarga de abrir o cerrar la sesión.
+     *
+     * @param detalle El detalle de pedido a verificar.
+     * @param session La sesión de Hibernate activa.
+     * @return true si el detalle ya existe, false en caso contrario.
      */
-    public boolean eliminarPorPedido(int numeroPedido) {
-        String sql = "DELETE FROM DetallePedido WHERE numero_pedido = ?";
-        try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
-            stmt.setInt(1, numeroPedido);
-            return stmt.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
+    private boolean existeDetalle(DetallePedido detalle, Session session) {
+        Query<Long> query = session.createQuery("select count(*) from DetallePedido where id = :id", Long.class);
+        query.setParameter("id", detalle.getId());
+        return query.uniqueResult() > 0;
     }
-    // Método auxiliar para obtener un objeto Articulo por su código
-    private Articulo obtenerArticuloPorCodigo(String codigoArticulo) throws SQLException {
-        String sql = "SELECT * FROM Articulos WHERE codigo = ?";
-        try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
-            stmt.setString(1, codigoArticulo);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return new Articulo(
-                        rs.getString("codigo"),
-                        rs.getString("descripcion"),
-                        rs.getDouble("precio_venta"),
-                        rs.getDouble("gastos_envio"),
-                        rs.getInt("tiempo_preparacion")
-                );
-            } else {
-                return null; // Puedes manejar el caso en que el artículo no se encuentre
-            }
-        }
+
+    /**
+     * Obtiene una lista de detalles de pedido por número de pedido utilizando una sesión existente.
+     * No se encarga de abrir o cerrar la sesión.
+     *
+     * @param numeroPedido El número de pedido para filtrar los detalles.
+     * @param session      La sesión de Hibernate activa.
+     * @return Una lista de detalles de pedido relacionados con el número de pedido especificado.
+     */
+    public List<DetallePedido> listarPorPedido(int numeroPedido, Session session) {
+        Query<DetallePedido> query = session.createQuery("from DetallePedido where id.numeroPedido = :numeroPedido", DetallePedido.class);
+        query.setParameter("numeroPedido", numeroPedido);
+        return query.list();
     }
+
+
+    /**
+     * Elimina detalles de pedido por número de pedido utilizando una sesión existente.
+     * No se encarga de abrir o cerrar la sesión, ni de manejar la transacción.
+     *
+     * @param numeroPedido El número de pedido para eliminar los detalles relacionados.
+     * @param session      La sesión de Hibernate activa.
+     * @return true si se eliminaron detalles con éxito, false en caso contrario.
+     */
+    public boolean eliminarPorPedido(int numeroPedido, Session session) {
+        Query<?> query = session.createQuery("delete from DetallePedido where id.numeroPedido = :numeroPedido");
+        query.setParameter("numeroPedido", numeroPedido);
+        int result = query.executeUpdate();
+        return result > 0;
+    }
+
 }
