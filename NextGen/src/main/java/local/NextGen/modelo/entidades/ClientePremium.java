@@ -13,10 +13,10 @@ import java.math.BigDecimal;
 @Table(name = "ClientesPremium")
 public class ClientePremium extends Cliente {
     @Column(name = "cuota_anual", nullable = false)
-    private BigDecimal cuotaAnual;
+    private BigDecimal cuotaAnual = new BigDecimal("30.00");
 
     @Column(name = "descuento_envio", nullable = false)
-    private BigDecimal descuentoEnvio;
+    private BigDecimal descuentoEnvio = new BigDecimal("0.20");
 
     /**
      * Constructor por defecto de ClientePremium.

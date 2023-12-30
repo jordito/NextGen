@@ -13,7 +13,7 @@ CREATE TABLE Clientes (
 -- Tabla ClientesEstandard (Herencia de Clientes)
 CREATE TABLE ClientesEstandard (
     id_cliente INT PRIMARY KEY,
-    FOREIGN KEY (id_cliente) REFERENCES Clientes(id_cliente)
+    FOREIGN KEY (id_cliente) REFERENCES Clientes(id_cliente) ON DELETE CASCADE
 );
 
 -- Tabla ClientesPremium (Herencia de Clientes)
@@ -21,7 +21,7 @@ CREATE TABLE ClientesPremium (
     id_cliente INT PRIMARY KEY,
     cuota_anual DECIMAL(10, 2) NOT NULL,
     descuento_envio DECIMAL(5, 2) NOT NULL,
-    FOREIGN KEY (id_cliente) REFERENCES Clientes(id_cliente)
+    FOREIGN KEY (id_cliente) REFERENCES Clientes(id_cliente) ON DELETE CASCADE
 );
 
 -- Tabla Articulos
@@ -49,8 +49,8 @@ CREATE TABLE DetallePedido (
     cantidad INT CHECK (cantidad > 0),
     precio_venta DECIMAL(10, 2),
     PRIMARY KEY (numero_pedido, codigo_articulo),
-    FOREIGN KEY (numero_pedido) REFERENCES Pedidos(numero_pedido),
-    FOREIGN KEY (codigo_articulo) REFERENCES Articulos(codigo)
+    FOREIGN KEY (numero_pedido) REFERENCES Pedidos(numero_pedido) ON DELETE CASCADE,
+    FOREIGN KEY (codigo_articulo) REFERENCES Articulos(codigo) ON DELETE CASCADE
 );
 
 -- Trigger para actualizar estado del pedido

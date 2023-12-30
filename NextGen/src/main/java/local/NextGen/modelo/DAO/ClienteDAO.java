@@ -98,6 +98,25 @@ public class ClienteDAO {
     }
 
     /**
+     * Inserta el cliente dentro de su tipo en la base de datos.
+     *
+     * @param cliente El cliente a insertar.
+     * @return Verdadero si la inserción es exitosa, falso en caso contrario.
+     */
+    public boolean insertarCliente(Cliente cliente) {
+        Transaction tx = null;
+        try (Session session = sessionFactory.openSession()) {
+            tx = session.beginTransaction();
+            session.save(cliente);
+            tx.commit();
+            return true;
+        } catch (Exception e) {
+            if (tx != null) tx.rollback();
+            return false;
+        }
+    }
+
+    /**
      * Actualiza un cliente existente en la base de datos.
      *
      * @param cliente El cliente con información actualizada.

@@ -3,6 +3,9 @@ package local.NextGen.controlador;
 import local.NextGen.modelo.DAO.ClienteDAO;
 import local.NextGen.modelo.factory.Datos;
 import local.NextGen.modelo.entidades.Cliente;
+import local.NextGen.modelo.entidades.ClienteEstandard;
+import local.NextGen.modelo.entidades.ClientePremium;
+
 
 import java.util.List;
 
@@ -77,6 +80,10 @@ public class ControladorCliente {
     public boolean agregarCliente(Cliente cliente) {
         return clienteDAO.insertar(cliente);
     }
+
+    //public void agregarClienteEstandard(ClienteEstandard cliente) { clienteDAO.insertarCliente(cliente);}
+
+    //public void agregarClientePremium(ClientePremium cliente) { clienteDAO.insertarCliente(cliente);}
 
     /**
      * Elimina un cliente por su NIF.

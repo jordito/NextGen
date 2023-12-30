@@ -3,9 +3,9 @@
     <session-factory>
         <!-- Propiedades de conexión a la base de datos -->
         <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
-        <property name="hibernate.connection.url">jdbc:mysql://127.0.0.1:3306/tienda</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/tienda</property>
         <property name="hibernate.connection.username">root</property>
-        <property name="hibernate.connection.password">1@@.oX?$C&lt;B&gt;</property>
+        <property name="hibernate.connection.password">371GeG3tix450</property>
 
 
         <!-- Especificar el dialecto que se utiliza en la base de datos -->
