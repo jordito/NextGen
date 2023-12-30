@@ -103,7 +103,7 @@ public class Pedido {
                 "numeroPedido=" + numeroPedido +
                 ", cliente=" + (cliente != null ? cliente.getIdCliente() : null) +
                 ", fechaHoraPedido=" + fechaHoraPedido +
-                ", estadoPedido=" + estadoPedido +
+                ", estadoPedido=" + estadoPedido.toString() +
                 '}';
     }
 
@@ -111,8 +111,20 @@ public class Pedido {
      * Enumeración de los posibles estados de un pedido.
      */
     public enum EstadoPedido {
-        Pendiente, Enviado
+        Pendiente("Pendiente"),
+        Enviado("Enviado");
         // Otros estados pueden ser añadidos en el futuro.
+
+        private final String nombre;
+
+        private EstadoPedido(String nombre) {
+            this.nombre = nombre;
+        }
+
+        @Override
+        public String toString() {
+            return nombre;
+        }
     }
 
 

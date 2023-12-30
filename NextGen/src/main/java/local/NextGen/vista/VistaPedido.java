@@ -81,7 +81,8 @@ public class VistaPedido {
                 new SimpleStringProperty(cellData.getValue().getFechaHoraPedido().toString()));
 
         TableColumn<Pedido, String> columnaEstado = new TableColumn<>("Estado");
-        columnaEstado.setCellValueFactory(new PropertyValueFactory<>("estado"));
+        columnaEstado.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getEstadoPedido().toString()));
 
         TableColumn<Pedido, String> columnaDetalles = new TableColumn<>("Detalles");
         columnaDetalles.setCellValueFactory(cellData ->
