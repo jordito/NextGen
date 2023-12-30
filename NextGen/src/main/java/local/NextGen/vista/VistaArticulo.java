@@ -1,10 +1,14 @@
 package local.NextGen.vista;
 
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -22,10 +26,7 @@ public class VistaArticulo {
         this.controladorArticulo = controlador;
     }
 
-    public void gestionArticulos() {
-        Stage stage = new Stage();
-        stage.setTitle("Gestión de Artículos");
-
+    public Node getVistaArticuloNode() {
         TableView<Articulo> tablaArticulos = new TableView<>();
         configurarColumnasTabla(tablaArticulos);
 
@@ -39,29 +40,49 @@ public class VistaArticulo {
         btnActualizar.setOnAction(e -> actualizarArticulo(tablaArticulos));
         btnEliminar.setOnAction(e -> eliminarArticulo(tablaArticulos));
 
-        VBox layout = new VBox(10, btnListar, btnAgregar, btnActualizar, btnEliminar, tablaArticulos);
-        Scene scene = new Scene(layout, 600, 400);
-        stage.setScene(scene);
-        stage.show();
+        HBox botonesHBox = new HBox(10);
+        botonesHBox.setAlignment(Pos.CENTER);
+        botonesHBox.getChildren().addAll(btnListar, btnAgregar, btnActualizar, btnEliminar);
+
+        // Asegurarse de que los botones se expandan uniformemente
+        botonesHBox.getChildren().forEach(node -> {
+            if (node instanceof Button) {
+                Button button = (Button) node;
+                button.setMaxWidth(Double.MAX_VALUE);
+                HBox.setHgrow(button, Priority.ALWAYS);
+            }
+        });
+
+        VBox layout = new VBox(10);
+        layout.setAlignment(Pos.CENTER);
+        layout.getChildren().addAll(botonesHBox, tablaArticulos);
+
+        return layout;
     }
 
     private void configurarColumnasTabla(TableView<Articulo> tabla) {
         TableColumn<Articulo, String> columnaCodigo = new TableColumn<>("Código");
         columnaCodigo.setCellValueFactory(new PropertyValueFactory<>("codigo"));
+        columnaCodigo.setMinWidth(6);
 
         TableColumn<Articulo, String> columnaDescripcion = new TableColumn<>("Descripción");
         columnaDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
+        columnaDescripcion.setMinWidth(20);
 
         TableColumn<Articulo, BigDecimal> columnaPrecio = new TableColumn<>("Precio");
         columnaPrecio.setCellValueFactory(new PropertyValueFactory<>("precioVenta"));
+        columnaPrecio.setMinWidth(6);
 
         TableColumn<Articulo, BigDecimal> columnaGastosEnvio = new TableColumn<>("Gastos de Envío");
         columnaGastosEnvio.setCellValueFactory(new PropertyValueFactory<>("gastosEnvio"));
+        columnaGastosEnvio.setMinWidth(15);
 
         TableColumn<Articulo, Integer> columnaTiempoPreparacion = new TableColumn<>("Tiempo de Preparación");
         columnaTiempoPreparacion.setCellValueFactory(new PropertyValueFactory<>("tiempoPreparacion"));
+        columnaTiempoPreparacion.setMinWidth(22);
 
         tabla.getColumns().addAll(columnaCodigo, columnaDescripcion, columnaPrecio, columnaGastosEnvio, columnaTiempoPreparacion);
+        tabla.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
 
     private void listarArticulos(TableView<Articulo> tabla) {
@@ -70,7 +91,6 @@ public class VistaArticulo {
     }
 
     private void agregarNuevoArticulo(TableView<Articulo> tabla) {
-        // Ventana para agregar un nuevo artículo
         Stage dialogStage = createDialogStage("Agregar Nuevo Artículo");
 
         GridPane grid = new GridPane();

@@ -41,28 +41,23 @@ public class GestionOs extends Application {
 
         rootLayout = new BorderPane();
 
-        // Configuración de la barra de menú
         MenuBar menuBar = new MenuBar();
 
-        // Menú de inicio
         Menu menuInicio = new Menu("INICIO");
         MenuItem inicio = new MenuItem("Inicio");
         inicio.setOnAction(e -> mostrarPantallaInicio());
         menuInicio.getItems().add(inicio);
 
-        // Menú de artículos
         Menu menuArticulos = new Menu("ARTÍCULOS");
         MenuItem articulos = new MenuItem("Gestión Artículos");
-        //articulos.setOnAction(e -> mostrarVistaArticulos());
+        articulos.setOnAction(e -> mostrarVistaArticulos());
         menuArticulos.getItems().add(articulos);
 
-        // Menú de pedidos
         Menu menuPedidos = new Menu("PEDIDOS");
         MenuItem pedidos = new MenuItem("Gestión Pedidos");
         //pedidos.setOnAction(e -> mostrarVistaPedidos());
         menuPedidos.getItems().add(pedidos);
 
-        // Menú de clientes
         Menu menuClientes = new Menu("CLIENTES");
         MenuItem clientes = new MenuItem("Gestión Clientes");
         clientes.setOnAction(e -> mostrarVistaClientes());
@@ -72,7 +67,6 @@ public class GestionOs extends Application {
 
         rootLayout.setTop(menuBar);
 
-        // Mostrar pantalla de inicio
         mostrarPantallaInicio();
 
         Scene scene = new Scene(rootLayout, 800, 600);
@@ -87,13 +81,11 @@ public class GestionOs extends Application {
      * secciones de la aplicación.
      */
     private void mostrarPantallaInicio() {
-        // Mensaje de bienvenida
         Label bienvenida = new Label("BIENVENIDO A ONLINE STORE!!!");
         bienvenida.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.ITALIC, 24));
 
-        // Botones de gestión
         Button btnGestionArticulos = new Button("GESTIÓN ARTÍCULOS");
-        //btnGestionArticulos.setOnAction(event -> mostrarVistaArticulos());
+        btnGestionArticulos.setOnAction(event -> mostrarVistaArticulos());
 
         Button btnGestionPedidos = new Button("GESTIÓN PEDIDOS");
         //btnGestionPedidos.setOnAction(event -> mostrarVistaPedidos());
@@ -113,11 +105,11 @@ public class GestionOs extends Application {
      * Muestra la vista de gestión de articulos en el panel central de la ventana principal.
      * Esta vista proporciona una interfaz para listar, agregar, eliminar y actualizar articulos.
      */
-    /*private void mostrarVistaArticulos() {
+    private void mostrarVistaArticulos() {
         VistaArticulo vistaArticulo = new VistaArticulo(controladorArticulo);
         rootLayout.setCenter(vistaArticulo.getVistaArticuloNode());
     }
-*/
+
     /**
      * Muestra la vista de gestión de pedidos en el panel central de la ventana principal.
      * Esta vista proporciona una interfaz para listar, agregar y eliminar pedidos.

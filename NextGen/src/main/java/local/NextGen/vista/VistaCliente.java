@@ -71,6 +71,7 @@ public class VistaCliente {
     private void configurarColumnasTabla(TableView<Cliente> tabla) {
         TableColumn<Cliente, Integer> columnaIdCliente = new TableColumn<>("ID");
         columnaIdCliente.setCellValueFactory(new PropertyValueFactory<>("idCliente"));
+        columnaIdCliente.setMinWidth(3);
 
         TableColumn<Cliente, String> columnaNombre = new TableColumn<>("Nombre");
         columnaNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
@@ -90,14 +91,16 @@ public class VistaCliente {
 
         TableColumn<Cliente, BigDecimal> columnaCuotaAnual = new TableColumn<>("Cuota Anual");
         columnaCuotaAnual.setCellValueFactory(new PropertyValueFactory<>("cuotaAnual"));
+        columnaCuotaAnual.setMinWidth(11);
 
         TableColumn<Cliente, BigDecimal> columnaDescuentoEnvio = new TableColumn<>("Dto.");
         columnaDescuentoEnvio.setCellValueFactory(new PropertyValueFactory<>("descuentoEnvio"));
+        columnaDescuentoEnvio.setMinWidth(5);
 
         TableColumn<Cliente, String> columnaTipoCliente = new TableColumn<>("Tipo");
         columnaTipoCliente.setCellValueFactory(cellData -> {
             Cliente cliente = cellData.getValue();
-            String tipoCliente = "Estándar"; // Valor por defecto
+            String tipoCliente = "Estándar";
             if (cliente instanceof ClientePremium) {
                 tipoCliente = "Premium";
             }
