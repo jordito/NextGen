@@ -20,14 +20,30 @@ import local.NextGen.modelo.entidades.ClientePremium;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
+/**
+ * Clase VistaCliente que representa la interfaz de usuario para la gestión de clientes.
+ * Ofrece funcionalidades para listar, agregar, actualizar y eliminar clientes, así como para mostrar diferentes tipos de clientes.
+ */
 public class VistaCliente {
     private ControladorCliente controlador;
 
+    /**
+     * Construye una instancia de VistaCliente con un controlador específico.
+     *
+     * @param controladorCliente Controlador que gestiona la lógica de negocio de clientes.
+     */
     public VistaCliente(ControladorCliente controladorCliente) {
         this.controlador = controladorCliente;
     }
 
+    /**
+     * Crea y devuelve un nodo de la interfaz de usuario para la gestión de clientes.
+     * Este nodo incluye una tabla para mostrar los clientes y botones para las operaciones de gestión.
+     *
+     * @return Un Node que contiene la interfaz de usuario para la gestión de clientes.
+     */
     public Node getVistaClienteNode() {
         TableView<Cliente> tablaClientes = new TableView<>();
         configurarColumnasTabla(tablaClientes);
@@ -46,14 +62,13 @@ public class VistaCliente {
         btnEliminarCliente.setOnAction(e -> eliminarCliente(tablaClientes));
         btnActualizarCliente.setOnAction(e -> actualizarCliente(tablaClientes));
 
-        HBox botonesHBox = new HBox(10);
-        botonesHBox.setAlignment(Pos.CENTER);
-        botonesHBox.getChildren().addAll(
-                btnListarTodosClientes, btnListarClientesEstandar, btnListarClientesPremium,
-                btnAgregarCliente, btnEliminarCliente, btnActualizarCliente
-        );
+        HBox filaBotones1 = new HBox(10, btnListarTodosClientes, btnListarClientesEstandar, btnListarClientesPremium);
+        filaBotones1.setAlignment(Pos.CENTER);
 
-        botonesHBox.getChildren().forEach(node -> {
+        HBox filaBotones2 = new HBox(10, btnAgregarCliente, btnEliminarCliente, btnActualizarCliente);
+        filaBotones2.setAlignment(Pos.CENTER);
+
+        Stream.of(filaBotones1, filaBotones2).flatMap(hbox -> hbox.getChildren().stream()).forEach(node -> {
             if (node instanceof Button) {
                 Button button = (Button) node;
                 button.setMaxWidth(Double.MAX_VALUE);
@@ -61,13 +76,18 @@ public class VistaCliente {
             }
         });
 
-        VBox layout = new VBox(10);
-        layout.setAlignment(Pos.CENTER);
-        layout.getChildren().addAll(botonesHBox, tablaClientes);
+        VBox menuContainer = new VBox(10);
+        menuContainer.getChildren().addAll(filaBotones1, filaBotones2, tablaClientes);
 
-        return layout;
+        return menuContainer;
     }
 
+    /**
+     * Configura las columnas de la tabla de clientes.
+     * Define cómo se muestran los datos de los clientes en la tabla.
+     *
+     * @param tabla La TableView que se configurará.
+     */
     private void configurarColumnasTabla(TableView<Cliente> tabla) {
         TableColumn<Cliente, Integer> columnaIdCliente = new TableColumn<>("ID");
         columnaIdCliente.setCellValueFactory(new PropertyValueFactory<>("idCliente"));
@@ -111,20 +131,42 @@ public class VistaCliente {
         tabla.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
 
-
+    /**
+     * Lista todos los clientes en la tabla.
+     *
+     * @param tabla La TableView donde se listarán los clientes.
+     * @param clientes La lista de clientes a mostrar.
+     */
     private void listarClientes(TableView<Cliente> tabla, List<Cliente> clientes) {
         tabla.getItems().setAll(clientes);
     }
+
+    /**
+     * Lista solo los clientes estándar en la tabla.
+     *
+     * @param tabla La TableView donde se listarán los clientes estándar.
+     */
     private void listarClientesEstandar(TableView<Cliente> tabla) {
         List<Cliente> clientesEstandar = controlador.listarClientesEstandard();
         tabla.getItems().setAll(clientesEstandar);
     }
 
+    /**
+     * Lista solo los clientes premium en la tabla.
+     *
+     * @param tabla La TableView donde se listarán los clientes premium.
+     */
     private void listarClientesPremium(TableView<Cliente> tabla) {
         List<Cliente> clientesPremium = controlador.listarClientesPremium();
         tabla.getItems().setAll(clientesPremium);
     }
 
+    /**
+     * Presenta una interfaz para agregar un nuevo cliente.
+     * Incluye campos para los detalles del cliente y un botón para confirmar la adición.
+     *
+     * @param tabla La TableView para reflejar los cambios una vez agregado el cliente.
+     */
     private void agregarCliente(TableView<Cliente> tabla) {
         Stage dialogStage = createDialogStage("Agregar Nuevo Cliente");
         GridPane grid = createClienteForm();
@@ -132,9 +174,13 @@ public class VistaCliente {
 
         // Campos y botones para agregar cliente
         TextField txtNombre = new TextField();
+        txtNombre.setPromptText("Nombre");
         TextField txtDomicilio = new TextField();
+        txtDomicilio.setPromptText("Domicilio");
         TextField txtNIF = new TextField();
+        txtNIF.setPromptText("NIF");
         TextField txtEmail = new TextField();
+        txtEmail.setPromptText("Email");
 
         // Selector de tipo de cliente
         ComboBox<String> tipoClienteComboBox = new ComboBox<>();
@@ -171,11 +217,7 @@ public class VistaCliente {
         Button btnConfirmar = new Button("Agregar");
         btnConfirmar.setOnAction(e -> {
             if (txtNombre.getText().isEmpty() || txtDomicilio.getText().isEmpty() || txtNIF.getText().isEmpty() || txtEmail.getText().isEmpty()) {
-                Alert alerta = new Alert(Alert.AlertType.ERROR);
-                alerta.setTitle("Error de Validación");
-                alerta.setHeaderText("Campos Obligatorios Faltantes");
-                alerta.setContentText("Por favor, completa todos los campos.");
-                alerta.showAndWait();
+                mostrarError("Error de Validación", "Por favor, completa todos los campos." );
                 return;
             }
             Cliente nuevoCliente;
@@ -196,19 +238,31 @@ public class VistaCliente {
         dialogStage.show();
     }
 
+    /**
+     * Presenta una interfaz para eliminar un cliente seleccionado.
+     * Elimina el cliente de la tabla y de la base de datos si se confirma.
+     *
+     * @param tabla La TableView de donde se selecciona el cliente a eliminar.
+     */
     private void eliminarCliente(TableView<Cliente> tabla) {
         Cliente clienteSeleccionado = tabla.getSelectionModel().getSelectedItem();
         if (clienteSeleccionado != null && controlador.eliminarCliente(clienteSeleccionado.getNif())) {
             listarClientes(tabla, controlador.listarClientes());
         } else {
-            // Mostrar mensaje de error o indicación
+            mostrarError("Selección de Cliente Requerida", "Por favor, selecciona un cliente de la lista antes de continuar.");
         }
     }
 
+    /**
+     * Presenta una interfaz para actualizar un cliente seleccionado.
+     * Permite modificar los detalles del cliente seleccionado.
+     *
+     * @param tabla La TableView donde se selecciona el cliente a actualizar.
+     */
     private void actualizarCliente(TableView<Cliente> tabla) {
         Cliente clienteSeleccionado = tabla.getSelectionModel().getSelectedItem();
         if (clienteSeleccionado == null) {
-            // Mostrar mensaje de error o indicación
+            mostrarError("Selección de Cliente Requerida", "Por favor, selecciona un cliente de la lista antes de continuar.");
             return;
         }
 
@@ -249,6 +303,12 @@ public class VistaCliente {
         dialogStage.show();
     }
 
+    /**
+     * Crea un diálogo para agregar o actualizar clientes.
+     *
+     * @param title El título del diálogo.
+     * @return Un Stage que representa el diálogo.
+     */
     private Stage createDialogStage(String title) {
         Stage dialogStage = new Stage();
         dialogStage.setTitle(title);
@@ -256,11 +316,29 @@ public class VistaCliente {
         return dialogStage;
     }
 
+    /**
+     * Crea un formulario para agregar o actualizar clientes.
+     *
+     * @return Un GridPane que contiene los campos del formulario.
+     */
     private GridPane createClienteForm() {
         GridPane grid = new GridPane();
         grid.setVgap(10);
         grid.setHgap(10);
         grid.setPadding(new Insets(10));
         return grid;
+    }
+    /**
+     * Muestra un mensaje de error en una ventana de diálogo.
+     *
+     * @param titulo El título de la ventana de diálogo.
+     * @param mensaje El mensaje de error a mostrar.
+     */
+    private void mostrarError(String titulo, String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
     }
 }

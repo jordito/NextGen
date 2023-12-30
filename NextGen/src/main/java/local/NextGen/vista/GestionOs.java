@@ -55,7 +55,7 @@ public class GestionOs extends Application {
 
         Menu menuPedidos = new Menu("PEDIDOS");
         MenuItem pedidos = new MenuItem("Gestión Pedidos");
-        //pedidos.setOnAction(e -> mostrarVistaPedidos());
+        pedidos.setOnAction(e -> mostrarVistaPedidos());
         menuPedidos.getItems().add(pedidos);
 
         Menu menuClientes = new Menu("CLIENTES");
@@ -88,7 +88,7 @@ public class GestionOs extends Application {
         btnGestionArticulos.setOnAction(event -> mostrarVistaArticulos());
 
         Button btnGestionPedidos = new Button("GESTIÓN PEDIDOS");
-        //btnGestionPedidos.setOnAction(event -> mostrarVistaPedidos());
+        btnGestionPedidos.setOnAction(event -> mostrarVistaPedidos());
 
         Button btnGestionClientes = new Button("GESTIÓN CLIENTES");
         btnGestionClientes.setOnAction(event -> mostrarVistaClientes());
@@ -113,11 +113,11 @@ public class GestionOs extends Application {
     /**
      * Muestra la vista de gestión de pedidos en el panel central de la ventana principal.
      * Esta vista proporciona una interfaz para listar, agregar y eliminar pedidos.
-     *//*
+     */
     private void mostrarVistaPedidos() {
         VistaPedido vistaPedido = new VistaPedido(controladorPedido, controladorCliente, controladorArticulo);
         rootLayout.setCenter(vistaPedido.getVistaPedidoNode());
-    }*/
+    }
 
     /**
      * Muestra la vista de gestión de clientes en el panel central de la ventana principal.

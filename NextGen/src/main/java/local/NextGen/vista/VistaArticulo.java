@@ -17,15 +17,32 @@ import local.NextGen.modelo.entidades.Articulo;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Stream;
 
+/**
+ * Clase que representa la vista de gestión de artículos en la interfaz de usuario.
+ * Proporciona métodos para listar, agregar, actualizar y eliminar artículos.
+ */
 public class VistaArticulo {
 
     private ControladorArticulo controladorArticulo;
 
+    /**
+     * Constructor para crear una instancia de VistaArticulo.
+     *
+     * @param controlador Controlador asociado que maneja la lógica de negocio.
+     */
     public VistaArticulo(ControladorArticulo controlador) {
         this.controladorArticulo = controlador;
     }
 
+    /**
+     * Crea y devuelve el nodo de la interfaz de usuario para la gestión de artículos.
+     * Incluye botones para operaciones como listar, agregar, actualizar y eliminar artículos,
+     * y una tabla para mostrar los artículos.
+     *
+     * @return Node que representa la interfaz de usuario para la gestión de artículos.
+     */
     public Node getVistaArticuloNode() {
         TableView<Articulo> tablaArticulos = new TableView<>();
         configurarColumnasTabla(tablaArticulos);
@@ -40,12 +57,13 @@ public class VistaArticulo {
         btnActualizar.setOnAction(e -> actualizarArticulo(tablaArticulos));
         btnEliminar.setOnAction(e -> eliminarArticulo(tablaArticulos));
 
-        HBox botonesHBox = new HBox(10);
-        botonesHBox.setAlignment(Pos.CENTER);
-        botonesHBox.getChildren().addAll(btnListar, btnAgregar, btnActualizar, btnEliminar);
+        HBox filaBotones1 = new HBox(10, btnListar, btnAgregar);
+        filaBotones1.setAlignment(Pos.CENTER);
 
-        // Asegurarse de que los botones se expandan uniformemente
-        botonesHBox.getChildren().forEach(node -> {
+        HBox filaBotones2 = new HBox(10, btnActualizar, btnEliminar);
+        filaBotones2.setAlignment(Pos.CENTER);
+
+        Stream.of(filaBotones1, filaBotones2).flatMap(hbox -> hbox.getChildren().stream()).forEach(node -> {
             if (node instanceof Button) {
                 Button button = (Button) node;
                 button.setMaxWidth(Double.MAX_VALUE);
@@ -53,13 +71,18 @@ public class VistaArticulo {
             }
         });
 
-        VBox layout = new VBox(10);
-        layout.setAlignment(Pos.CENTER);
-        layout.getChildren().addAll(botonesHBox, tablaArticulos);
+        VBox menuContainer = new VBox(10);
+        menuContainer.getChildren().addAll(filaBotones1, filaBotones2, tablaArticulos);
 
-        return layout;
+        return menuContainer;
     }
 
+    /**
+     * Configura las columnas de la tabla de artículos.
+     * Define cómo se deben mostrar los datos de los artículos en la tabla.
+     *
+     * @param tabla Tabla en la que se configurarán las columnas.
+     */
     private void configurarColumnasTabla(TableView<Articulo> tabla) {
         TableColumn<Articulo, String> columnaCodigo = new TableColumn<>("Código");
         columnaCodigo.setCellValueFactory(new PropertyValueFactory<>("codigo"));
@@ -85,11 +108,22 @@ public class VistaArticulo {
         tabla.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
 
+    /**
+     * Lista todos los artículos en la tabla.
+     *
+     * @param tabla Tabla en la que se listarán los artículos.
+     */
     private void listarArticulos(TableView<Articulo> tabla) {
         List<Articulo> articulos = controladorArticulo.listarArticulos();
         tabla.getItems().setAll(articulos);
     }
 
+    /**
+     * Presenta una interfaz de usuario para agregar un nuevo artículo.
+     * Incluye campos para ingresar detalles del artículo y un botón para confirmar la adición.
+     *
+     * @param tabla Tabla para reflejar los cambios una vez que se agrega un artículo.
+     */
     private void agregarNuevoArticulo(TableView<Articulo> tabla) {
         Stage dialogStage = createDialogStage("Agregar Nuevo Artículo");
 
@@ -123,7 +157,7 @@ public class VistaArticulo {
                 listarArticulos(tabla);
                 dialogStage.close();
             } catch (NumberFormatException ex) {
-                // Manejar error de formato de números
+                mostrarError("Error de Formato", "Por favor, ingrese números válidos para precio y gastos de envío.");
             }
         });
 
@@ -143,11 +177,16 @@ public class VistaArticulo {
         dialogStage.setScene(scene);
         dialogStage.show();
     }
+    /**
+     * Presenta una interfaz de usuario para actualizar un artículo existente.
+     * Permite modificar los detalles del artículo seleccionado.
+     *
+     * @param tabla Tabla donde se selecciona el artículo a actualizar.
+     */
     private void actualizarArticulo(TableView<Articulo> tabla) {
         Articulo articuloSeleccionado = tabla.getSelectionModel().getSelectedItem();
         if (articuloSeleccionado == null) {
-            // Mostrar mensaje de error o indicación para seleccionar un artículo
-            return;
+            mostrarError("Selección de Artículo Requerida", "Por favor, selecciona un artículo de la lista antes de continuar.");
         }
 
         Stage dialogStage = createDialogStage("Actualizar Artículo");
@@ -174,7 +213,7 @@ public class VistaArticulo {
                 listarArticulos(tabla);
                 dialogStage.close();
             } catch (NumberFormatException ex) {
-                // Manejar error de formato de números
+                mostrarError("Error de Formato", "Por favor, ingrese números válidos para precio y gastos de envío.");
             }
         });
 
@@ -192,11 +231,16 @@ public class VistaArticulo {
         dialogStage.setScene(scene);
         dialogStage.show();
     }
-
+    /**
+     * Presenta una confirmación para eliminar un artículo seleccionado.
+     * Elimina el artículo de la tabla y de la base de datos si se confirma.
+     *
+     * @param tabla Tabla de donde se selecciona el artículo a eliminar.
+     */
     private void eliminarArticulo(TableView<Articulo> tabla) {
         Articulo articuloSeleccionado = tabla.getSelectionModel().getSelectedItem();
         if (articuloSeleccionado == null) {
-            // Mostrar mensaje de error o indicación para seleccionar un artículo
+            mostrarError("Selección de Artículo Requerida", "Por favor, selecciona un artículo de la lista antes de continuar.");
             return;
         }
 
@@ -228,6 +272,19 @@ public class VistaArticulo {
         dialogStage.setTitle(title);
         dialogStage.initModality(Modality.WINDOW_MODAL);
         return dialogStage;
+    }
+    /**
+     * Muestra un mensaje de error en una ventana de diálogo.
+     *
+     * @param titulo El título de la ventana de diálogo.
+     * @param mensaje El mensaje de error a mostrar.
+     */
+    private void mostrarError(String titulo, String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
     }
 }
 

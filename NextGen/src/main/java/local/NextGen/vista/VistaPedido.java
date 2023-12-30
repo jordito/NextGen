@@ -2,10 +2,14 @@ package local.NextGen.vista;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -15,6 +19,7 @@ import local.NextGen.modelo.entidades.*;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class VistaPedido {
     private ControladorPedido controladorPedido;
@@ -27,25 +32,40 @@ public class VistaPedido {
         controladorArticulo = ca;
     }
 
-    public void gestionPedidos() {
-        Stage stage = new Stage();
-        stage.setTitle("Gestión de Pedidos");
-
+    public Node getVistaPedidoNode() {
         TableView<Pedido> tablaPedidos = new TableView<>();
-        configurarColumnasTabla(tablaPedidos); // Configura las columnas de la tabla
+        configurarColumnasTabla(tablaPedidos);
 
         Button btnListarPedidos = new Button("Listar Pedidos");
+        Button btnListarPedidosEnviados = new Button("Listar Pedidos Enviados");
+        Button btnListarPedidosPendientes = new Button("Listar Pedidos Pendientes");
         Button btnAgregarPedido = new Button("Agregar Pedido");
         Button btnEliminarPedido = new Button("Eliminar Pedido");
 
         btnListarPedidos.setOnAction(e -> listarPedidos(tablaPedidos));
+        btnListarPedidosEnviados.setOnAction(e -> listarPedidosEnviados(tablaPedidos));
+        btnListarPedidosPendientes.setOnAction(e -> listarPedidosPendientes(tablaPedidos));
         btnAgregarPedido.setOnAction(e -> agregarPedido(tablaPedidos));
         btnEliminarPedido.setOnAction(e -> eliminarPedido(tablaPedidos));
 
-        VBox layout = new VBox(10, btnListarPedidos, btnAgregarPedido, btnEliminarPedido, tablaPedidos);
-        Scene scene = new Scene(layout, 800, 600);
-        stage.setScene(scene);
-        stage.show();
+        HBox filaBotones1 = new HBox(10, btnListarPedidos, btnListarPedidosEnviados, btnListarPedidosPendientes);
+        filaBotones1.setAlignment(Pos.CENTER);
+
+        HBox filaBotones2 = new HBox(10, btnAgregarPedido, btnEliminarPedido);
+        filaBotones2.setAlignment(Pos.CENTER);
+
+        Stream.of(filaBotones1, filaBotones2).flatMap(hbox -> hbox.getChildren().stream()).forEach(node -> {
+            if (node instanceof Button) {
+                Button button = (Button) node;
+                button.setMaxWidth(Double.MAX_VALUE);
+                HBox.setHgrow(button, Priority.ALWAYS);
+            }
+        });
+
+        VBox menuContainer = new VBox(10);
+        menuContainer.getChildren().addAll(filaBotones1, filaBotones2, tablaPedidos);
+
+        return menuContainer;
     }
 
     private void configurarColumnasTabla(TableView<Pedido> tabla) {
@@ -94,6 +114,11 @@ public class VistaPedido {
         List<Pedido> pedidos = controladorPedido.listarPedidos();
         tabla.getItems().setAll(pedidos);
     }
+
+    private void listarPedidosEnviados(TableView<Pedido> tabla){}
+
+    private void listarPedidosPendientes(TableView<Pedido> tabla){}
+
 
     private void agregarPedido(TableView<Pedido> tabla) {
         Stage dialogStage = createDialogStage("Agregar Nuevo Pedido");
@@ -173,11 +198,10 @@ public class VistaPedido {
                     listaDetalles.getItems().add(detalle);
                     dialogStage.close();
                 } else {
-                    // Mostrar mensaje de error si el artículo no se encuentra o la cantidad es inválida
-                    mostrarAlerta("Error", "Artículo no encontrado o cantidad inválida.");
+                    mostrarError("Error", "Artículo no encontrado o cantidad inválida.");
                 }
             } catch (NumberFormatException ex) {
-                mostrarAlerta("Error", "Por favor, ingrese una cantidad válida.");
+                mostrarError("Error", "Por favor, ingrese una cantidad válida.");
             }
         });
 
@@ -193,23 +217,14 @@ public class VistaPedido {
 
     }
 
-    // Método auxiliar para mostrar alertas
-  private void mostrarAlerta(String titulo, String mensaje) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(titulo);
-        alert.setHeaderText(null);
-        alert.setContentText(mensaje);
-        alert.showAndWait();
-    }
-
     private void eliminarPedido(TableView<Pedido> tabla) {
         Pedido pedidoSeleccionado = tabla.getSelectionModel().getSelectedItem();
         if (pedidoSeleccionado != null) {
             controladorPedido.eliminarPedido(pedidoSeleccionado.getNumeroPedido());
             listarPedidos(tabla);
         } else {
-            // Mostrar mensaje de error o indicación
-            System.out.println("Seleccione un pedido para eliminar.");
+            mostrarError("Selección de Pedido Requerida", "Por favor, selecciona un pedido de la lista antes de continuar.");
+
         }
     }
 
@@ -219,6 +234,18 @@ public class VistaPedido {
         dialogStage.initModality(Modality.WINDOW_MODAL);
         return dialogStage;
     }
-
+    /**
+     * Muestra un mensaje de error en una ventana de diálogo.
+     *
+     * @param titulo El título de la ventana de diálogo.
+     * @param mensaje El mensaje de error a mostrar.
+     */
+    private void mostrarError(String titulo, String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
+    }
 
 }
