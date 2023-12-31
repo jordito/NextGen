@@ -116,9 +116,15 @@ public class VistaPedido {
         tabla.getItems().setAll(pedidos);
     }
 
-    private void listarPedidosEnviados(TableView<Pedido> tabla){}
+    private void listarPedidosEnviados(TableView<Pedido> tabla){
+        List<Pedido> pedidos = controladorPedido.listarPedidosEnviados();
+        tabla.getItems().setAll(pedidos);
+    }
 
-    private void listarPedidosPendientes(TableView<Pedido> tabla){}
+    private void listarPedidosPendientes(TableView<Pedido> tabla){
+        List<Pedido> pedidos = controladorPedido.listarPedidosPendientes();
+        tabla.getItems().setAll(pedidos);
+    }
 
 
     private void agregarPedido(TableView<Pedido> tabla) {
@@ -150,6 +156,22 @@ public class VistaPedido {
 
         // Lista para agregar detalles del pedido
         ListView<DetallePedido> listaDetalles = new ListView<>();
+
+        // Set a custom cell factory for the ListView
+        listaDetalles.setCellFactory(param -> new ListCell<DetallePedido>() {
+            @Override
+            protected void updateItem(DetallePedido detallePedido, boolean empty) {
+                super.updateItem(detallePedido, empty);
+
+                if (empty || detallePedido == null) {
+                    setText(null);
+                } else {
+                    // Customize the display for each item
+                    setText("Código: " + detallePedido.getArticulo().getCodigo() + ", Precio: " + detallePedido.getArticulo().getPrecioVenta() + ", Cantidad: " + detallePedido.getCantidad());
+                }
+            }
+        });
+
         Button btnAgregarDetalle = new Button("Agregar Detalle");
         btnAgregarDetalle.setOnAction(e -> {
             agregarDetallePedido(listaDetalles, txtNifCliente.getText());

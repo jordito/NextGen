@@ -89,6 +89,7 @@ public class ControladorPedido {
                 pedido.setNumeroPedido(numeroPedidoGenerado);
                 for (DetallePedido detalle : detallesPedido) {
                     detalle.getId().setNumeroPedido(numeroPedidoGenerado);
+                    detalle.setPedido(pedido);
                     detallePedidoDAO.agregarDetalle(detalle, session);
                 }
                 tx.commit();
@@ -114,7 +115,12 @@ public class ControladorPedido {
         Transaction tx = null;
         try (Session session = Datos.getSessionFactory().openSession()) {
             tx = session.beginTransaction();
-            boolean detallesEliminados = detallePedidoDAO.eliminarPorPedido(numeroPedido, session);
+            boolean detallesEliminados;
+            if (!detallePedidoDAO.listarPorPedido(numeroPedido, session).isEmpty()) {
+                detallesEliminados = detallePedidoDAO.eliminarPorPedido(numeroPedido, session);
+            } else {
+                detallesEliminados = true;
+            }
             boolean pedidoEliminado = pedidoDAO.eliminar(numeroPedido, session);
             if (detallesEliminados && pedidoEliminado) {
                 tx.commit();
