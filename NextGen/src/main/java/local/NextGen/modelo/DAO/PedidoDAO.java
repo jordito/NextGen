@@ -3,6 +3,7 @@ package local.NextGen.modelo.DAO;
 import local.NextGen.modelo.entidades.Pedido;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 
 import java.util.List;
 
@@ -72,6 +73,36 @@ public class PedidoDAO {
      */
     public List<Pedido> listarTodos(Session session) {
         return session.createQuery("from Pedido", Pedido.class).list();
+    }
+
+    /**
+     * Actualiza los estados de los pedidos según el tiempo de preparación de cada artículo
+     * y lo compara con la hora actual
+     *
+     * @param session La sesión de Hibernate activa.
+     */
+    public void actualizarEstadoPedido(Session session) {
+
+        Query<Integer> subquery = session.createQuery(
+                "SELECT dp.pedido.numeroPedido " +
+                        "FROM DetallePedido dp " +
+                        "JOIN dp.articulo a " +
+                        "JOIN dp.pedido p " +
+                        "WHERE p.estadoPedido = 'Pendiente' AND " +
+                        "FUNCTION('TIMESTAMPADD', MINUTE, a.tiempoPreparacion, p.fechaHoraPedido) <= CURRENT_TIMESTAMP", Integer.class);
+
+        List<Integer> numeroPedidos = subquery.getResultList();
+
+        if (!numeroPedidos.isEmpty()) {
+            Query<?> updateQuery = session.createQuery(
+                    "UPDATE Pedido p " +
+                            "SET p.estadoPedido = 'Enviado' " +
+                            "WHERE p.numeroPedido IN :numeroPedidos"
+            );
+
+            updateQuery.setParameter("numeroPedidos", numeroPedidos);
+            updateQuery.executeUpdate();
+        }
     }
 
     /**

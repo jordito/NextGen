@@ -31,11 +31,25 @@ public class ControladorPedido {
     }
 
     /**
+     * Actualiza los estados de los pedidos según la hora actual
+     */
+    public void actualizarEstadoPedidos() {
+        Transaction tx = null;
+        try (Session session = Datos.getSessionFactory().openSession()) {
+            tx = session.beginTransaction();
+            pedidoDAO.actualizarEstadoPedido(session);
+            tx.commit();
+            session.close();
+        }
+    }
+
+    /**
      * Lista todos los pedidos existentes.
      *
      * @return Lista de pedidos.
      */
     public List<Pedido> listarPedidos() {
+        actualizarEstadoPedidos();
         try (Session session = Datos.getSessionFactory().openSession()) {
             return pedidoDAO.listarTodos(session);
         }
@@ -48,6 +62,7 @@ public class ControladorPedido {
      * @return Un conjunto de detalles del pedido.
      */
     public Set<DetallePedido> obtenerDetallesDePedido(int numeroPedido) {
+        actualizarEstadoPedidos();
         try (Session session = Datos.getSessionFactory().openSession()) {
             List<DetallePedido> detallesList = detallePedidoDAO.listarPorPedido(numeroPedido, session);
             return new HashSet<>(detallesList);
@@ -60,6 +75,7 @@ public class ControladorPedido {
      * @return Un conjunto de detalles de todos los pedidos.
      */
     public Set<DetallePedido> obtenerDetallesDeTodosLosPedidos() {
+        actualizarEstadoPedidos();
         try (Session session = Datos.getSessionFactory().openSession()) {
             List<Pedido> pedidos = pedidoDAO.listarTodos(session);
             Set<DetallePedido> detallesDeTodosLosPedidos = new HashSet<>();
@@ -72,7 +88,6 @@ public class ControladorPedido {
         }
     }
 
-
     /**
      * Agrega un nuevo pedido y sus detalles a la base de datos.
      *
@@ -81,6 +96,7 @@ public class ControladorPedido {
      * @return El pedido agregado o null en caso de fallo.
      */
     public Pedido agregarPedido(Pedido pedido, Set<DetallePedido> detallesPedido) {
+        actualizarEstadoPedidos();
         Transaction tx = null;
         try (Session session = Datos.getSessionFactory().openSession()) {
             tx = session.beginTransaction();
@@ -112,6 +128,7 @@ public class ControladorPedido {
      * @return true si el pedido y sus detalles se eliminaron con éxito, de lo contrario false.
      */
     public boolean eliminarPedido(int numeroPedido) {
+        actualizarEstadoPedidos();
         Transaction tx = null;
         try (Session session = Datos.getSessionFactory().openSession()) {
             tx = session.beginTransaction();
@@ -142,6 +159,7 @@ public class ControladorPedido {
      * @return Lista de pedidos pendientes.
      */
     public List<Pedido> listarPedidosPendientes() {
+        actualizarEstadoPedidos();
         try (Session session = Datos.getSessionFactory().openSession()) {
             return pedidoDAO.listarTodos(session).stream()
                     .filter(pedido -> pedido.getEstadoPedido() == Pedido.EstadoPedido.Pendiente)
@@ -155,12 +173,11 @@ public class ControladorPedido {
      * @return Lista de pedidos enviados.
      */
     public List<Pedido> listarPedidosEnviados() {
+        actualizarEstadoPedidos();
         try (Session session = Datos.getSessionFactory().openSession()) {
             return pedidoDAO.listarTodos(session).stream()
                     .filter(pedido -> pedido.getEstadoPedido() == Pedido.EstadoPedido.Enviado)
                     .collect(Collectors.toList());
         }
     }
-
-
 }
