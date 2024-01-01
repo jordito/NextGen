@@ -52,6 +52,7 @@ public class PedidoDAO {
      */
     public boolean eliminar(int numeroPedido, Session session) {
         try {
+            session.flush();
             Pedido pedido = session.get(Pedido.class, numeroPedido);
             if (pedido != null) {
                 session.delete(pedido);

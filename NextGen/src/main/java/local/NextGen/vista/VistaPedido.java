@@ -188,6 +188,7 @@ public class VistaPedido {
     private void listarPedidos(TableView<Pedido> tabla) {
         List<Pedido> pedidos = controladorPedido.listarPedidos();
         tabla.getItems().setAll(pedidos);
+        tabla.refresh();
     }
 
     private void listarPedidosEnviados(TableView<Pedido> tabla){

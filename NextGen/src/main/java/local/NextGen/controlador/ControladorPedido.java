@@ -128,16 +128,10 @@ public class ControladorPedido {
      * @return true si el pedido y sus detalles se eliminaron con éxito, de lo contrario false.
      */
     public boolean eliminarPedido(int numeroPedido) {
-        actualizarEstadoPedidos();
+        boolean detallesEliminados = eliminarDetalles(numeroPedido);
         Transaction tx = null;
         try (Session session = Datos.getSessionFactory().openSession()) {
             tx = session.beginTransaction();
-            boolean detallesEliminados;
-            if (!detallePedidoDAO.listarPorPedido(numeroPedido, session).isEmpty()) {
-                detallesEliminados = detallePedidoDAO.eliminarPorPedido(numeroPedido, session);
-            } else {
-                detallesEliminados = true;
-            }
             boolean pedidoEliminado = pedidoDAO.eliminar(numeroPedido, session);
             if (detallesEliminados && pedidoEliminado) {
                 tx.commit();
@@ -151,6 +145,31 @@ public class ControladorPedido {
             e.printStackTrace();
             return false;
         }
+    }
+
+    /**
+     * Elimina todos los detalles de un pedido de la base de datos.
+     *
+     * @param numeroPedido El número del pedido a eliminar.
+     * @return true si ha eliminado los detalles o si no había detalles.
+     */
+    public boolean eliminarDetalles(int numeroPedido) {
+        boolean detallesEliminados;
+        Transaction tx = null;
+        try (Session session = Datos.getSessionFactory().openSession()) {
+            tx = session.beginTransaction();
+            if (!detallePedidoDAO.listarPorPedido(numeroPedido, session).isEmpty()) {
+                detallesEliminados = detallePedidoDAO.eliminarPorPedido(numeroPedido, session);
+                tx.commit();
+            } else {
+                detallesEliminados = true;
+            }
+        } catch (Exception e) {
+            if (tx != null) tx.rollback();
+            e.printStackTrace();
+            return false;
+        }
+        return detallesEliminados;
     }
 
     /**
