@@ -2,6 +2,8 @@ package local.NextGen.modelo.entidades;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -29,8 +31,13 @@ public class Pedido {
     @Column(name = "estado_pedido", nullable = false)
     private EstadoPedido estadoPedido = EstadoPedido.Pendiente;
 
-    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<DetallePedido> detallePedidos;
+
+    public List<DetallePedido> getDetallePedidosList() {
+        return detallePedidos != null ? new ArrayList<>(detallePedidos) : new ArrayList<>();
+    }
 
     /**
      * Constructor por defecto.

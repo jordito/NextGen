@@ -16,6 +16,7 @@ import javafx.stage.Stage;
 import local.NextGen.controlador.*;
 import local.NextGen.modelo.entidades.*;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -79,17 +80,90 @@ public class VistaPedido {
         TableColumn<Pedido, String> columnaFecha = new TableColumn<>("Fecha de Pedido");
         columnaFecha.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().getFechaHoraPedido().toString()));
+        columnaFecha.setPrefWidth(150);
 
         TableColumn<Pedido, String> columnaEstado = new TableColumn<>("Estado");
         columnaEstado.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().getEstadoPedido().toString()));
 
-        TableColumn<Pedido, String> columnaDetalles = new TableColumn<>("Detalles");
-        columnaDetalles.setCellValueFactory(cellData ->
+        TableColumn<Pedido, String> columnaResumen = new TableColumn<>("Resumen");
+        columnaResumen.setCellValueFactory(cellData ->
                 new SimpleStringProperty(resumenDetallesPedido(cellData.getValue())));
+        columnaResumen.setPrefWidth(180);
 
-        tabla.getColumns().addAll(columnaNumero, columnaCliente, columnaFecha, columnaEstado, columnaDetalles);
+        TableColumn<Pedido, String> columnaDetalles = new TableColumn<>("Detalles");
+        columnaDetalles.setPrefWidth(200);
+        tabla.getColumns().addAll(columnaNumero, columnaCliente, columnaFecha, columnaEstado, columnaResumen, columnaDetalles);
+
+        columnaResumen.setCellFactory(param -> new TableCell<Pedido, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty ? null : getItem());
+            }
+        });
+
+        columnaDetalles.setCellFactory(param -> new TableCell<Pedido, String>() {
+            private final TableView<DetallePedido> nestedTable = createNestedTable();
+
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setText(null);
+                } else {
+                    Pedido pedido = getTableView().getItems().get(getIndex());
+                    nestedTable.getItems().setAll(pedido.getDetallePedidosList());
+                    nestedTable.setPrefHeight(calculateNestedTableHeight(pedido.getDetallePedidosList()));
+                    setGraphic(nestedTable);
+                }
+            }
+        });
     }
+
+    private TableView<DetallePedido> createNestedTable() {
+        TableView<DetallePedido> nestedTable = new TableView<>();
+
+        TableColumn<DetallePedido, String> columnaCodigoArticulo = new TableColumn<>("Artículo");
+        columnaCodigoArticulo.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getArticulo().getCodigo()));
+        columnaCodigoArticulo.setPrefWidth(30);
+
+        TableColumn<DetallePedido, Integer> columnaCantidad = new TableColumn<>("Cantidad");
+        columnaCantidad.setCellValueFactory(new PropertyValueFactory<>("cantidad"));
+        columnaCantidad.setPrefWidth(10);
+
+        TableColumn<DetallePedido, BigDecimal> columnaPrecioVenta = new TableColumn<>("Precio");
+        columnaPrecioVenta.setCellValueFactory(new PropertyValueFactory<>("precioVenta"));
+        columnaPrecioVenta.setPrefWidth(30);
+
+        nestedTable.getColumns().addAll(columnaCantidad, columnaPrecioVenta, columnaCodigoArticulo);
+        nestedTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        return nestedTable;
+    }
+
+    /* Calcular la altura de la tabla a partir del número de filas */
+    private double calculateNestedTableHeight(List<?> items) {
+        int rows = items.size();
+        double rowHeight = 24;
+        double headerHeight = 24;
+        return headerHeight + (rows * rowHeight);
+    }
+
+    private String detallePedidoInfo(List<DetallePedido> detalles) {
+        if (detalles == null || detalles.isEmpty()) {
+            return "No hay detalles";
+        }
+
+        StringBuilder detallesInfo = new StringBuilder();
+        for (DetallePedido detalle : detalles) {
+            detallesInfo.append(String.format("Cantidad: %d, Precio Venta: %.2f, Código Artículo: %s\n",
+                    detalle.getCantidad(), detalle.getPrecioVenta(), detalle.getArticulo().getCodigo()));
+        }
+
+        return detallesInfo.toString();
+    }
+
     private String resumenDetallesPedido(Pedido pedido) {
         if (pedido == null) {
             return "No hay detalles";
