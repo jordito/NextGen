@@ -1,167 +1,349 @@
 package local.NextGen.vista;
-import java.util.*;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import local.NextGen.controlador.*;
-import local.NextGen.modelo.Articulo;
-import local.NextGen.modelo.Cliente;
-import local.NextGen.modelo.DAO.*;
-import local.NextGen.modelo.DetallePedido;
-import local.NextGen.modelo.Pedido;
+import local.NextGen.modelo.entidades.*;
 
-import java.sql.SQLException;
-
+import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Stream;
 
 public class VistaPedido {
-    private static local.NextGen.controlador.Controlador controlador;
-    static Scanner scanner = new Scanner(System.in);
+    private ControladorPedido controladorPedido;
+    private ControladorCliente controladorCliente;
+    private ControladorArticulo controladorArticulo;
 
-    // Constructor que recibe una instancia de Controlador
-    public VistaPedido(local.NextGen.controlador.Controlador controlador) {
-        VistaPedido.controlador = controlador;
-    }
-    private static char pedirOpcion() {
-        System.out.print("Ingrese la opción deseada: ");
-        return scanner.nextLine().charAt(0);
+    public VistaPedido(ControladorPedido cp, ControladorCliente cc, ControladorArticulo ca) {
+        controladorPedido = cp;
+        controladorCliente = cc;
+        controladorArticulo = ca;
     }
 
-    public static void gestionPedidos() throws SQLException {
-        boolean salir = false;
-        char opcion;
+    public Node getVistaPedidoNode() {
+        TableView<Pedido> tablaPedidos = new TableView<>();
+        configurarColumnasTabla(tablaPedidos);
 
-        do {
-            System.out.println("╔══════════════════════════════╗");
-            System.out.println("║     GESTIÓN PEDIDOS          ║");
-            System.out.println("╠══════════════════════════════╣");
-            System.out.println("║ 1. Listar Pedidos            ║");
-            System.out.println("║ 2. Agregar Pedido            ║");
-            System.out.println("║ 3. Eliminar Pedido           ║");
-            System.out.println("║ 4. Listar Pendientes         ║");
-            System.out.println("║ 5. Listar Enviados           ║");
-            System.out.println("║ 0. Salir                     ║");
-            System.out.println("╚══════════════════════════════╝");
+        Button btnListarPedidos = new Button("Listar Pedidos");
+        Button btnListarPedidosEnviados = new Button("Listar Pedidos Enviados");
+        Button btnListarPedidosPendientes = new Button("Listar Pedidos Pendientes");
+        Button btnAgregarPedido = new Button("Agregar Pedido");
+        Button btnEliminarPedido = new Button("Eliminar Pedido");
 
-            opcion = pedirOpcion();
+        btnListarPedidos.setOnAction(e -> listarPedidos(tablaPedidos));
+        btnListarPedidosEnviados.setOnAction(e -> listarPedidosEnviados(tablaPedidos));
+        btnListarPedidosPendientes.setOnAction(e -> listarPedidosPendientes(tablaPedidos));
+        btnAgregarPedido.setOnAction(e -> agregarPedido(tablaPedidos));
+        btnEliminarPedido.setOnAction(e -> eliminarPedido(tablaPedidos));
 
-            switch (opcion) {
-                case '1':
-                    local.NextGen.controlador.Controlador.listarPedidos();
-                    break;
-                case '2':
-                    agregarPedido();
-                    break;
-                case '3':
-                    eliminarPedido();
-                    break;
-                case '4':
-                    mostrarPedidosPendientes();
-                    break;
-                case '5':
-                    mostrarPedidosEnviados();
-                    break;
-                case '0':
-                    salir = true;
-                    break;
-                default:
-                    System.out.println("\u001B[31m" + "Opción inválida. Por favor, elija una opción válida." + "\u001B[0m");
+        HBox filaBotones1 = new HBox(10, btnListarPedidos, btnListarPedidosEnviados, btnListarPedidosPendientes);
+        filaBotones1.setAlignment(Pos.CENTER);
+
+        HBox filaBotones2 = new HBox(10, btnAgregarPedido, btnEliminarPedido);
+        filaBotones2.setAlignment(Pos.CENTER);
+
+        Stream.of(filaBotones1, filaBotones2).flatMap(hbox -> hbox.getChildren().stream()).forEach(node -> {
+            if (node instanceof Button) {
+                Button button = (Button) node;
+                button.setMaxWidth(Double.MAX_VALUE);
+                HBox.setHgrow(button, Priority.ALWAYS);
             }
-        } while (!salir);
+        });
+
+        VBox menuContainer = new VBox(10);
+        menuContainer.getChildren().addAll(filaBotones1, filaBotones2, tablaPedidos);
+
+        return menuContainer;
     }
-    public static void agregarPedido() {
-        Scanner scanner = new Scanner(System.in);
 
-        System.out.println("\u001B[34mAgregar Nuevo Pedido:\u001B[0m");
+    private void configurarColumnasTabla(TableView<Pedido> tabla) {
+        TableColumn<Pedido, Integer> columnaNumero = new TableColumn<>("Número de Pedido");
+        columnaNumero.setCellValueFactory(new PropertyValueFactory<>("numeroPedido"));
 
-        try {
-            System.out.print("\u001B[34mIngrese el id del cliente:\u001B[0m ");
-            int idCliente = scanner.nextInt();
-            Cliente cliente = local.NextGen.modelo.DAO.ClienteDAO.obtenerPorId(idCliente);
+        TableColumn<Pedido, String> columnaCliente = new TableColumn<>("Cliente");
+        columnaCliente.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getCliente().getNombre()));
 
-            if (cliente != null) {
-                Date fechaHora = new Date();
-                Pedido nuevoPedido = new Pedido(0, fechaHora, cliente, new ArrayList<>());
+        TableColumn<Pedido, String> columnaFecha = new TableColumn<>("Fecha de Pedido");
+        columnaFecha.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getFechaHoraPedido().toString()));
+        columnaFecha.setPrefWidth(150);
 
-                boolean agregarOtroDetalle = true;
+        TableColumn<Pedido, String> columnaEstado = new TableColumn<>("Estado");
+        columnaEstado.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getEstadoPedido().toString()));
 
-                while (agregarOtroDetalle) {
-                    try {
-                        System.out.print("\u001B[34mIngrese el código del artículo:\u001B[0m ");
-                        String codigo = scanner.next();
-                        Articulo articulo = local.NextGen.modelo.DAO.ArticuloDAO.obtenerPorCodigo(codigo);
+        TableColumn<Pedido, String> columnaResumen = new TableColumn<>("Resumen");
+        columnaResumen.setCellValueFactory(cellData ->
+                new SimpleStringProperty(resumenDetallesPedido(cellData.getValue())));
+        columnaResumen.setPrefWidth(180);
 
-                        if (articulo != null) {
-                            System.out.print("\u001B[34mIngrese la cantidad:\u001B[0m ");
-                            int cantidad = scanner.nextInt();
-                            scanner.nextLine();
+        TableColumn<Pedido, String> columnaDetalles = new TableColumn<>("Detalles");
+        columnaDetalles.setPrefWidth(200);
+        tabla.getColumns().addAll(columnaNumero, columnaCliente, columnaFecha, columnaEstado, columnaResumen, columnaDetalles);
 
-                            DetallePedido detalle = new DetallePedido(0, articulo, cantidad);
-                            nuevoPedido.agregarDetalle(detalle);
+        columnaResumen.setCellFactory(param -> new TableCell<Pedido, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty ? null : getItem());
+            }
+        });
 
-                            System.out.print("\u001B[34m¿Desea agregar otro artículo? (S/N):\u001B[0m ");
-                            char opcion = scanner.next().toUpperCase().charAt(0);
-                            agregarOtroDetalle = (opcion == 'S');
-                        } else {
-                            System.out.println("\u001B[31mArtículo no encontrado. Ingrese un código de artículo válido.\u001B[0m");
-                        }
-                    } catch (InputMismatchException e) {
-                        System.out.println("\u001B[31mError: Ingrese un valor válido.\u001B[0m");
-                        scanner.next();
-                    }
-                }
+        columnaDetalles.setCellFactory(param -> new TableCell<Pedido, String>() {
+            private final TableView<DetallePedido> nestedTable = createNestedTable();
 
-                Pedido resultadoPedido = local.NextGen.controlador.Controlador.agregarPedido(nuevoPedido);
-
-                if (resultadoPedido != null) {
-                    System.out.println("\u001B[32mPedido agregado con éxito\u001B[0m");
-                    System.out.println(resultadoPedido);
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setText(null);
                 } else {
-                    System.out.println("\u001B[31mError al agregar el pedido\u001B[0m");
+                    Pedido pedido = getTableView().getItems().get(getIndex());
+                    nestedTable.getItems().setAll(pedido.getDetallePedidosList());
+                    nestedTable.setPrefHeight(calculateNestedTableHeight(pedido.getDetallePedidosList()));
+                    setGraphic(nestedTable);
                 }
+            }
+        });
+    }
+
+    private TableView<DetallePedido> createNestedTable() {
+        TableView<DetallePedido> nestedTable = new TableView<>();
+
+        TableColumn<DetallePedido, String> columnaCodigoArticulo = new TableColumn<>("Artículo");
+        columnaCodigoArticulo.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getArticulo().getCodigo()));
+        columnaCodigoArticulo.setPrefWidth(30);
+
+        TableColumn<DetallePedido, Integer> columnaCantidad = new TableColumn<>("Cantidad");
+        columnaCantidad.setCellValueFactory(new PropertyValueFactory<>("cantidad"));
+        columnaCantidad.setPrefWidth(10);
+
+        TableColumn<DetallePedido, BigDecimal> columnaPrecioVenta = new TableColumn<>("Precio");
+        columnaPrecioVenta.setCellValueFactory(new PropertyValueFactory<>("precioVenta"));
+        columnaPrecioVenta.setPrefWidth(30);
+
+        nestedTable.getColumns().addAll(columnaCantidad, columnaPrecioVenta, columnaCodigoArticulo);
+        nestedTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        return nestedTable;
+    }
+
+    /* Calcular la altura de la tabla a partir del número de filas */
+    private double calculateNestedTableHeight(List<?> items) {
+        int rows = items.size();
+        double rowHeight = 24;
+        double headerHeight = 24;
+        return headerHeight + (rows * rowHeight);
+    }
+
+    private String detallePedidoInfo(List<DetallePedido> detalles) {
+        if (detalles == null || detalles.isEmpty()) {
+            return "No hay detalles";
+        }
+
+        StringBuilder detallesInfo = new StringBuilder();
+        for (DetallePedido detalle : detalles) {
+            detallesInfo.append(String.format("Cantidad: %d, Precio Venta: %.2f, Código Artículo: %s\n",
+                    detalle.getCantidad(), detalle.getPrecioVenta(), detalle.getArticulo().getCodigo()));
+        }
+
+        return detallesInfo.toString();
+    }
+
+    private String resumenDetallesPedido(Pedido pedido) {
+        if (pedido == null) {
+            return "No hay detalles";
+        }
+
+        Set<DetallePedido> detalles = controladorPedido.obtenerDetallesDePedido(pedido.getNumeroPedido());
+        if (detalles.isEmpty()) {
+            return "No hay detalles";
+        }
+
+        // Calcular el total de artículos y el costo total del pedido
+        int totalArticulos = 0;
+        double costoTotal = 0.0;
+        for (DetallePedido detalle : detalles) {
+            totalArticulos += detalle.getCantidad();
+            costoTotal += detalle.getPrecioVenta().doubleValue() * detalle.getCantidad();
+        }
+
+        return String.format("Artículos: %d, Costo Total: %.2f", totalArticulos, costoTotal);
+    }
+
+    private void listarPedidos(TableView<Pedido> tabla) {
+        List<Pedido> pedidos = controladorPedido.listarPedidos();
+        tabla.getItems().setAll(pedidos);
+        tabla.refresh();
+    }
+
+    private void listarPedidosEnviados(TableView<Pedido> tabla){
+        List<Pedido> pedidos = controladorPedido.listarPedidosEnviados();
+        tabla.getItems().setAll(pedidos);
+    }
+
+    private void listarPedidosPendientes(TableView<Pedido> tabla){
+        List<Pedido> pedidos = controladorPedido.listarPedidosPendientes();
+        tabla.getItems().setAll(pedidos);
+    }
+
+
+    private void agregarPedido(TableView<Pedido> tabla) {
+        Stage dialogStage = createDialogStage("Agregar Nuevo Pedido");
+        GridPane grid = new GridPane();
+        grid.setVgap(10);
+        grid.setHgap(10);
+        grid.setPadding(new Insets(10));
+
+        // Campos para ingresar los datos del pedido
+        TextField txtNifCliente = new TextField();
+        txtNifCliente.setPromptText("NIF del Cliente");
+        Button btnBuscarCliente = new Button("Buscar Cliente");
+        Label lblNombreCliente = new Label();
+
+        btnBuscarCliente.setOnAction(e -> {
+            Cliente cliente = controladorCliente.obtenerClientePorNif(txtNifCliente.getText());
+            if (cliente != null) {
+                lblNombreCliente.setText("Cliente: " + cliente.getNombre());
             } else {
-                System.out.println("\u001B[31mCliente no encontrado\u001B[0m");
+                lblNombreCliente.setText("Cliente no encontrado");
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("\u001B[31mError al acceder a la base de datos\u001B[0m");
-        }
+        });
+
+        grid.add(new Label("NIF Cliente:"), 0, 0);
+        grid.add(txtNifCliente, 1, 0);
+        grid.add(btnBuscarCliente, 2, 0);
+        grid.add(lblNombreCliente, 1, 1);
+
+        // Lista para agregar detalles del pedido
+        ListView<DetallePedido> listaDetalles = new ListView<>();
+
+        // Set a custom cell factory for the ListView
+        listaDetalles.setCellFactory(param -> new ListCell<DetallePedido>() {
+            @Override
+            protected void updateItem(DetallePedido detallePedido, boolean empty) {
+                super.updateItem(detallePedido, empty);
+
+                if (empty || detallePedido == null) {
+                    setText(null);
+                } else {
+                    // Customize the display for each item
+                    setText("Código: " + detallePedido.getArticulo().getCodigo() + ", Precio: " + detallePedido.getArticulo().getPrecioVenta() + ", Cantidad: " + detallePedido.getCantidad());
+                }
+            }
+        });
+
+        Button btnAgregarDetalle = new Button("Agregar Detalle");
+        btnAgregarDetalle.setOnAction(e -> {
+            agregarDetallePedido(listaDetalles, txtNifCliente.getText());
+        });
+
+        Button btnConfirmarPedido = new Button("Confirmar Pedido");
+        btnConfirmarPedido.setOnAction(e -> {
+            Cliente cliente = controladorCliente.obtenerClientePorNif(txtNifCliente.getText());
+            if (cliente != null) {
+                Pedido nuevoPedido = new Pedido();
+                nuevoPedido.setCliente(cliente);
+                Set<DetallePedido> detalles = new HashSet<>(listaDetalles.getItems());
+                controladorPedido.agregarPedido(nuevoPedido, detalles);
+                listarPedidos(tabla);
+                dialogStage.close();
+            }
+        });
+
+        grid.add(btnAgregarDetalle, 1, 2);
+        grid.add(listaDetalles, 1, 3);
+        grid.add(btnConfirmarPedido, 1, 4);
+
+        Scene scene = new Scene(grid);
+        dialogStage.setScene(scene);
+        dialogStage.show();
     }
 
-    private static void eliminarPedido() {
-        try {
-            System.out.print("\u001B[34mIngrese el número del pedido a eliminar: \u001B[0m");
-            int numeroPedido = Integer.parseInt(scanner.nextLine());
+    private void agregarDetallePedido(ListView<DetallePedido> listaDetalles, String nifCliente) {
+        Stage dialogStage = createDialogStage("Agregar Detalle del Pedido");
+        GridPane grid = new GridPane();
+        grid.setVgap(10);
+        grid.setHgap(10);
+        grid.setPadding(new Insets(10));
 
-            controlador.eliminarPedido(numeroPedido);
+        TextField txtCodigoArticulo = new TextField();
+        txtCodigoArticulo.setPromptText("Código del Artículo");
+        TextField txtCantidad = new TextField();
+        txtCantidad.setPromptText("Cantidad");
 
-            System.out.println("\u001B[32mPedido eliminado con éxito\u001B[0m");
-        } catch (NumberFormatException e) {
-            System.out.println("\u001B[31mError: Ingrese un número válido\u001B[0m");
-        } catch (SQLException e) {
-            System.out.println("\u001B[31mError al eliminar el pedido\u001B[0m");
-            e.printStackTrace();
-        }
+        Button btnConfirmarDetalle = new Button("Agregar Detalle");
+        btnConfirmarDetalle.setOnAction(e -> {
+            try {
+                Articulo articulo = controladorArticulo.obtenerArticuloPorCodigo(txtCodigoArticulo.getText());
+                int cantidad = Integer.parseInt(txtCantidad.getText());
+                if (articulo != null && cantidad > 0) {
+                    DetallePedido detalle = new DetallePedido(new DetallePedido.DetallePedidoId(0, articulo.getCodigo()), null, articulo, cantidad, articulo.getPrecioVenta());
+                    listaDetalles.getItems().add(detalle);
+                    dialogStage.close();
+                } else {
+                    mostrarError("Error", "Artículo no encontrado o cantidad inválida.");
+                }
+            } catch (NumberFormatException ex) {
+                mostrarError("Error", "Por favor, ingrese una cantidad válida.");
+            }
+        });
+
+        grid.add(new Label("Código del Artículo:"), 0, 0);
+        grid.add(txtCodigoArticulo, 1, 0);
+        grid.add(new Label("Cantidad:"), 0, 1);
+        grid.add(txtCantidad, 1, 1);
+        grid.add(btnConfirmarDetalle, 1, 2);
+
+        Scene scene = new Scene(grid);
+        dialogStage.setScene(scene);
+        dialogStage.show();
+
     }
-    public static void mostrarPedidosPendientes() throws SQLException {
-        List<local.NextGen.modelo.Pedido> pedidosPendientes = controlador.listarPedidosPendientes();
-        if (pedidosPendientes.isEmpty()) {
-            System.out.println("\u001B[31mNo hay pedidos pendientes en la base de datos.\u001B[0m");
+
+    private void eliminarPedido(TableView<Pedido> tabla) {
+        Pedido pedidoSeleccionado = tabla.getSelectionModel().getSelectedItem();
+        if (pedidoSeleccionado != null) {
+            controladorPedido.eliminarPedido(pedidoSeleccionado.getNumeroPedido());
+            listarPedidos(tabla);
         } else {
-            System.out.println("\u001B[34m\nLista de pedidos pendientes:\u001B[0m");
-            for (local.NextGen.modelo.Pedido pedido : pedidosPendientes) {
-                System.out.println(pedido.toString());
-            }
+            mostrarError("Selección de Pedido Requerida", "Por favor, selecciona un pedido de la lista antes de continuar.");
+
         }
     }
 
-    public static void mostrarPedidosEnviados() throws SQLException {
-        List<local.NextGen.modelo.Pedido> pedidosEnviados = controlador.listarPedidosEnviados();
-        if (pedidosEnviados.isEmpty()) {
-            System.out.println("\u001B[31mNo hay pedidos enviados en la base de datos.\u001B[0m");
-        } else {
-            System.out.println("\u001B[34m\nLista de pedidos enviados:\u001B[0m");
-            for (local.NextGen.modelo.Pedido pedido : pedidosEnviados) {
-                System.out.println(pedido.toString());
-            }
-        }
+    private Stage createDialogStage(String title) {
+        Stage dialogStage = new Stage();
+        dialogStage.setTitle(title);
+        dialogStage.initModality(Modality.WINDOW_MODAL);
+        return dialogStage;
+    }
+    /**
+     * Muestra un mensaje de error en una ventana de diálogo.
+     *
+     * @param titulo El título de la ventana de diálogo.
+     * @param mensaje El mensaje de error a mostrar.
+     */
+    private void mostrarError(String titulo, String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
     }
 
 }

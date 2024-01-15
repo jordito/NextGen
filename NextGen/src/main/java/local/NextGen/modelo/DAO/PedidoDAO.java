@@ -1,163 +1,120 @@
 package local.NextGen.modelo.DAO;
 
-import local.NextGen.modelo.*;
-import java.sql.*;
-import java.util.ArrayList;
+import local.NextGen.modelo.entidades.Pedido;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
+
 import java.util.List;
 
-
 /**
- * Clase DAO para la gestión de pedidos en la base de datos.
- * Esta clase se encarga de realizar operaciones CRUD (Crear, Leer, Actualizar, Eliminar) para los pedidos.
+ * Clase DAO para la entidad Pedido.
+ * Proporciona métodos para realizar operaciones de base de datos sobre pedidos,
+ * como insertar, eliminar, listar y obtener pedidos.
  */
 public class PedidoDAO {
-    private static Connection conn = null;
-    private static local.NextGen.modelo.DAO.DetallePedidoDAO detallePedidoDAO = null;
-    private final local.NextGen.modelo.DAO.ClienteDAO clienteDAO;
-    private final local.NextGen.modelo.DAO.ArticuloDAO articuloDAO;
+    private SessionFactory sessionFactory;
 
     /**
-     * Constructor que establece la conexión a la base de datos y las dependencias con otras clases DAO.
+     * Constructor de la clase PedidoDAO.
      *
-     * @param conn La conexión a la base de datos.
+     * @param sessionFactory La fábrica de sesiones de Hibernate.
      */
-    public PedidoDAO(Connection conn) {
-        this.conn = conn;
-        this.detallePedidoDAO = new local.NextGen.modelo.DAO.DetallePedidoDAO(conn);
-        this.clienteDAO = new local.NextGen.modelo.DAO.ClienteDAO(conn);
-        this.articuloDAO = new local.NextGen.modelo.DAO.ArticuloDAO(conn);
+    public PedidoDAO(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
     }
 
     /**
-     * Inserta un nuevo pedido en la base de datos.
+     * Inserta un pedido en la base de datos utilizando una sesión existente.
+     * No se encarga de abrir o cerrar la sesión, ni de manejar la transacción.
      *
-     * @param pedido El objeto Pedido a insertar.
-     * @throws SQLException Si ocurre un error durante la inserción.
+     * @param pedido  El pedido a insertar.
+     * @param session La sesión de Hibernate activa.
+     * @return El número de pedido generado, o -1 si ocurrió un error.
      */
-    public static int insertar(Connection conn, local.NextGen.modelo.Pedido pedido) throws SQLException {
-        int numeroPedidoGenerado = -1;
-
-        String sql = "INSERT INTO Pedidos (fecha_hora_pedido, id_cliente) VALUES (?, ?)";
-
-        try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            pstmt.setTimestamp(1, new Timestamp(pedido.getFechaHora().getTime()));
-            pstmt.setInt(2, pedido.getCliente().getIdCliente());
-
-            int filasAfectadas = pstmt.executeUpdate();
-
-            if (filasAfectadas > 0) {
-                ResultSet generatedKeys = pstmt.getGeneratedKeys();
-
-                if (generatedKeys.next()) {
-                    numeroPedidoGenerado = generatedKeys.getInt(1);
-
-                    for (local.NextGen.modelo.DetallePedido detalle : pedido.getDetallesPedido()) {
-                        local.NextGen.modelo.DAO.DetallePedidoDAO.agregarDetalle(conn, new local.NextGen.modelo.DetallePedido(numeroPedidoGenerado, detalle.getArticulo(), detalle.getCantidad()));
-                    }
-                }
-            }
+    public int insertar(Pedido pedido, Session session) {
+        try {
+            session.save(pedido);
+            return pedido.getNumeroPedido();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1;
         }
-
-        return numeroPedidoGenerado;
     }
 
-
-
     /**
-     * Elimina un pedido de la base de datos.
+     * Elimina un pedido de la base de datos utilizando una sesión existente.
+     * No se encarga de abrir o cerrar la sesión, ni de manejar la transacción.
      *
-     * @param numeroPedido El número del pedido a eliminar.
-     * @return
-     * @throws SQLException Si ocurre un error durante la eliminación.
+     * @param numeroPedido El número de pedido a eliminar.
+     * @param session      La sesión de Hibernate activa.
+     * @return True si el pedido se eliminó con éxito, False en caso contrario.
      */
-    public static boolean eliminar(int numeroPedido) throws SQLException {
-        if (existePedido(numeroPedido)) {
-            detallePedidoDAO.eliminarPorPedido(numeroPedido);
-
-            String sql = "DELETE FROM Pedidos WHERE numero_pedido = ?";
-            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                pstmt.setInt(1, numeroPedido);
-                pstmt.executeUpdate();
+    public boolean eliminar(int numeroPedido, Session session) {
+        try {
+            session.flush();
+            Pedido pedido = session.get(Pedido.class, numeroPedido);
+            if (pedido != null) {
+                session.delete(pedido);
+                return true;
             }
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
-        return false;
     }
 
     /**
-     * Lista todos los pedidos existentes en la base de datos.
+     * Obtiene una lista de todos los pedidos en la base de datos utilizando una sesión existente.
+     * No se encarga de abrir o cerrar la sesión.
      *
-     * @return Una lista de objetos Pedido.
-     * @throws SQLException Si ocurre un error durante la consulta SQL.
+     * @param session La sesión de Hibernate activa.
+     * @return Una lista de pedidos.
      */
-    public static List<local.NextGen.modelo.Pedido> listarTodos() throws SQLException {
-        List<local.NextGen.modelo.Pedido> pedidos = new ArrayList<>();
-        String sql = "SELECT * FROM Pedidos";
-
-        try (PreparedStatement pstmt = conn.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
-            while (rs.next()) {
-                local.NextGen.modelo.Pedido pedido = crearPedidoDesdeResultSet(rs);
-                pedidos.add(pedido);
-            }
-        }
-
-        return pedidos;
+    public List<Pedido> listarTodos(Session session) {
+        return session.createQuery("from Pedido", Pedido.class).list();
     }
 
     /**
-     * Obtiene un pedido específico de la base de datos por su número.
+     * Actualiza los estados de los pedidos según el tiempo de preparación de cada artículo
+     * y lo compara con la hora actual
      *
-     * @param numeroPedido El número del pedido a buscar.
-     * @return El objeto Pedido si se encuentra, o null si no existe.
-     * @throws SQLException Si ocurre un error durante la consulta SQL.
+     * @param session La sesión de Hibernate activa.
      */
-    public local.NextGen.modelo.Pedido obtenerPorNumero(int numeroPedido) throws SQLException {
-        String sql = "SELECT * FROM Pedidos WHERE numero_pedido = ?";
-        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, numeroPedido);
-            ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {
-                return crearPedidoDesdeResultSet(rs);
-            }
+    public void actualizarEstadoPedido(Session session) {
+
+        Query<Integer> subquery = session.createQuery(
+                "SELECT dp.pedido.numeroPedido " +
+                        "FROM DetallePedido dp " +
+                        "JOIN dp.articulo a " +
+                        "JOIN dp.pedido p " +
+                        "WHERE p.estadoPedido = 'Pendiente' AND " +
+                        "FUNCTION('TIMESTAMPADD', MINUTE, a.tiempoPreparacion, p.fechaHoraPedido) <= CURRENT_TIMESTAMP", Integer.class);
+
+        List<Integer> numeroPedidos = subquery.getResultList();
+
+        if (!numeroPedidos.isEmpty()) {
+            Query<?> updateQuery = session.createQuery(
+                    "UPDATE Pedido p " +
+                            "SET p.estadoPedido = 'Enviado' " +
+                            "WHERE p.numeroPedido IN :numeroPedidos"
+            );
+
+            updateQuery.setParameter("numeroPedidos", numeroPedidos);
+            updateQuery.executeUpdate();
         }
-        return null;
     }
 
     /**
-     * Crea un objeto Pedido a partir de un ResultSet.
+     * Obtiene un pedido por su número de pedido utilizando una sesión existente.
+     * No se encarga de abrir o cerrar la sesión.
      *
-     * @param rs ResultSet de una consulta SQL.
-     * @return Un objeto Pedido creado a partir de los datos del ResultSet.
-     * @throws SQLException Si ocurre un error al acceder a los datos del ResultSet.
+     * @param numeroPedido El número de pedido a buscar.
+     * @param session      La sesión de Hibernate activa.
+     * @return El pedido encontrado, o null si no se encontró un pedido con ese número.
      */
-    private static local.NextGen.modelo.Pedido crearPedidoDesdeResultSet(ResultSet rs) throws SQLException {
-        int numeroPedido = rs.getInt("numero_pedido");
-        Timestamp fechaHora = rs.getTimestamp("fecha_hora_pedido");
-        local.NextGen.modelo.Cliente cliente = local.NextGen.modelo.DAO.ClienteDAO.obtenerPorId(rs.getInt("id_cliente"));
-        List<local.NextGen.modelo.DetallePedido> detallesPedido = detallePedidoDAO.listarPorPedido(numeroPedido);
-        return new local.NextGen.modelo.Pedido(numeroPedido, new java.util.Date(fechaHora.getTime()), cliente, detallesPedido);
-    }
-
-    /**
-     * Verifica si un pedido con un determinado número ya existe en la base de datos.
-     *
-     * @param numeroPedido El número del pedido a verificar.
-     * @return true si el pedido existe, false en caso contrario.
-     * @throws SQLException Si ocurre un error durante la consulta.
-     */
-    private static boolean existePedido(int numeroPedido) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM Pedidos WHERE numero_pedido = ?";
-        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, numeroPedido);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt(1) > 0;
-                }
-            }
-        }
-        return false;
+    public Pedido obtenerPorNumero(int numeroPedido, Session session) {
+        return session.get(Pedido.class, numeroPedido);
     }
 }
-
-
-

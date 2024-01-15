@@ -1,136 +1,344 @@
 package local.NextGen.vista;
-import local.NextGen.controlador.*;
-import local.NextGen.modelo.*;
-import local.NextGen.modelo.DAO.*;
-import java.sql.SQLException;
-import java.util.Map;
-import java.util.Scanner;
-import local.NextGen.controlador.*;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.*;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.scene.control.TableColumn;
+
+import local.NextGen.controlador.ControladorCliente;
+import local.NextGen.modelo.entidades.Cliente;
+import local.NextGen.modelo.entidades.ClienteEstandard;
+import local.NextGen.modelo.entidades.ClientePremium;
+
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
+
+/**
+ * Clase VistaCliente que representa la interfaz de usuario para la gestión de clientes.
+ * Ofrece funcionalidades para listar, agregar, actualizar y eliminar clientes, así como para mostrar diferentes tipos de clientes.
+ */
 public class VistaCliente {
-    static Scanner scanner = new Scanner(System.in);
-    public static void gestionClientes() throws SQLException {
-        boolean salir = false;
-        char opcion;
-        do {
-            System.out.println("╔══════════════════════════════╗");
-            System.out.println("║     GESTIÓN CLIENTES         ║");
-            System.out.println("╠══════════════════════════════╣");
-            System.out.println("║ 1. Listar Clientes           ║");
-            System.out.println("║ 2. Listar Clientes Estandard ║");
-            System.out.println("║ 3. Listar Clientes Premium   ║");
-            System.out.println("║ 4. Añadir Cliente            ║");
-            System.out.println("║ 5. Eliminar Cliente          ║");
-            System.out.println("║ 6. Actualizar Cliente        ║");
-            System.out.println("║ 0. Salir                     ║");
-            System.out.println("╚══════════════════════════════╝");
-            opcion = pedirOpcion();
-            switch (opcion) {
-                case '1' -> local.NextGen.controlador.Controlador.listarClientes();
-                case '2' -> local.NextGen.controlador.Controlador.listarClientesEstandard();
-                case '3' -> local.NextGen.controlador.Controlador.listarClientesPremium();
-                case '4' -> agregarCliente();
-                case '5' -> eliminarCliente();
-                case '6' -> actualizarCliente();
-                case '0' -> salir = true;
-                default ->
-                        System.out.println("\u001B[31m" + "Opción inválida. Por favor, elija una opción válida." + "\u001B[0m");
+    private ControladorCliente controlador;
+
+    /**
+     * Construye una instancia de VistaCliente con un controlador específico.
+     *
+     * @param controladorCliente Controlador que gestiona la lógica de negocio de clientes.
+     */
+    public VistaCliente(ControladorCliente controladorCliente) {
+        this.controlador = controladorCliente;
+    }
+
+    /**
+     * Crea y devuelve un nodo de la interfaz de usuario para la gestión de clientes.
+     * Este nodo incluye una tabla para mostrar los clientes y botones para las operaciones de gestión.
+     *
+     * @return Un Node que contiene la interfaz de usuario para la gestión de clientes.
+     */
+    public Node getVistaClienteNode() {
+        TableView<Cliente> tablaClientes = new TableView<>();
+        configurarColumnasTabla(tablaClientes);
+
+        Button btnListarTodosClientes = new Button("Listar Todos los Clientes");
+        Button btnListarClientesEstandar = new Button("Listar Clientes Estándar");
+        Button btnListarClientesPremium = new Button("Listar Clientes Premium");
+        Button btnAgregarCliente = new Button("Agregar Cliente");
+        Button btnEliminarCliente = new Button("Eliminar Cliente");
+        Button btnActualizarCliente = new Button("Actualizar Cliente");
+
+        btnListarTodosClientes.setOnAction(e -> listarClientes(tablaClientes, controlador.listarClientes()));
+        btnListarClientesEstandar.setOnAction(e -> listarClientesEstandar(tablaClientes));
+        btnListarClientesPremium.setOnAction(e -> listarClientesPremium(tablaClientes));
+        btnAgregarCliente.setOnAction(e -> agregarCliente(tablaClientes));
+        btnEliminarCliente.setOnAction(e -> eliminarCliente(tablaClientes));
+        btnActualizarCliente.setOnAction(e -> actualizarCliente(tablaClientes));
+
+        HBox filaBotones1 = new HBox(10, btnListarTodosClientes, btnListarClientesEstandar, btnListarClientesPremium);
+        filaBotones1.setAlignment(Pos.CENTER);
+
+        HBox filaBotones2 = new HBox(10, btnAgregarCliente, btnEliminarCliente, btnActualizarCliente);
+        filaBotones2.setAlignment(Pos.CENTER);
+
+        Stream.of(filaBotones1, filaBotones2).flatMap(hbox -> hbox.getChildren().stream()).forEach(node -> {
+            if (node instanceof Button) {
+                Button button = (Button) node;
+                button.setMaxWidth(Double.MAX_VALUE);
+                HBox.setHgrow(button, Priority.ALWAYS);
             }
-        }
-        while (!salir);
+        });
+
+        VBox menuContainer = new VBox(10);
+        menuContainer.getChildren().addAll(filaBotones1, filaBotones2, tablaClientes);
+
+        return menuContainer;
     }
 
-    private static char pedirOpcion() {
-        System.out.print("Ingrese la opción deseada: ");
-        return scanner.nextLine().charAt(0);
+    /**
+     * Configura las columnas de la tabla de clientes.
+     * Define cómo se muestran los datos de los clientes en la tabla.
+     *
+     * @param tabla La TableView que se configurará.
+     */
+    private void configurarColumnasTabla(TableView<Cliente> tabla) {
+        TableColumn<Cliente, Integer> columnaIdCliente = new TableColumn<>("ID");
+        columnaIdCliente.setCellValueFactory(new PropertyValueFactory<>("idCliente"));
+        columnaIdCliente.setMinWidth(3);
+
+        TableColumn<Cliente, String> columnaNombre = new TableColumn<>("Nombre");
+        columnaNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+        columnaNombre.setMinWidth(50);
+
+        TableColumn<Cliente, String> columnaDomicilio = new TableColumn<>("Domicilio");
+        columnaDomicilio.setCellValueFactory(new PropertyValueFactory<>("domicilio"));
+        columnaDomicilio.setMinWidth(50);
+
+        TableColumn<Cliente, String> columnaNIF = new TableColumn<>("NIF");
+        columnaNIF.setCellValueFactory(new PropertyValueFactory<>("nif"));
+        columnaNIF.setMinWidth(10);
+
+        TableColumn<Cliente, String> columnaEmail = new TableColumn<>("Email");
+        columnaEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
+        columnaEmail.setMinWidth(20);
+
+        TableColumn<Cliente, BigDecimal> columnaCuotaAnual = new TableColumn<>("Cuota Anual");
+        columnaCuotaAnual.setCellValueFactory(new PropertyValueFactory<>("cuotaAnual"));
+        columnaCuotaAnual.setMinWidth(11);
+
+        TableColumn<Cliente, BigDecimal> columnaDescuentoEnvio = new TableColumn<>("Dto.");
+        columnaDescuentoEnvio.setCellValueFactory(new PropertyValueFactory<>("descuentoEnvio"));
+        columnaDescuentoEnvio.setMinWidth(5);
+
+        TableColumn<Cliente, String> columnaTipoCliente = new TableColumn<>("Tipo");
+        columnaTipoCliente.setCellValueFactory(cellData -> {
+            Cliente cliente = cellData.getValue();
+            String tipoCliente = "Estándar";
+            if (cliente instanceof ClientePremium) {
+                tipoCliente = "Premium";
+            }
+            return new SimpleStringProperty(tipoCliente);
+        });
+
+        tabla.getColumns().addAll(columnaIdCliente, columnaNombre, columnaDomicilio, columnaNIF, columnaEmail, columnaCuotaAnual, columnaDescuentoEnvio, columnaTipoCliente);
+        tabla.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
-    public static void agregarCliente() throws SQLException {
-        System.out.println("\u001B[34mIngrese los datos del nuevo cliente:\u001B[0m");
 
-        System.out.print("\u001B[34mNIF:\u001B[0m ");
-        String nif = scanner.nextLine();
-
-        System.out.print("\u001B[34mNombre:\u001B[0m ");
-        String nombre = scanner.nextLine();
-
-        System.out.print("\u001B[34mEmail:\u001B[0m ");
-        String email = scanner.nextLine();
-
-        System.out.print("\u001B[34mDirección:\u001B[0m ");
-        String direccion = scanner.nextLine();
-
-        System.out.print("\u001B[34m¿Es cliente estándar? (S/N):\u001B[0m ");
-        char opcion = scanner.nextLine().toUpperCase().charAt(0);
-
-        local.NextGen.modelo.Cliente cliente;
-
-        if (opcion == 'S') {
-            cliente = new local.NextGen.modelo.ClienteEstandard(0, nif, nombre, email, direccion) {
-                @Override
-                public Map<String, Object> toMap() {
-                    return null;
-                }
-            };
-        } else {
-            cliente = new local.NextGen.modelo.ClientePremium(0, nif, nombre, email, direccion, 0, 0) {
-                @Override
-                public Map<String, Object> toMap() {
-                    return null;
-                }
-            };
-        }
-
-        if (local.NextGen.controlador.Controlador.agregarCliente(cliente)) {
-            System.out.println("\u001B[32mCliente agregado con éxito\u001B[0m");
-            System.out.println(cliente);
-        } else {
-            System.out.println("\u001B[32mError a agregar el cliente\u001B[0m");
-        }
+    /**
+     * Lista todos los clientes en la tabla.
+     *
+     * @param tabla La TableView donde se listarán los clientes.
+     * @param clientes La lista de clientes a mostrar.
+     */
+    private void listarClientes(TableView<Cliente> tabla, List<Cliente> clientes) {
+        tabla.getItems().setAll(clientes);
     }
 
-    public static void actualizarCliente() throws SQLException {
-        System.out.print("\u001B[34mIngrese el Id del cliente a actualizar: \u001B[0m");
-        int idCliente = scanner.nextInt();
+    /**
+     * Lista solo los clientes estándar en la tabla.
+     *
+     * @param tabla La TableView donde se listarán los clientes estándar.
+     */
+    private void listarClientesEstandar(TableView<Cliente> tabla) {
+        List<Cliente> clientesEstandar = controlador.listarClientesEstandard();
+        tabla.getItems().setAll(clientesEstandar);
+    }
 
-        scanner.nextLine();
+    /**
+     * Lista solo los clientes premium en la tabla.
+     *
+     * @param tabla La TableView donde se listarán los clientes premium.
+     */
+    private void listarClientesPremium(TableView<Cliente> tabla) {
+        List<Cliente> clientesPremium = controlador.listarClientesPremium();
+        tabla.getItems().setAll(clientesPremium);
+    }
 
-        local.NextGen.modelo.Cliente cliente = local.NextGen.modelo.DAO.ClienteDAO.obtenerPorId(idCliente);
+    /**
+     * Presenta una interfaz para agregar un nuevo cliente.
+     * Incluye campos para los detalles del cliente y un botón para confirmar la adición.
+     *
+     * @param tabla La TableView para reflejar los cambios una vez agregado el cliente.
+     */
+    private void agregarCliente(TableView<Cliente> tabla) {
+        Stage dialogStage = createDialogStage("Agregar Nuevo Cliente");
+        GridPane grid = createClienteForm();
+        grid.setVgap(10);
 
-        if (cliente != null) {
-            System.out.println("\u001B[34mDatos actuales del cliente:\u001B[0m");
-            System.out.println(cliente);
+        // Campos y botones para agregar cliente
+        TextField txtNombre = new TextField();
+        txtNombre.setPromptText("Nombre");
+        TextField txtDomicilio = new TextField();
+        txtDomicilio.setPromptText("Domicilio");
+        TextField txtNIF = new TextField();
+        txtNIF.setPromptText("NIF");
+        TextField txtEmail = new TextField();
+        txtEmail.setPromptText("Email");
 
-            System.out.println("\u001B[34mIngrese los nuevos datos del cliente:\u001B[0m");
+        // Selector de tipo de cliente
+        ComboBox<String> tipoClienteComboBox = new ComboBox<>();
+        tipoClienteComboBox.getItems().addAll("Estándar", "Premium");
 
-            System.out.print("\u001B[34mNuevo Nombre: \u001B[0m");
-            String nuevoNombre = scanner.nextLine();
-            cliente.setNombre(nuevoNombre);
+        // Campos específicos para ClientePremium
+        Label lblCuotaAnualInfo = new Label("Cuota Anual:                    30€");
+        Label lblDescuentoEnvioInfo = new Label("Dto. en Gastos de Envío:  20%");
+        lblCuotaAnualInfo.setVisible(false);
+        lblDescuentoEnvioInfo.setVisible(false);
 
-            System.out.print("\u001B[34mNuevo Email: \u001B[0m");
-            String nuevoEmail = scanner.nextLine();
-            cliente.setEmail(nuevoEmail);
+        // Mostrar campos de ClientePremium cuando sea necesario
+        tipoClienteComboBox.setOnAction(e -> {
+            boolean esPremium = tipoClienteComboBox.getValue().equals("Premium");
+            lblCuotaAnualInfo.setVisible(esPremium);
+            lblDescuentoEnvioInfo.setVisible(esPremium);
+        });
 
-            System.out.print("\u001B[34mNueva Dirección: \u001B[0m");
-            String nuevaDireccion = scanner.nextLine();
-            cliente.setDireccion(nuevaDireccion);
+        // Añadir campos al grid
+        grid.add(new Label("Nombre:"), 0, 0);
+        grid.add(txtNombre, 1, 0);
+        grid.add(new Label("Domicilio:"), 0, 1);
+        grid.add(txtDomicilio, 1, 1);
+        grid.add(new Label("NIF:"), 0, 2);
+        grid.add(txtNIF, 1, 2);
+        grid.add(new Label("Email:"), 0, 3);
+        grid.add(txtEmail, 1, 3);
+        grid.add(new Label("Tipo de Cliente:"), 0, 4);
+        grid.add(tipoClienteComboBox, 1, 4);
+        grid.add(lblCuotaAnualInfo, 0, 5);
+        grid.add(lblDescuentoEnvioInfo, 0, 6);
 
-            if (local.NextGen.controlador.Controlador.actualizarCliente(cliente)) {
-                System.out.println("\u001B[32mCliente actualizado con éxito\u001B[0m");
+        // Botón de confirmación
+        Button btnConfirmar = new Button("Agregar");
+        btnConfirmar.setOnAction(e -> {
+            if (txtNombre.getText().isEmpty() || txtDomicilio.getText().isEmpty() || txtNIF.getText().isEmpty() || txtEmail.getText().isEmpty()) {
+                mostrarError("Error de Validación", "Por favor, completa todos los campos." );
+                return;
+            }
+            Cliente nuevoCliente;
+            if (tipoClienteComboBox.getValue().equals("Premium")) {
+                nuevoCliente = new ClientePremium(null, txtNombre.getText(), txtDomicilio.getText(), txtNIF.getText(), txtEmail.getText(), new BigDecimal("30.00"), new BigDecimal("0.2"));
             } else {
-                System.out.println("\u001B[31mError al actualizar el cliente\u001B[0m");
+                nuevoCliente = new ClienteEstandard(null, txtNombre.getText(), txtDomicilio.getText(), txtNIF.getText(), txtEmail.getText());
             }
+            controlador.agregarCliente(nuevoCliente);
+            listarClientes(tabla, controlador.listarClientes());
+            dialogStage.close();
+        });
+
+        grid.add(btnConfirmar, 1, 8);
+
+        Scene scene = new Scene(grid);
+        dialogStage.setScene(scene);
+        dialogStage.show();
+    }
+
+    /**
+     * Presenta una interfaz para eliminar un cliente seleccionado.
+     * Elimina el cliente de la tabla y de la base de datos si se confirma.
+     *
+     * @param tabla La TableView de donde se selecciona el cliente a eliminar.
+     */
+    private void eliminarCliente(TableView<Cliente> tabla) {
+        Cliente clienteSeleccionado = tabla.getSelectionModel().getSelectedItem();
+        if (clienteSeleccionado != null && controlador.eliminarCliente(clienteSeleccionado.getNif())) {
+            listarClientes(tabla, controlador.listarClientes());
         } else {
-            System.out.println("\u001B[31mCliente no encontrado\u001B[0m");
+            mostrarError("Selección de Cliente Requerida", "Por favor, selecciona un cliente de la lista antes de continuar.");
         }
     }
-    private static void eliminarCliente() throws SQLException {
-        System.out.print("\u001B[34mIngrese el NIF del cliente que desea eliminar: \u001B[0m");
-        String nif = scanner.nextLine();
 
-        if (local.NextGen.controlador.Controlador.eliminarCliente(nif)) {
-            System.out.println("\u001B[32mCliente eliminado con éxito\u001B[0m");
-        } else {
-            System.out.println("\u001B[31mError al eliminar el cliente\u001B[0m");
+    /**
+     * Presenta una interfaz para actualizar un cliente seleccionado.
+     * Permite modificar los detalles del cliente seleccionado.
+     *
+     * @param tabla La TableView donde se selecciona el cliente a actualizar.
+     */
+    private void actualizarCliente(TableView<Cliente> tabla) {
+        Cliente clienteSeleccionado = tabla.getSelectionModel().getSelectedItem();
+        if (clienteSeleccionado == null) {
+            mostrarError("Selección de Cliente Requerida", "Por favor, selecciona un cliente de la lista antes de continuar.");
+            return;
         }
+
+        Stage dialogStage = createDialogStage("Actualizar Cliente");
+        GridPane grid = createClienteForm();
+
+        // Campos y botones para actualizar cliente
+        TextField txtNombre = new TextField(clienteSeleccionado.getNombre());
+        TextField txtDomicilio = new TextField(clienteSeleccionado.getDomicilio());
+        TextField txtNIF = new TextField(clienteSeleccionado.getNif());
+        TextField txtEmail = new TextField(clienteSeleccionado.getEmail());
+
+        // Añadir campos al grid
+        grid.add(new Label("Nombre:"), 0, 0);
+        grid.add(txtNombre, 1, 0);
+        grid.add(new Label("Domicilio:"), 0, 1);
+        grid.add(txtDomicilio, 1, 1);
+        grid.add(new Label("NIF:"), 0, 2);
+        grid.add(txtNIF, 1, 2);
+        grid.add(new Label("Email:"), 0, 3);
+        grid.add(txtEmail, 1, 3);
+
+        Button btnConfirmar = new Button("Actualizar");
+        btnConfirmar.setOnAction(e -> {
+            clienteSeleccionado.setNombre(txtNombre.getText());
+            clienteSeleccionado.setDomicilio(txtDomicilio.getText());
+            clienteSeleccionado.setNif(txtNIF.getText());
+            clienteSeleccionado.setEmail(txtEmail.getText());
+            controlador.actualizarCliente(clienteSeleccionado);
+            listarClientes(tabla, controlador.listarClientes());
+            dialogStage.close();
+        });
+
+        grid.add(btnConfirmar, 1, 4);
+
+        Scene scene = new Scene(grid);
+        dialogStage.setScene(scene);
+        dialogStage.show();
+    }
+
+    /**
+     * Crea un diálogo para agregar o actualizar clientes.
+     *
+     * @param title El título del diálogo.
+     * @return Un Stage que representa el diálogo.
+     */
+    private Stage createDialogStage(String title) {
+        Stage dialogStage = new Stage();
+        dialogStage.setTitle(title);
+        dialogStage.initModality(Modality.WINDOW_MODAL);
+        return dialogStage;
+    }
+
+    /**
+     * Crea un formulario para agregar o actualizar clientes.
+     *
+     * @return Un GridPane que contiene los campos del formulario.
+     */
+    private GridPane createClienteForm() {
+        GridPane grid = new GridPane();
+        grid.setVgap(10);
+        grid.setHgap(10);
+        grid.setPadding(new Insets(10));
+        return grid;
+    }
+    /**
+     * Muestra un mensaje de error en una ventana de diálogo.
+     *
+     * @param titulo El título de la ventana de diálogo.
+     * @param mensaje El mensaje de error a mostrar.
+     */
+    private void mostrarError(String titulo, String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
     }
 }
